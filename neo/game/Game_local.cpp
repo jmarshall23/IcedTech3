@@ -61,8 +61,8 @@ static gameExport_t			gameExport;
 idAnimManager				animationLib;
 
 // the rest of the engine will only reference the "game" variable, while all local aspects stay hidden
-idGameLocal					gameLocal;
-idGame *					game = &gameLocal;	// statically pointed at an idGameLocal
+iceGameLocal				gameLocal;
+idGame *					game = &gameLocal;	// statically pointed at an iceGameLocal
 
 const char *idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] = {
 	"none",	"metal", "stone", "flesh", "wood", "cardboard", "liquid", "glass", "plastic",

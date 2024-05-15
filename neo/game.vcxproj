@@ -407,6 +407,9 @@
     <None Include="game\Game.def" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="icegame.vcxproj">
+      <Project>{a89855f7-0437-4f07-9d43-be418737c7b1}</Project>
+    </ProjectReference>
     <ProjectReference Include="idlib.vcxproj">
       <Project>{49bec5c6-b964-417a-851e-808886b57400}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -3121,6 +3121,9 @@
       <Project>{f46f5d4e-c1d4-4ade-9faa-5f0ce3aa07f1}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="game.vcxproj">
+      <Project>{49bec5c6-b964-417a-851e-808886b57430}</Project>
+    </ProjectReference>
     <ProjectReference Include="idlib.vcxproj">
       <Project>{49bec5c6-b964-417a-851e-808886b57400}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

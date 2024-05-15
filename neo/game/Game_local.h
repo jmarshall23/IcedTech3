@@ -575,7 +575,8 @@ private:
 
 //============================================================================
 
-extern idGameLocal			gameLocal;
+#include "../icegame/Icegame.h"
+
 extern idAnimManager		animationLib;
 
 //============================================================================
