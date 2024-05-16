@@ -53,16 +53,7 @@ GENERAL INTERACTION RENDERING
 =========================================================================================
 */
 
-/*
-====================
-GL_SelectTextureNoClient
-====================
-*/
-void GL_SelectTextureNoClient( int unit ) {
-	backEnd.glState.currenttmu = unit;
-	qglActiveTextureARB( GL_TEXTURE0_ARB + unit );
-	RB_LogComment( "glActiveTextureARB( %i )\n", unit );
-}
+void GL_SelectTextureNoClient(int unit);
 
 /*
 ==================

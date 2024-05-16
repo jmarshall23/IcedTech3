@@ -62,7 +62,7 @@ idCVar r_useTripleTextureARB( "r_useTripleTextureARB", "1", CVAR_RENDERER | CVAR
 idCVar r_useSilRemap( "r_useSilRemap", "1", CVAR_RENDERER | CVAR_BOOL, "consider verts with the same XYZ, but different ST the same for shadows" );
 idCVar r_useNodeCommonChildren( "r_useNodeCommonChildren", "1", CVAR_RENDERER | CVAR_BOOL, "stop pushing reference bounds early when possible" );
 idCVar r_useShadowProjectedCull( "r_useShadowProjectedCull", "1", CVAR_RENDERER | CVAR_BOOL, "discard triangles outside light volume before shadowing" );
-idCVar r_useShadowVertexProgram( "r_useShadowVertexProgram", "1", CVAR_RENDERER | CVAR_BOOL, "do the shadow projection in the vertex program on capable cards" );
+idCVar r_useShadowVertexProgram( "r_useShadowVertexProgram", "0", CVAR_RENDERER | CVAR_BOOL, "do the shadow projection in the vertex program on capable cards" );
 idCVar r_useShadowSurfaceScissor( "r_useShadowSurfaceScissor", "1", CVAR_RENDERER | CVAR_BOOL, "scissor shadows by the scissor rect of the interaction surfaces" );
 idCVar r_useInteractionTable( "r_useInteractionTable", "1", CVAR_RENDERER | CVAR_BOOL, "create a full entityDefs * lightDefs table to make finding interactions faster" );
 idCVar r_useTurboShadow( "r_useTurboShadow", "1", CVAR_RENDERER | CVAR_BOOL, "use the infinite projection with W technique for dynamic shadows" );
@@ -310,6 +310,26 @@ PFNGLPROGRAMLOCALPARAMETER4FVARBPROC	qglProgramLocalParameter4fvARB;
 // GL_EXT_depth_bounds_test
 PFNGLDEPTHBOUNDSEXTPROC                 qglDepthBoundsEXT;
 
+PFNGLGENERATEMIPMAPEXTPROC				qglGenerateMipmapEXT;
+
+PFNGLCREATEPROGRAMPROC qglCreateProgram = nullptr;
+PFNGLCREATESHADERPROC qglCreateShader = nullptr;
+PFNGLSHADERSOURCEPROC qglShaderSource = nullptr;
+PFNGLCOMPILESHADERPROC qglCompileShader = nullptr;
+PFNGLATTACHSHADERPROC qglAttachShader = nullptr;
+PFNGLLINKPROGRAMPROC qglLinkProgram = nullptr;
+PFNGLUSEPROGRAMPROC qglUseProgram = nullptr;
+PFNGLGETSHADERIVPROC qglGetShaderiv = nullptr;
+PFNGLGETSHADERINFOLOGPROC qglGetShaderInfoLog = nullptr;
+PFNGLGETPROGRAMIVPROC qglGetProgramiv = nullptr;
+PFNGLGETPROGRAMINFOLOGPROC qglGetProgramInfoLog = nullptr;
+PFNGLDELETEPROGRAMPROC qglDeleteProgram = nullptr;
+PFNGLDELETESHADERPROC qglDeleteShader = nullptr;
+PFNGLUNIFORM4FVPROC qglUniform4fv = nullptr;
+PFNGLGETUNIFORMLOCATIONPROC qglGetUniformLocation = nullptr;
+PFNGLUNIFORM1IPROC qglUniform1i = nullptr;
+PFNGLBINDATTRIBLOCATIONPROC qglBindAttribLocation = nullptr;
+
 /*
 =================
 R_CheckExtension
@@ -535,6 +555,25 @@ static void R_CheckPortableExtensions( void ) {
  		qglDepthBoundsEXT = (PFNGLDEPTHBOUNDSEXTPROC)GLimp_ExtensionPointer( "glDepthBoundsEXT" );
  	}
 
+	qglGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)GLimp_ExtensionPointer("glGenerateMipmapEXT");
+
+	qglCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
+	qglCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
+	qglShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
+	qglCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
+	qglAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
+	qglLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");
+	qglUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
+	qglGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
+	qglGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
+	qglGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
+	qglGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
+	qglDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
+	qglDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
+	qglUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
+	qglGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
+	qglUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
+	qglBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
 }
 
 
@@ -707,6 +746,9 @@ void R_InitOpenGL( void ) {
 
 	// Reset our gamma
 	R_SetColorMappings();
+
+	// Load in needed RenderPrograms.
+	tr.interactionProgram = renderSystem->FindRenderProgram("interaction", false);
 
 #ifdef _WIN32
 	static bool glCheck = false;

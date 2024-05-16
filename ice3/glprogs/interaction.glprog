@@ -1,0 +1,144 @@
+glprog interaction
+{
+	vertex
+	{
+		// Uniforms
+		uniform vec4 lightOrigin;
+		uniform vec4 viewOrigin;
+		uniform vec4 lightProjectS;
+		uniform vec4 lightProjectT;
+		uniform vec4 lightProjectQ;
+		uniform vec4 lightFalloffS;
+		uniform vec4 bumpMatrixS;
+		uniform vec4 bumpMatrixT;
+		uniform vec4 diffuseMatrixS;
+		uniform vec4 diffuseMatrixT;
+		uniform vec4 specularMatrixS;
+		uniform vec4 specularMatrixT;
+		uniform vec4 colorModulate;
+		uniform vec4 colorAdd;
+
+		// Varying variables
+		varying vec3 lightVector;
+		varying vec2 bumpST;
+		varying vec2 lightFalloff;
+		varying vec3 lightProjection;
+		varying vec2 diffuseST;
+		varying vec2 specularST;
+		varying vec3 halfAngleVector;
+		varying vec4 primaryColor;
+		
+		// Attributes
+		attribute vec4 aPosition;
+		attribute vec4 aTexCoord;
+		attribute vec3 aNormal;
+		attribute vec3 aTangent0;
+		attribute vec3 aTangent1;
+		attribute vec4 aColor;
+
+		void main() {
+			 // Fetch fixed-function attributes
+			vec4 position = gl_Vertex;
+			vec4 texCoord = aTexCoord;
+			vec3 normal = normalize(aNormal);
+			vec3 tangent0 = normalize(aTangent0);
+			vec3 tangent1 = normalize(aTangent1);
+			vec4 color = aColor;
+
+			// Normal map texgen
+			bumpST = vec2(dot(bumpMatrixS, texCoord), dot(bumpMatrixT, texCoord));
+
+			// Light falloff texgen
+			lightFalloff = vec2(dot(lightFalloffS, position), 0.5);
+
+			// Light projection texgen
+			lightProjection = vec3(dot(lightProjectS, position), dot(lightProjectT, position), dot(lightProjectQ, position));
+
+			// Diffuse map texgen
+			diffuseST = vec2(dot(diffuseMatrixS, texCoord), dot(diffuseMatrixT, texCoord));
+
+			// Specular map texgen
+			specularST = vec2(dot(specularMatrixS, texCoord), dot(specularMatrixT, texCoord));
+
+			// Light and half-angle vectors
+			mat3 TBN = mat3(tangent0, tangent1, normal);
+
+			vec3 L = normalize(lightOrigin.xyz - position.xyz);
+			vec3 V = normalize(viewOrigin.xyz - position.xyz);
+			vec3 H = normalize(L + V);
+
+			lightVector = vec3(
+				dot(L, tangent0),
+				dot(L, tangent1),
+				dot(L, normal)
+			);
+
+			halfAngleVector = vec3(
+				dot(H, tangent0),
+				dot(H, tangent1),
+				dot(H, normal)
+			);
+
+			// Primary color
+			primaryColor = color * colorModulate + colorAdd;
+
+			// Position
+			gl_Position = ftransform();
+		}
+	}
+	
+	pixel
+	{
+		// Varying variables from the vertex shader
+		varying vec4 primaryColor;
+		varying vec3 lightVector;
+		varying vec2 bumpST;
+		varying vec2 lightFalloff;
+		varying vec3 lightProjection;
+		varying vec2 diffuseST;
+		varying vec2 specularST;
+		varying vec3 halfAngleVector;
+
+		// Uniforms
+		uniform vec4 diffuse;
+		uniform vec4 specular;
+		uniform sampler2D bumpImage;
+		uniform sampler2D lightFalloffImage;
+		uniform sampler2D lightImage;
+		uniform sampler2D diffuseImage;
+		uniform sampler2D specularImage;
+		uniform sampler2D specularTableImage;
+
+		void main() {
+			 // Sample the bump map and adjust range to [-1, 1]
+			vec3 N = normalize(texture(bumpImage, bumpST).xyz * 2.0 - 1.0);
+
+			// Sample the light vector and normalize it
+			vec3 L = normalize(lightVector);
+
+			// Compute dot product of normal and light vector and clamp to [0, 1]
+			float NdotL = clamp(dot(N, L), 0.0, 1.0);
+
+			// Sample the diffuse map
+			vec4 Cd = texture(diffuseImage, diffuseST);
+
+			// Sample the half-angle vector and normalize it
+			vec3 H = normalize(halfAngleVector);
+
+			// Compute dot product of normal and half-angle vector and clamp to [0, 1]
+			float NdotH = clamp(dot(N, H), 0.0, 1.0);
+
+			// Sample the specular table using NdotH
+			//vec4 spec = specular * texture(specularTableImage, vec2(NdotH, 0.0)).x;
+			const float specularPower = 10.0f;
+			float specPower = pow( NdotH, specularPower );
+			vec4 spec = specular * specPower;
+
+			// Sample the light image using projective texturing and the light falloff image
+			vec4 Cl = textureProj(lightImage, vec3(lightProjection)) * texture(lightFalloffImage, lightFalloff);
+
+			// Compute final color
+			gl_FragColor = primaryColor * Cl * NdotL * (Cd + spec * 2.0 * texture(specularImage, specularST));
+		}
+	}
+}

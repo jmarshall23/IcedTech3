@@ -621,6 +621,9 @@
     <ClInclude Include="ui\Winvar.h">
       <Filter>Ui</Filter>
     </ClInclude>
+    <ClInclude Include="renderer\DeclRenderProg.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cm\CollisionModel_contacts.cpp">
@@ -1828,6 +1831,12 @@
     </ClCompile>
     <ClCompile Include="cm\CollisionModel.cpp">
       <Filter>CM</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\DeclRenderProg.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\draw_glsl.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

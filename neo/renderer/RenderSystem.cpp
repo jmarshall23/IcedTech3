@@ -1039,3 +1039,12 @@ bool idRenderSystemLocal::UploadImage( const char *imageName, const byte *data, 
 	image->SetImageFilterAndRepeat();
 	return true;
 }
+
+/*
+===============
+idRenderSystemLocal::FindRenderProgram
+===============
+*/
+const idDeclRenderProg* idRenderSystemLocal::FindRenderProgram(const char* name, bool makeDefault) {
+	return static_cast<const idDeclRenderProg*>(declManager->FindType(DECL_RENDERPROG, name, makeDefault));
+}
