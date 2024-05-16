@@ -27,6 +27,7 @@ glprog interaction
 		varying vec2 specularST;
 		varying vec3 halfAngleVector;
 		varying vec4 primaryColor;
+		varying vec3 viewDir;
 		
 		// Attributes
 		attribute vec4 aPosition;
@@ -78,6 +79,8 @@ glprog interaction
 				dot(H, tangent1),
 				dot(H, normal)
 			);
+			
+			viewDir = normalize(vec3(dot(V, tangent0), dot(V, tangent1), dot(V, normal)));
 
 			// Primary color
 			primaryColor = color * colorModulate + colorAdd;
@@ -98,6 +101,7 @@ glprog interaction
 		varying vec2 diffuseST;
 		varying vec2 specularST;
 		varying vec3 halfAngleVector;
+		varying vec3 viewDir;
 
 		// Uniforms
 		uniform vec4 diffuse;
@@ -110,8 +114,19 @@ glprog interaction
 		uniform sampler2D specularTableImage;
 
 		void main() {
-			 // Sample the bump map and adjust range to [-1, 1]
-			vec3 N = normalize(texture(bumpImage, bumpST).xyz * 2.0 - 1.0);
+			// Sample the height from the bump map (Z component)
+			float height = normalize(texture(bumpImage, bumpST).xyz).z * 0.01;
+
+			// Calculate the offset for parallax mapping
+			vec2 offset = viewDir.xy * height;
+
+			// Apply the offset to the texture coordinates
+			vec2 bumpedST = bumpST + offset;
+			vec2 diffuseST = diffuseST + offset;
+			vec2 specularST = specularST + offset;
+			
+			// Sample the bump map and adjust range to [-1, 1]
+			vec3 N = normalize(texture(bumpImage, bumpedST).xyz * 2.0 - 1.0);
 
 			// Sample the light vector and normalize it
 			vec3 L = normalize(lightVector);
@@ -119,7 +134,7 @@ glprog interaction
 			// Compute dot product of normal and light vector and clamp to [0, 1]
 			float NdotL = clamp(dot(N, L), 0.0, 1.0);
 
-			// Sample the diffuse map
+			// Sample the diffuse map with the offset coordinates
 			vec4 Cd = diffuse * texture(diffuseImage, diffuseST);
 
 			// Sample the half-angle vector and normalize it
@@ -128,10 +143,9 @@ glprog interaction
 			// Compute dot product of normal and half-angle vector and clamp to [0, 1]
 			float NdotH = clamp(dot(N, H), 0.0, 1.0);
 
-			// Sample the specular table using NdotH
-			//vec4 spec = specular * texture(specularTableImage, vec2(NdotH, 0.0)).x;
+			// Compute specular power
 			const float specularPower = 10.0f;
-			float specPower = pow( NdotH, specularPower );
+			float specPower = pow(NdotH, specularPower);
 			vec4 spec = specular * specPower;
 
 			// Sample the light image using projective texturing and the light falloff image
