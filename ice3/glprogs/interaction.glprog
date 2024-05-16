@@ -40,9 +40,9 @@ glprog interaction
 			 // Fetch fixed-function attributes
 			vec4 position = gl_Vertex;
 			vec4 texCoord = aTexCoord;
-			vec3 normal = normalize(aNormal);
-			vec3 tangent0 = normalize(aTangent0);
-			vec3 tangent1 = normalize(aTangent1);
+			vec3 normal   = aNormal;
+			vec3 tangent0 = aTangent0;
+			vec3 tangent1 = aTangent1;
 			vec4 color = aColor;
 
 			// Normal map texgen
@@ -63,9 +63,9 @@ glprog interaction
 			// Light and half-angle vectors
 			mat3 TBN = mat3(tangent0, tangent1, normal);
 
-			vec3 L = normalize(lightOrigin.xyz - position.xyz);
-			vec3 V = normalize(viewOrigin.xyz - position.xyz);
-			vec3 H = normalize(L + V);
+			vec3 L = lightOrigin.xyz - position.xyz;
+			vec3 V = viewOrigin.xyz - position.xyz;
+			vec3 H = normalize(L) + normalize(V);
 
 			lightVector = vec3(
 				dot(L, tangent0),
@@ -120,7 +120,7 @@ glprog interaction
 			float NdotL = clamp(dot(N, L), 0.0, 1.0);
 
 			// Sample the diffuse map
-			vec4 Cd = texture(diffuseImage, diffuseST);
+			vec4 Cd = diffuse * texture(diffuseImage, diffuseST);
 
 			// Sample the half-angle vector and normalize it
 			vec3 H = normalize(halfAngleVector);

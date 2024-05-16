@@ -729,6 +729,10 @@ void RB_CreateSingleDrawInteractions( const drawSurf_t *surf, void (*DrawInterac
 	inter.surf = surf;
 	inter.lightFalloffImage = vLight->falloffImage;
 
+
+	//inter.localLightOrigin = idVec4(vLight->globalLightOrigin.x, vLight->globalLightOrigin.y, vLight->globalLightOrigin.z, 0.0);
+	//inter.localViewOrigin = idVec4(backEnd.viewDef->renderView.vieworg.x, backEnd.viewDef->renderView.vieworg.y, backEnd.viewDef->renderView.vieworg.z, 0.0);
+
 	R_GlobalPointToLocal( surf->space->modelMatrix, vLight->globalLightOrigin, inter.localLightOrigin.ToVec3() );
 	R_GlobalPointToLocal( surf->space->modelMatrix, backEnd.viewDef->renderView.vieworg, inter.localViewOrigin.ToVec3() );
 	inter.localLightOrigin[3] = 0;
