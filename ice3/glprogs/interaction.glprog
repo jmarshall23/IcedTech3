@@ -112,18 +112,37 @@ glprog interaction
 		uniform sampler2D diffuseImage;
 		uniform sampler2D specularImage;
 		uniform sampler2D specularTableImage;
+		
+		// POM parameters
+		const float numLayers = 32.0;
+		const float layerHeight = 0.01;
 
 		void main() {
-			// Sample the height from the bump map (Z component)
-			float height = normalize(texture(bumpImage, bumpST).xyz).z * 0.01;
-
-			// Calculate the offset for parallax mapping
-			vec2 offset = viewDir.xy * height;
-
 			// Apply the offset to the texture coordinates
-			vec2 bumpedST = bumpST + offset;
-			vec2 diffuseST = diffuseST + offset;
-			vec2 specularST = specularST + offset;
+			vec2 bumpedST = bumpST;
+			vec2 diffuseST = diffuseST;
+			vec2 specularST = specularST;
+			
+			// Compute view direction in tangent space
+			vec3 V = normalize(viewDir);
+
+			// Initialize parallax mapping
+			float layerDepth = 1.0 / numLayers;
+			vec2 P = V.xy * layerHeight / V.z;
+			float currentLayerDepth = 0.0;
+			vec2 deltaTexCoords = P / numLayers;
+
+			// Loop through layers for parallax occlusion mapping
+			for (int i = 0; i < int(numLayers); i++) {
+				float height = normalize(texture(bumpImage, bumpST).xyz  * 2.0 - 1.0).z;
+				if (currentLayerDepth >= height) {
+					break;
+				}
+				bumpedST -= deltaTexCoords;
+				diffuseST -= deltaTexCoords;
+				specularST -= deltaTexCoords;
+				currentLayerDepth += layerDepth;
+			}
 			
 			// Sample the bump map and adjust range to [-1, 1]
 			vec3 N = normalize(texture(bumpImage, bumpedST).xyz * 2.0 - 1.0);
