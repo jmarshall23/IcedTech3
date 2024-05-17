@@ -1308,13 +1308,9 @@
     </ClCompile>
     <ClCompile Include="renderer\Cinematic.cpp" />
     <ClCompile Include="renderer\DeclRenderProg.cpp" />
-    <ClCompile Include="renderer\draw_arb.cpp" />
     <ClCompile Include="renderer\draw_arb2.cpp" />
     <ClCompile Include="renderer\draw_common.cpp" />
-    <ClCompile Include="renderer\draw_glsl.cpp" />
-    <ClCompile Include="renderer\draw_nv10.cpp" />
-    <ClCompile Include="renderer\draw_nv20.cpp" />
-    <ClCompile Include="renderer\draw_r200.cpp" />
+    <ClCompile Include="renderer\draw_exp.cpp" />
     <ClCompile Include="renderer\GuiModel.cpp" />
     <ClCompile Include="renderer\Image_files.cpp" />
     <ClCompile Include="renderer\Image_init.cpp" />

@@ -6,6 +6,30 @@ Version 2
 {
  brushDef3
  {
+  ( 0 0 -1 48 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+  ( -0 0 1 -152 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+  ( -0 -1 -0 184 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+  ( 1 0 0 -120 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+  ( -0 1 0 -192 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+  ( -1 0 0 -88 ) ( ( 0.0078125 0 0 ) ( 0 0.015625 0 ) ) "textures/glass/glass2_nvp" 0 0 0
+ }
+}
+// primitive 1
+{
+ brushDef3
+ {
+  ( -0 -0 -1 0 ) ( ( 0.0078125 0 0.5625 ) ( 0 0.0078125 2.375 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+  ( 0 -0 1 -256 ) ( ( 0.0078125 0 0.5625 ) ( 0 0.0078125 -2.375 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+  ( 0 -1 0 -8 ) ( ( 0.0078125 0 -2.375 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+  ( 1 0 -0 16 ) ( ( 0.0078125 0 0.5625 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+  ( 0 1 0 -48 ) ( ( 0.0078125 0 2.375 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+  ( -1 0 0 -96 ) ( ( 0.0078125 -0 -0.5625 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
+ }
+}
+// primitive 2
+{
+ brushDef3
+ {
   ( 0 0 -1 256 ) ( ( 0.0078125 0 0 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
   ( 0 0 1 -272 ) ( ( 0.0078125 0 0 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
   ( -1 0.0000001344 0 -192.0000152588 ) ( ( 0.0078125 0 0 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
@@ -14,7 +38,7 @@ Version 2
   ( 0.0000001343 1 0 -256 ) ( ( 0.0078125 0 0 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
  }
 }
-// primitive 1
+// primitive 3
 {
  brushDef3
  {
@@ -26,7 +50,7 @@ Version 2
   ( 0.0000001343 1 0 -256 ) ( ( 0.015625 0 0 ) ( 0 0.015625 0 ) ) "textures/base_wall/lfwall27b" 0 0 0
  }
 }
-// primitive 2
+// primitive 4
 {
  brushDef3
  {
@@ -38,7 +62,7 @@ Version 2
   ( 0.0000001343 1 0 -272 ) ( ( 0.0078125009 0 -0.4999997616 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
  }
 }
-// primitive 3
+// primitive 5
 {
  brushDef3
  {
@@ -50,7 +74,7 @@ Version 2
   ( 0.0000001344 1 0 128 ) ( ( 0.0078125009 0 -0.4999997616 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
  }
 }
-// primitive 4
+// primitive 6
 {
  brushDef3
  {
@@ -62,7 +86,7 @@ Version 2
   ( -1 0 0 192 ) ( ( 0.0078125 0 0 ) ( 0 0.0078125 0 ) ) "textures/base_wall/lfwall13f3" 0 0 0
  }
 }
-// primitive 5
+// primitive 7
 {
  brushDef3
  {
@@ -77,20 +101,39 @@ Version 2
 }
 // entity 1
 {
+"anim" "idle"
+"classname" "monster_zombie_fat"
+"name" "monster_zombie_fat_1"
+"origin" "-112 144 0"
+}
+// entity 2
+{
 "classname" "light"
 "name" "light_2"
-"origin" "-152 24 80"
+"origin" "-152 16 80"
 "noshadows" "0"
 "nospecular" "0"
 "nodiffuse" "0"
 "falloff" "0"
 "_color" "0.78 0.78 0.84"
-"light_radius" "225 225 225"
+"light_radius" "500 500 500"
 }
-// entity 2
+// entity 3
 {
 "classname" "info_player_start"
 "name" "info_player_start_1"
 "origin" "128 64 0"
 "angle" "180"
+}
+// entity 4
+{
+"classname" "light"
+"name" "light_3"
+"origin" "16 32 80"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "0.78 0.78 0.84"
+"light_radius" "500 500 500"
 }

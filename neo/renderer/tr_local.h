@@ -456,6 +456,8 @@ typedef struct {
 	idVec4				bumpMatrix[2];
 	idVec4				diffuseMatrix[2];
 	idVec4				specularMatrix[2];
+
+	float				surfModelMatrix[16];
 } drawInteraction_t;
 
 
@@ -599,7 +601,7 @@ typedef struct {
 	textureType_t	textureType;
 } tmu_t;
 
-const int MAX_MULTITEXTURE_UNITS =	8;
+const int MAX_MULTITEXTURE_UNITS =	16;
 typedef struct {
 	tmu_t		tmu[MAX_MULTITEXTURE_UNITS];
 	int			currenttmu;
@@ -801,8 +803,6 @@ public:
 	int						guiRecursionLevel;		// to prevent infinite overruns
 	class idGuiModel *		guiModel;
 	class idGuiModel *		demoGuiModel;
-
-	const idDeclRenderProg*	interactionProgram;
 
 	unsigned short			gammaTable[256];	// brightness / gamma modify this
 };
@@ -1307,23 +1307,15 @@ enum AttributeLocations {
 	ATTR_COLOR = 5
 };
 
-void	RB_GLSL_DrawInteractions(void);
-
-void	RB_ARB_DrawInteractions( void );
-
-void	R_R200_Init( void );
-void	RB_R200_DrawInteractions( void );
-
-void	R_NV10_Init( void );
-void	RB_NV10_DrawInteractions( void );
-
-void	R_NV20_Init( void );
-void	RB_NV20_DrawInteractions( void );
+void	RB_EXP_Init(void);
+void	RB_EXP_Shutdown(void);
 
 void	R_ARB2_Init( void );
 void	RB_ARB2_DrawInteractions( void );
 void	R_ReloadARBPrograms_f( const idCmdArgs &args );
 int		R_FindARBProgram( GLenum target, const char *program );
+
+void	RB_EXP_DrawInteractions(void);
 
 typedef enum {
 	PROG_INVALID,

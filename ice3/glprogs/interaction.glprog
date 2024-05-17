@@ -17,6 +17,8 @@ glprog interaction
 		uniform vec4 specularMatrixT;
 		uniform vec4 colorModulate;
 		uniform vec4 colorAdd;
+		uniform mat4 lightMatrices[6];
+		uniform mat4 modelMatrix;
 
 		// Varying variables
 		varying vec3 lightVector;
@@ -28,6 +30,7 @@ glprog interaction
 		varying vec3 halfAngleVector;
 		varying vec4 primaryColor;
 		varying vec3 viewDir;
+		varying vec4 shadowCoords[6];
 		
 		// Attributes
 		attribute vec4 aPosition;
@@ -45,6 +48,10 @@ glprog interaction
 			vec3 tangent0 = aTangent0;
 			vec3 tangent1 = aTangent1;
 			vec4 color = aColor;
+			
+			for (int i = 0; i < 6; i++) {
+				shadowCoords[i] = lightMatrices[i] * (modelMatrix * vec4(gl_Vertex.xyz, 1.0));
+			}
 
 			// Normal map texgen
 			bumpST = vec2(dot(bumpMatrixS, texCoord), dot(bumpMatrixT, texCoord));
@@ -102,16 +109,32 @@ glprog interaction
 		varying vec2 specularST;
 		varying vec3 halfAngleVector;
 		varying vec3 viewDir;
-
+		varying vec4 shadowCoords[6];
+		
 		// Uniforms
 		uniform vec4 diffuse;
 		uniform vec4 specular;
+		uniform int numSides;
 		uniform sampler2D bumpImage;
 		uniform sampler2D lightFalloffImage;
 		uniform sampler2D lightImage;
 		uniform sampler2D diffuseImage;
 		uniform sampler2D specularImage;
 		uniform sampler2D specularTableImage;
+		uniform sampler2D shadowMaps[6];
+
+		float shadowFactor(int index) {
+			vec3 coord = shadowCoords[index].xyz / shadowCoords[index].w; // Convert to normalized device coordinates (NDC)
+			coord = coord * 0.5 + 0.5; // Transform from [-1, 1] range to [0, 1] range
+			
+			if(coord.z > 1)
+				return 1;
+
+			float depth = texture2D(shadowMaps[index], coord.xy).r; // Sample the depth from the shadow map
+			float bias = 0.001; // Adjust the bias value as needed to reduce shadow acne and peter-panning
+
+			return (coord.z - bias) < depth ? 1.0 : 0.0; // Compare the depth values with a bias
+		}
 		
 		// POM parameters
 		const float numLayers = 32.0;
@@ -169,9 +192,24 @@ glprog interaction
 
 			// Sample the light image using projective texturing and the light falloff image
 			vec4 Cl = textureProj(lightImage, vec3(lightProjection)) * texture(lightFalloffImage, lightFalloff);
+			
+			float shadow = 1.0;
+			if(numSides > 0)
+			{
+				for (int i = 0; i < numSides; i++) {
+					float factor = shadowFactor(i);
+					if(factor == -1)
+					{
+						gl_FragColor = vec4(1, 0, 0, 1);
+						return;
+					}
+					shadow *= factor;
+				}
+			}
 
 			// Compute final color
 			gl_FragColor = primaryColor * Cl * NdotL * (Cd + spec * 2.0 * texture(specularImage, specularST));
+			gl_FragColor *= shadow;
 		}
 	}
 }

@@ -329,6 +329,18 @@ PFNGLUNIFORM4FVPROC qglUniform4fv = nullptr;
 PFNGLGETUNIFORMLOCATIONPROC qglGetUniformLocation = nullptr;
 PFNGLUNIFORM1IPROC qglUniform1i = nullptr;
 PFNGLBINDATTRIBLOCATIONPROC qglBindAttribLocation = nullptr;
+PFNGLUNIFORMMATRIX4FVPROC qglUniformMatrix4fv = nullptr;
+
+PFNGLGENFRAMEBUFFERSEXTPROC            qglGenFramebuffersEXT = NULL;
+PFNGLDELETEFRAMEBUFFERSEXTPROC         qglDeleteFramebuffersEXT = NULL;
+PFNGLBINDFRAMEBUFFEREXTPROC            qglBindFramebufferEXT = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC     qglCheckFramebufferStatusEXT = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC       qglFramebufferTexture2DEXT = NULL;
+PFNGLGENRENDERBUFFERSEXTPROC           qglGenRenderbuffersEXT = NULL;
+PFNGLDELETERENDERBUFFERSEXTPROC        qglDeleteRenderbuffersEXT = NULL;
+PFNGLBINDRENDERBUFFEREXTPROC           qglBindRenderbufferEXT = NULL;
+PFNGLRENDERBUFFERSTORAGEEXTPROC        qglRenderbufferStorageEXT = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC    qglFramebufferRenderbufferEXT = NULL;
 
 /*
 =================
@@ -555,8 +567,10 @@ static void R_CheckPortableExtensions( void ) {
  		qglDepthBoundsEXT = (PFNGLDEPTHBOUNDSEXTPROC)GLimp_ExtensionPointer( "glDepthBoundsEXT" );
  	}
 
+	// Mipmaps.
 	qglGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)GLimp_ExtensionPointer("glGenerateMipmapEXT");
 
+	// GLSL
 	qglCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
 	qglCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
 	qglShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
@@ -574,6 +588,18 @@ static void R_CheckPortableExtensions( void ) {
 	qglGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
 	qglUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
 	qglBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
+	qglUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
+
+	qglGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)GLimp_ExtensionPointer("glGenFramebuffersEXT");
+	qglDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)GLimp_ExtensionPointer("glDeleteFramebuffersEXT");
+	qglBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)GLimp_ExtensionPointer("glBindFramebufferEXT");
+	qglCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)GLimp_ExtensionPointer("glCheckFramebufferStatusEXT");
+	qglFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)GLimp_ExtensionPointer("glFramebufferTexture2DEXT");
+	qglGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)GLimp_ExtensionPointer("glGenRenderbuffersEXT");
+	qglDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)GLimp_ExtensionPointer("glDeleteRenderbuffersEXT");
+	qglBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)GLimp_ExtensionPointer("glBindRenderbufferEXT");
+	qglRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)GLimp_ExtensionPointer("glRenderbufferStorageEXT");
+	qglFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)GLimp_ExtensionPointer("glFramebufferRenderbufferEXT");
 }
 
 
@@ -726,9 +752,7 @@ void R_InitOpenGL( void ) {
 
 	// parse our vertex and fragment programs, possibly disably support for
 	// one of the paths if there was an error
-	R_NV10_Init();
-	R_NV20_Init();
-	R_R200_Init();
+	RB_EXP_Init();
 	R_ARB2_Init();
 
 	cmdSystem->AddCommand( "reloadARBprograms", R_ReloadARBPrograms_f, CMD_FL_RENDERER, "reloads ARB programs" );
@@ -746,9 +770,6 @@ void R_InitOpenGL( void ) {
 
 	// Reset our gamma
 	R_SetColorMappings();
-
-	// Load in needed RenderPrograms.
-	tr.interactionProgram = renderSystem->FindRenderProgram("interaction", false);
 
 #ifdef _WIN32
 	static bool glCheck = false;
@@ -2233,6 +2254,8 @@ void idRenderSystemLocal::Shutdown( void ) {
 	idCinematic::ShutdownCinematic( );
 
 	globalImages->Shutdown();
+
+	RB_EXP_Shutdown();
 
 	// close the r_logFile
 	if ( logFile ) {

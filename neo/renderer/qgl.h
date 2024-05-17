@@ -182,7 +182,18 @@ extern PFNGLUNIFORM4FVPROC qglUniform4fv;
 extern PFNGLGETUNIFORMLOCATIONPROC qglGetUniformLocation;
 extern PFNGLUNIFORM1IPROC qglUniform1i;
 extern PFNGLBINDATTRIBLOCATIONPROC qglBindAttribLocation;
+extern PFNGLUNIFORMMATRIX4FVPROC qglUniformMatrix4fv;
 
+extern PFNGLGENFRAMEBUFFERSEXTPROC            qglGenFramebuffersEXT;
+extern PFNGLDELETEFRAMEBUFFERSEXTPROC         qglDeleteFramebuffersEXT;
+extern PFNGLBINDFRAMEBUFFEREXTPROC            qglBindFramebufferEXT;
+extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC     qglCheckFramebufferStatusEXT;
+extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC       qglFramebufferTexture2DEXT;
+extern PFNGLGENRENDERBUFFERSEXTPROC           qglGenRenderbuffersEXT;
+extern PFNGLDELETERENDERBUFFERSEXTPROC        qglDeleteRenderbuffersEXT;
+extern PFNGLBINDRENDERBUFFEREXTPROC           qglBindRenderbufferEXT;
+extern PFNGLRENDERBUFFERSTORAGEEXTPROC        qglRenderbufferStorageEXT;
+extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC    qglFramebufferRenderbufferEXT;
 //===========================================================================
 
 // non-windows systems will just redefine qgl* to gl*
