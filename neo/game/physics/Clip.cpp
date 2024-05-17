@@ -1092,6 +1092,19 @@ bool idClip::Translation( trace_t &results, const idVec3 &start, const idVec3 &e
 		if ( results.fraction == 0.0f ) {
 			return true;		// blocked immediately by the world
 		}
+
+		for (int i = 0; i < collisionModelManager->GetNumInlinedProcClipModels(); i++)
+		{
+			idCollisionModel* cm = collisionModelManager->GetCollisionModel(i + 1);
+			if (cm == NULL)
+				continue;
+
+			collisionModelManager->Translation(&results, start, end, trm, trmAxis, contentMask, cm, vec3_origin, mat3_default);
+			results.c.entityNum = results.fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+			if (results.fraction == 0.0f) {
+				return true;		// blocked immediately by the world
+			}
+		}
 	} else {
 		memset( &results, 0, sizeof( results ) );
 		results.fraction = 1.0f;
@@ -1384,6 +1397,15 @@ int idClip::Contacts( contactInfo_t *contacts, const int maxContacts, const idVe
 		// test world
 		idClip::numContacts++;
 		numContacts = collisionModelManager->Contacts( contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default );
+
+		for (int i = 0; i < collisionModelManager->GetNumInlinedProcClipModels(); i++)
+		{
+			idCollisionModel* cm = collisionModelManager->GetCollisionModel(i + 1);
+			if (cm == NULL)
+				continue;
+
+			numContacts += collisionModelManager->Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, cm, vec3_origin, mat3_default);
+		}
 	} else {
 		numContacts = 0;
 	}
@@ -1454,6 +1476,19 @@ int idClip::Contents( const idVec3 &start, const idClipModel *mdl, const idMat3 
 		// test world
 		idClip::numContents++;
 		contents = collisionModelManager->Contents( start, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default );
+
+		for (int i = 0; i < collisionModelManager->GetNumInlinedProcClipModels(); i++)
+		{
+			idCollisionModel* cm = collisionModelManager->GetCollisionModel(i + 1);
+			if (cm == NULL)
+				continue;
+
+			int procMeshContents = collisionModelManager->Contents(start, trm, trmAxis, contentMask, cm, vec3_origin, mat3_default);
+			if (procMeshContents)
+			{
+				contents |= (procMeshContents & contentMask);
+			}
+		}
 	} else {
 		contents = 0;
 	}
