@@ -624,6 +624,9 @@
     <ClInclude Include="renderer\DeclRenderProg.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="renderer\Model_obj.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cm\CollisionModel_contacts.cpp">
@@ -1815,6 +1818,9 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="renderer\draw_exp.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\Model_obj.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>

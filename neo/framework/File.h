@@ -94,6 +94,8 @@ public:
 	virtual int				ReadVec4( idVec4 &vec );
 	virtual int				ReadVec6( idVec6 &vec );
 	virtual int				ReadMat3( idMat3 &mat );
+	virtual bool			ReadToken(idStr& token);
+	virtual bool			ReadLine(idStr& line);
 	
 	// Endian portable alternatives to Write(...)
 	virtual int				WriteInt( const int value );

@@ -301,6 +301,7 @@
     <ClInclude Include="renderer\ModelDecal.h" />
     <ClInclude Include="renderer\ModelManager.h" />
     <ClInclude Include="renderer\ModelOverlay.h" />
+    <ClInclude Include="renderer\Model_obj.h" />
     <ClInclude Include="renderer\qgl.h" />
     <ClInclude Include="renderer\qgl_linked.h" />
     <ClInclude Include="renderer\RenderSystem.h" />
@@ -1328,6 +1329,7 @@
     <ClCompile Include="renderer\Model_ma.cpp" />
     <ClCompile Include="renderer\Model_md3.cpp" />
     <ClCompile Include="renderer\Model_md5.cpp" />
+    <ClCompile Include="renderer\Model_obj.cpp" />
     <ClCompile Include="renderer\Model_prt.cpp" />
     <ClCompile Include="renderer\Model_sprite.cpp" />
     <ClCompile Include="renderer\ModelDecal.cpp" />

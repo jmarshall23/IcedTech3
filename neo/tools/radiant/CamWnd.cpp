@@ -1660,7 +1660,7 @@ void Select_ToOBJ() {
 }
 
 void Select_ToCM() {
-	CFileDialog dlgFile( FALSE, "lwo, ase", NULL, 0, "(*.lwo)|*.lwo|(*.ase)|*.ase|(*.ma)|*.ma||", g_pParentWnd );
+	CFileDialog dlgFile( FALSE, "lwo, ase, obj", NULL, 0, "(*.obj)|*.obj|(*.lwo)|*.lwo|(*.ase)|*.ase|(*.ma)|*.ma||", g_pParentWnd );
 
 	if ( dlgFile.DoModal() == IDOK ) {
 		idMapEntity *mapEnt;

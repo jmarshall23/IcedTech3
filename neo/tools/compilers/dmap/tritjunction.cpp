@@ -597,7 +597,7 @@ void	FixGlobalTjunctions( uEntity_t *e ) {
 			if ( !modelName ) {
 				continue;
 			}
-			if ( !strstr( modelName, ".lwo" ) && !strstr( modelName, ".ase" ) && !strstr( modelName, ".ma" ) ) {
+			if ( !strstr( modelName, ".lwo" ) && !strstr(modelName, ".obj") && !strstr( modelName, ".ase" ) && !strstr( modelName, ".ma" ) ) {
 				continue;
 			}
 

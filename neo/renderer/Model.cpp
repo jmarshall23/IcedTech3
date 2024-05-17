@@ -34,6 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "Model_ase.h"
 #include "Model_lwo.h"
 #include "Model_ma.h"
+#include "Model_obj.h"
 
 idCVar idRenderModelStatic::r_mergeModelSurfaces( "r_mergeModelSurfaces", "1", CVAR_BOOL|CVAR_RENDERER, "combine model surfaces with the same material" );
 idCVar idRenderModelStatic::r_slopVertex( "r_slopVertex", "0.01", CVAR_RENDERER, "merge xyz coordinates this far apart" );
@@ -296,6 +297,9 @@ void idRenderModelStatic::InitFromFile( const char *fileName ) {
 	} else if ( extension.Icmp( "ma" ) == 0 ) {
 		loaded		= LoadMA( name );
 		reloadable	= true;
+	} else if (extension.Icmp("obj") == 0) {
+		loaded		= LoadOBJ(name);
+		reloadable = true;
 	} else {
 		common->Warning( "idRenderModelStatic::InitFromFile: unknown type for model: \'%s\'", name.c_str() );
 		loaded		= false;
@@ -1020,6 +1024,50 @@ bool idRenderModelStatic::ConvertASEToModelSurfaces( const struct aseModel_s *as
 			R_FreeStaticTriSurf( mergeTri );
 		}
 	}
+
+	return true;
+}
+
+/*
+=================
+idRenderModelStatic::ConvertOBJToModelSurfaces
+=================
+*/
+bool idRenderModelStatic::ConvertOBJToModelSurfaces(const char* filename) {
+	idList<idDrawVert> vertices;
+	idList<int> indices;
+
+	if (!OBJ_LoadOBJ(filename, vertices, indices)) {
+		common->Warning("Failed to load OBJ model: %s", filename);
+		return false;
+	}
+
+	modelSurface_t surf;
+	memset(&surf, 0, sizeof(surf));
+
+	idStr materialName = filename;
+	materialName.StripFileExtension();
+	const idMaterial* shader = declManager->FindMaterial(materialName);
+	surf.shader = shader;
+	surf.id = NumSurfaces();
+
+	srfTriangles_t* tri = R_AllocStaticTriSurf();
+	tri->numVerts = vertices.Num();
+	tri->numIndexes = indices.Num();
+	R_AllocStaticTriSurfVerts(tri, tri->numVerts);
+	R_AllocStaticTriSurfIndexes(tri, tri->numIndexes);
+
+	for (int i = 0; i < tri->numVerts; i++) {
+		tri->verts[i] = vertices[i];
+	}
+	for (int i = 0; i < tri->numIndexes; i++) {
+		tri->indexes[i] = indices[i];
+	}
+
+	tri->generateNormals = true;
+
+	surf.geometry = tri;
+	AddSurface(surf);
 
 	return true;
 }
@@ -1870,6 +1918,15 @@ bool idRenderModelStatic::ConvertMAToModelSurfaces (const struct maModel_s *ma )
 	}
 
 	return true;
+}
+
+/*
+=================
+idRenderModelStatic::LoadOBJ
+=================
+*/
+bool idRenderModelStatic::LoadOBJ(const char* fileName) {
+	return ConvertOBJToModelSurfaces(fileName);
 }
 
 /*

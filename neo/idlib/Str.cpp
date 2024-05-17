@@ -1741,3 +1741,30 @@ idStr idStr::FormatNumber( int number ) {
 	return string;
 }
 
+/*
+=================
+idStr::StripLeadingWhitespace
+=================
+*/
+void idStr::StripLeadingWhitespace() {
+	int start = 0;
+	while (start < Length() && isspace((*this)[start])) {
+		start++;
+	}
+	if (start > 0) {
+		*this = Right(Length() - start);
+	}
+}
+
+/*
+=================
+idStr::StartsWith
+=================
+*/
+bool idStr::StartsWith(const char* prefix) const {
+	int prefixLength = strlen(prefix);
+	if (prefixLength > Length()) {
+		return false;
+	}
+	return idStr::Cmpn(c_str(), prefix, prefixLength) == 0;
+}

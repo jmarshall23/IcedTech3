@@ -121,6 +121,9 @@ void CPreviewDlg::BuildTree() {
 		files = fileSystem->ListFilesTree( "models", ".ma" );
 		AddStrList( "base", files->GetList(), MODELS );
 		fileSystem->FreeFileList( files );
+		files = fileSystem->ListFilesTree("models", ".obj");
+		AddStrList("base", files->GetList(), MODELS);
+		fileSystem->FreeFileList(files);
 	} else if ( currentMode == SOUNDS ) {
 		AddSounds( true );
 	} else if ( currentMode == MATERIALS ) {
@@ -339,20 +342,20 @@ void CPreviewDlg::OnTvnSelchangedTreeMedia(NMHDR *pNMHDR, LRESULT *pResult)
 				modelMedia = data;
 			}
 			if ( modelMedia.Length() ) {
-				int size = fileSystem->ReadFile( modelMedia, NULL, NULL );
+				int size = fileSystem->ReadFile(modelMedia, NULL, NULL);
 				int lsize;
-				if ( strstr( modelMedia, ".lwo" ) ) {
+				if (strstr(modelMedia, ".lwo")) {
 					lsize = 128 * 1024;
 				}
 				else {
 					lsize = 768 * 1024;
 				}
-				if ( size > lsize ) {
-					if ( MessageBox("Model appears to be quite large, are you sure you want to preview it?", "High Poly Model?", MB_YESNO ) == IDNO ) {
-						*pResult = 0;
-						return;
-					}
-				}
+				//if (size > lsize) {
+				//	if (MessageBox("Model appears to be quite large, are you sure you want to preview it?", "High Poly Model?", MB_YESNO) == IDNO) {
+				//		*pResult = 0;
+				//		return;
+				//	}
+				//}
 				m_drawModel.setMedia( modelMedia );
 				if ( currentMode == SKINS ) {
 					m_drawModel.SetSkin( mediaName );
