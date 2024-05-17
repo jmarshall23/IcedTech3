@@ -2466,103 +2466,109 @@ void idCommonLocal::Frame( void ) {
 
 		eventLoop->RunEventLoop();
 
-		//--------------------------------------------
-		// Determine how many game tics we are going to run,
-		// now that the previous frame is completely finished.
-		//
-		// It is important that any waiting on the GPU be done
-		// before this, or there will be a bad stuttering when
-		// dropping frames for performance management.
-		//--------------------------------------------
+		if (sys->IsGameWindowVisible())
+		{
+			//--------------------------------------------
+			// Determine how many game tics we are going to run,
+			// now that the previous frame is completely finished.
+			//
+			// It is important that any waiting on the GPU be done
+			// before this, or there will be a bad stuttering when
+			// dropping frames for performance management.
+			//--------------------------------------------
 
-		// input:
-		// thisFrameTime
-		// com_noSleep
-		// com_engineHz
-		// com_fixedTic
-		// com_deltaTimeClamp
-		// IsMultiplayer
-		//
-		// in/out state:
-		// gameFrame
-		// gameTimeResidual
-		// lastFrameTime
-		// syncNextFrame
-		//
-		// Output:
-		// numGameFrames
+			// input:
+			// thisFrameTime
+			// com_noSleep
+			// com_engineHz
+			// com_fixedTic
+			// com_deltaTimeClamp
+			// IsMultiplayer
+			//
+			// in/out state:
+			// gameFrame
+			// gameTimeResidual
+			// lastFrameTime
+			// syncNextFrame
+			//
+			// Output:
+			// numGameFrames
 
-		// How many game frames to run
-		int numGameFrames = 0;
+			// How many game frames to run
+			int numGameFrames = 0;
 
-		for (;;) {
-			const int thisFrameTime = Sys_Milliseconds();
-			static int lastFrameTime = thisFrameTime;	// initialized only the first time
-			const int deltaMilliseconds = thisFrameTime - lastFrameTime;
-			lastFrameTime = thisFrameTime;
+			for (;;) {
+				const int thisFrameTime = Sys_Milliseconds();
+				static int lastFrameTime = thisFrameTime;	// initialized only the first time
+				const int deltaMilliseconds = thisFrameTime - lastFrameTime;
+				lastFrameTime = thisFrameTime;
 
-			// if there was a large gap in time since the last frame, or the frame
-			// rate is very very low, limit the number of frames we will run
-			const int clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
+				// if there was a large gap in time since the last frame, or the frame
+				// rate is very very low, limit the number of frames we will run
+				const int clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
 
-			gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
+				gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
 
-			// don't run any frames when paused
-			//if (pauseGame) {
-			//	gameFrame++;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
+				// don't run any frames when paused
+				//if (pauseGame) {
+				//	gameFrame++;
+				//	gameTimeResidual = 0;
+				//	break;
+				//}
 
-			// debug cvar to force multiple game tics
-			//if (com_fixedTic.GetInteger() > 0) {
-			//	numGameFrames = com_fixedTic.GetInteger();
-			//	gameFrame += numGameFrames;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
+				// debug cvar to force multiple game tics
+				//if (com_fixedTic.GetInteger() > 0) {
+				//	numGameFrames = com_fixedTic.GetInteger();
+				//	gameFrame += numGameFrames;
+				//	gameTimeResidual = 0;
+				//	break;
+				//}
 
-			//if (syncNextGameFrame) {
-			//	// don't sleep at all
-			//	syncNextGameFrame = false;
-			//	gameFrame++;
-			//	numGameFrames++;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
+				//if (syncNextGameFrame) {
+				//	// don't sleep at all
+				//	syncNextGameFrame = false;
+				//	gameFrame++;
+				//	numGameFrames++;
+				//	gameTimeResidual = 0;
+				//	break;
+				//}
 
-			for (;; ) {
-				// How much time to wait before running the next frame,
-				// based on com_engineHz
-				const int frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
-				if (gameTimeResidual < frameDelay) {
+				for (;; ) {
+					// How much time to wait before running the next frame,
+					// based on com_engineHz
+					const int frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
+					if (gameTimeResidual < frameDelay) {
+						break;
+					}
+					gameTimeResidual -= frameDelay;
+					gameFrame++;
+					numGameFrames++;
+					// if there is enough residual left, we may run additional frames
+				}
+
+				if (numGameFrames > 0) {
+					// ready to actually run them
 					break;
 				}
-				gameTimeResidual -= frameDelay;
-				gameFrame++;
-				numGameFrames++;
-				// if there is enough residual left, we may run additional frames
+
+				// if we are vsyncing, we always want to run at least one game
+				// frame and never sleep, which might happen due to scheduling issues
+				// if we were just looking at real time.
+				//if (com_noSleep.GetBool()) {
+				//	numGameFrames = 1;
+				//	gameFrame += numGameFrames;
+				//	gameTimeResidual = 0;
+				//	break;
+				//}
+
+				// not enough time has passed to run a frame, as might happen if
+				// we don't have vsync on, or the monitor is running at 120hz while
+				// com_engineHz is 60, so sleep a bit and check again
+				Sys_Sleep(0);
 			}
-
-			if (numGameFrames > 0) {
-				// ready to actually run them
-				break;
-			}
-
-			// if we are vsyncing, we always want to run at least one game
-			// frame and never sleep, which might happen due to scheduling issues
-			// if we were just looking at real time.
-			//if (com_noSleep.GetBool()) {
-			//	numGameFrames = 1;
-			//	gameFrame += numGameFrames;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
-
-			// not enough time has passed to run a frame, as might happen if
-			// we don't have vsync on, or the monitor is running at 120hz while
-			// com_engineHz is 60, so sleep a bit and check again
-			Sys_Sleep(0);
+		}
+		else {
+			gameFrame++;
 		}
 
 		com_frameTime = com_ticNumber * USERCMD_MSEC;

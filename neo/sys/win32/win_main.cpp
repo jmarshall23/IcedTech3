@@ -1289,6 +1289,17 @@ EXCEPTION_DISPOSITION __cdecl _except_handler( struct _EXCEPTION_RECORD *Excepti
 							/*	FPU_EXCEPTION_INEXACT_RESULT |			*/	\
 								0
 
+
+/*
+==================
+Sys_GameWindowVisible
+==================
+*/
+bool Sys_GameWindowVisible() {
+	return ::IsWindowVisible(win32.hWnd);
+}
+
+
 /*
 ==================
 WinMain
