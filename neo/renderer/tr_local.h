@@ -1317,6 +1317,36 @@ int		R_FindARBProgram( GLenum target, const char *program );
 
 void	RB_EXP_DrawInteractions(void);
 
+// Define the struct to hold uniform locations
+struct idInteractionUniformState {
+	GLint lightMatrices;
+	GLint modelMatrix;
+	GLint lightOrigin;
+	GLint viewOrigin;
+	GLint lightProjectS;
+	GLint lightProjectT;
+	GLint lightProjectQ;
+	GLint lightFalloffS;
+	GLint bumpMatrixS;
+	GLint bumpMatrixT;
+	GLint diffuseMatrixS;
+	GLint diffuseMatrixT;
+	GLint specularMatrixS;
+	GLint specularMatrixT;
+	GLint colorModulate;
+	GLint colorAdd;
+	GLint diffuse;
+	GLint specular;
+	GLint bumpImage;
+	GLint lightFalloffImage;
+	GLint lightImage;
+	GLint diffuseImage;
+	GLint specularImage;
+	GLint specularTableImage;
+	GLint shadowMaps[6];
+	GLint numSides;
+};
+
 typedef enum {
 	PROG_INVALID,
 	VPROG_INTERACTION,

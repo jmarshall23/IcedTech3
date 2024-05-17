@@ -35,6 +35,9 @@ static float	viewLightAxialSize;
 
 static int		lightNumSides = -1;
 
+// Declare a global variable for uniform state
+idInteractionUniformState interactionUniformState;
+
 /*
 ====================
 RB_EXP_CreateFBO
@@ -85,6 +88,39 @@ void RB_EXP_Init(void) {
 	}
 
 	interactionProgram = renderSystem->FindRenderProgram("interaction", false);
+
+	// Get uniform locations and store them in interactionUniformState
+	GLuint program = interactionProgram->GetProgram();
+	interactionUniformState.lightMatrices = qglGetUniformLocation(program, "lightMatrices");
+	interactionUniformState.modelMatrix = qglGetUniformLocation(program, "modelMatrix");
+	interactionUniformState.lightOrigin = qglGetUniformLocation(program, "lightOrigin");
+	interactionUniformState.viewOrigin = qglGetUniformLocation(program, "viewOrigin");
+	interactionUniformState.lightProjectS = qglGetUniformLocation(program, "lightProjectS");
+	interactionUniformState.lightProjectT = qglGetUniformLocation(program, "lightProjectT");
+	interactionUniformState.lightProjectQ = qglGetUniformLocation(program, "lightProjectQ");
+	interactionUniformState.lightFalloffS = qglGetUniformLocation(program, "lightFalloffS");
+	interactionUniformState.bumpMatrixS = qglGetUniformLocation(program, "bumpMatrixS");
+	interactionUniformState.bumpMatrixT = qglGetUniformLocation(program, "bumpMatrixT");
+	interactionUniformState.diffuseMatrixS = qglGetUniformLocation(program, "diffuseMatrixS");
+	interactionUniformState.diffuseMatrixT = qglGetUniformLocation(program, "diffuseMatrixT");
+	interactionUniformState.specularMatrixS = qglGetUniformLocation(program, "specularMatrixS");
+	interactionUniformState.specularMatrixT = qglGetUniformLocation(program, "specularMatrixT");
+	interactionUniformState.colorModulate = qglGetUniformLocation(program, "colorModulate");
+	interactionUniformState.colorAdd = qglGetUniformLocation(program, "colorAdd");
+	interactionUniformState.diffuse = qglGetUniformLocation(program, "diffuse");
+	interactionUniformState.specular = qglGetUniformLocation(program, "specular");
+	interactionUniformState.bumpImage = qglGetUniformLocation(program, "bumpImage");
+	interactionUniformState.lightFalloffImage = qglGetUniformLocation(program, "lightFalloffImage");
+	interactionUniformState.lightImage = qglGetUniformLocation(program, "lightImage");
+	interactionUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
+	interactionUniformState.specularImage = qglGetUniformLocation(program, "specularImage");
+	interactionUniformState.specularTableImage = qglGetUniformLocation(program, "specularTableImage");
+
+	for (int i = 0; i < 6; i++) {
+		interactionUniformState.shadowMaps[i] = qglGetUniformLocation(program, va("shadowMaps[%d]", i));
+	}
+
+	interactionUniformState.numSides = qglGetUniformLocation(program, "numSides");
 }
 
 /*
@@ -569,25 +605,22 @@ void RB_EXP_DrawInteraction(const drawInteraction_t* din) {
 	qglUseProgram(program);
 
 	// Set uniforms for light matrices
-	unsigned int lightMatricesParm = qglGetUniformLocation(program, "lightMatrices");
-	qglUniformMatrix4fv(lightMatricesParm, 6, GL_FALSE, &mvpLightMatrix[0][0]);
+	qglUniformMatrix4fv(interactionUniformState.lightMatrices, 6, GL_FALSE, &mvpLightMatrix[0][0]);
+	qglUniformMatrix4fv(interactionUniformState.modelMatrix, 1, GL_FALSE, din->surfModelMatrix);
 
-	unsigned int modelMatrixParm = qglGetUniformLocation(program, "modelMatrix");
-	qglUniformMatrix4fv(modelMatrixParm, 1, GL_FALSE, din->surfModelMatrix);
+	qglUniform4fv(interactionUniformState.lightOrigin, 1, din->localLightOrigin.ToFloatPtr());
+	qglUniform4fv(interactionUniformState.viewOrigin, 1, din->localViewOrigin.ToFloatPtr());
+	qglUniform4fv(interactionUniformState.lightProjectS, 1, din->lightProjection[0].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.lightProjectT, 1, din->lightProjection[1].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.lightProjectQ, 1, din->lightProjection[2].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.lightFalloffS, 1, din->lightProjection[3].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.bumpMatrixS, 1, din->bumpMatrix[0].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.bumpMatrixT, 1, din->bumpMatrix[1].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.diffuseMatrixS, 1, din->diffuseMatrix[0].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.diffuseMatrixT, 1, din->diffuseMatrix[1].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.specularMatrixS, 1, din->specularMatrix[0].ToFloatPtr());
+	qglUniform4fv(interactionUniformState.specularMatrixT, 1, din->specularMatrix[1].ToFloatPtr());
 
-	// Set uniforms
-	qglUniform4fv(qglGetUniformLocation(program, "lightOrigin"), 1, din->localLightOrigin.ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "viewOrigin"), 1, din->localViewOrigin.ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "lightProjectS"), 1, din->lightProjection[0].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "lightProjectT"), 1, din->lightProjection[1].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "lightProjectQ"), 1, din->lightProjection[2].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "lightFalloffS"), 1, din->lightProjection[3].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "bumpMatrixS"), 1, din->bumpMatrix[0].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "bumpMatrixT"), 1, din->bumpMatrix[1].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "diffuseMatrixS"), 1, din->diffuseMatrix[0].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "diffuseMatrixT"), 1, din->diffuseMatrix[1].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "specularMatrixS"), 1, din->specularMatrix[0].ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "specularMatrixT"), 1, din->specularMatrix[1].ToFloatPtr());
 
 	static const float zero[4] = { 0, 0, 0, 0 };
 	static const float one[4] = { 1, 1, 1, 1 };
@@ -595,55 +628,52 @@ void RB_EXP_DrawInteraction(const drawInteraction_t* din) {
 
 	switch (din->vertexColor) {
 	case SVC_IGNORE:
-		qglUniform4fv(qglGetUniformLocation(program, "colorModulate"), 1, zero);
-		qglUniform4fv(qglGetUniformLocation(program, "colorAdd"), 1, one);
+		qglUniform4fv(interactionUniformState.colorModulate, 1, zero);
+		qglUniform4fv(interactionUniformState.colorAdd, 1, one);
 		break;
 	case SVC_MODULATE:
-		qglUniform4fv(qglGetUniformLocation(program, "colorModulate"), 1, one);
-		qglUniform4fv(qglGetUniformLocation(program, "colorAdd"), 1, zero);
+		qglUniform4fv(interactionUniformState.colorModulate, 1, one);
+		qglUniform4fv(interactionUniformState.colorAdd, 1, zero);
 		break;
 	case SVC_INVERSE_MODULATE:
-		qglUniform4fv(qglGetUniformLocation(program, "colorModulate"), 1, negOne);
-		qglUniform4fv(qglGetUniformLocation(program, "colorAdd"), 1, one);
+		qglUniform4fv(interactionUniformState.colorModulate, 1, negOne);
+		qglUniform4fv(interactionUniformState.colorAdd, 1, one);
 		break;
 	}
 
-	// Set the fragment shader uniforms
-	qglUniform4fv(qglGetUniformLocation(program, "diffuse"), 1, din->diffuseColor.ToFloatPtr());
-	qglUniform4fv(qglGetUniformLocation(program, "specular"), 1, din->specularColor.ToFloatPtr());
+	qglUniform4fv(interactionUniformState.diffuse, 1, din->diffuseColor.ToFloatPtr());
+	qglUniform4fv(interactionUniformState.specular, 1, din->specularColor.ToFloatPtr());
 
-	// Bind textures
 	GL_SelectTextureNoClient(1);
 	din->bumpImage->Bind();
-	qglUniform1i(qglGetUniformLocation(program, "bumpImage"), 1);
+	qglUniform1i(interactionUniformState.bumpImage, 1);
 
 	GL_SelectTextureNoClient(2);
 	din->lightFalloffImage->Bind();
-	qglUniform1i(qglGetUniformLocation(program, "lightFalloffImage"), 2);
+	qglUniform1i(interactionUniformState.lightFalloffImage, 2);
 
 	GL_SelectTextureNoClient(3);
 	din->lightImage->Bind();
-	qglUniform1i(qglGetUniformLocation(program, "lightImage"), 3);
+	qglUniform1i(interactionUniformState.lightImage, 3);
 
 	GL_SelectTextureNoClient(4);
 	din->diffuseImage->Bind();
-	qglUniform1i(qglGetUniformLocation(program, "diffuseImage"), 4);
+	qglUniform1i(interactionUniformState.diffuseImage, 4);
 
 	GL_SelectTextureNoClient(5);
 	din->specularImage->Bind();
-	qglUniform1i(qglGetUniformLocation(program, "specularImage"), 5);
+	qglUniform1i(interactionUniformState.specularImage, 5);
 
-	qglUniform1i(qglGetUniformLocation(program, "specularTableImage"), 6);
+	qglUniform1i(interactionUniformState.specularTableImage, 6);
 
 	for (int i = 0; i < 6; i++) {
 		GL_SelectTextureNoClient(7 + i);
 		qglEnable(GL_TEXTURE_2D);
 		qglBindTexture(GL_TEXTURE_2D, shadowDepth[i]);
-		unsigned int p = qglGetUniformLocation(program, va("shadowMaps[%d]", i));
-		qglUniform1i(p, 7 + i);
+		qglUniform1i(interactionUniformState.shadowMaps[i], 7 + i);
 	}
 
-	qglUniform1i(qglGetUniformLocation(program, "numSides"), lightNumSides);
+	qglUniform1i(interactionUniformState.numSides, lightNumSides);
 
 	// Draw the elements
 	RB_DrawElementsWithCounters(din->surf->geo);
