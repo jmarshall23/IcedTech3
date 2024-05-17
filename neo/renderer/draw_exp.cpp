@@ -10,7 +10,7 @@ static GLuint shadowDepth[6];
 const idDeclRenderProg* interactionProgram;
 
 idCVar r_sb_noShadows("r_sb_noShadows", "0", CVAR_RENDERER | CVAR_BOOL, "don't draw any occluders");
-idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "512", CVAR_RENDERER | CVAR_FLOAT, "Shadow Map Size");
+idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "2048", CVAR_RENDERER | CVAR_FLOAT, "Shadow Map Size");
 idCVar r_sb_frustomFOV("r_sb_frustomFOV", "92", CVAR_RENDERER | CVAR_FLOAT, "oversize FOV for point light side matching");
 idCVar r_sb_useCulling("r_sb_useCulling", "1", CVAR_RENDERER | CVAR_BOOL, "cull geometry to individual side frustums");
 

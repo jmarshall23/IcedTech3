@@ -139,7 +139,7 @@ glprog interaction
 				for (int y = -samples; y <= samples; ++y) {
 					vec2 offsetCoord = coord.xy + vec2(float(x), float(y)) * offset;
 					float depth = texture2D(shadowMaps[index], offsetCoord).r;
-					factor += (coord.z - 0.001) < depth ? 1.0 : 0.0;
+					factor += (coord.z - 0.0005) < depth ? 1.0 : 0.0;
 				}
 			}
 
