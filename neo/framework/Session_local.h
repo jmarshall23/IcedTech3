@@ -155,6 +155,8 @@ public:
 	bool				LoadGame(const char *saveName);
 	bool				SaveGame(const char *saveName, bool autosave = false);
 
+	void				RunSessionTic(void);
+
 	const char			*GetAuthMsg( void );
 
 	//=====================================
@@ -356,6 +358,8 @@ private:
 	bool				authWaitBox;
 
 	idStr				authMsg;
+
+	int					lastTicMsec;
 };
 
 extern idSessionLocal	sessLocal;
