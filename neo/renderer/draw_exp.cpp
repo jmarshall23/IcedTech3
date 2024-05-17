@@ -14,9 +14,9 @@ idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "512", CVAR_RENDERER | CVAR_FLOA
 idCVar r_sb_frustomFOV("r_sb_frustomFOV", "92", CVAR_RENDERER | CVAR_FLOAT, "oversize FOV for point light side matching");
 idCVar r_sb_useCulling("r_sb_useCulling", "1", CVAR_RENDERER | CVAR_BOOL, "cull geometry to individual side frustums");
 
-idCVar r_sb_polyOfsFactor("r_sb_polyOfsFactor", "2", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset factor for drawing shadow buffer");
+idCVar r_sb_polyOfsFactor("r_sb_polyOfsFactor", "0", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset factor for drawing shadow buffer");
 idCVar r_sb_polyOfsUnits("r_sb_polyOfsUnits", "3000", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset units for drawing shadow buffer");
-idCVar r_sb_occluderFacing("r_sb_occluderFacing", "0", CVAR_RENDERER | CVAR_INTEGER, "0 = front faces, 1 = back faces, 2 = midway between");
+idCVar r_sb_occluderFacing("r_sb_occluderFacing", "1", CVAR_RENDERER | CVAR_INTEGER, "0 = front faces, 1 = back faces, 2 = midway between");
 
 idCVar r_sb_singleSide("r_sb_singleSide", "-1", CVAR_RENDERER | CVAR_INTEGER, "only draw a single side (0-5) of point lights");
 

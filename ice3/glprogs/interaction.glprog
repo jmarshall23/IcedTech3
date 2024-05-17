@@ -130,10 +130,22 @@ glprog interaction
 			if(coord.z > 1)
 				return 1;
 
-			float depth = texture2D(shadowMaps[index], coord.xy).r; // Sample the depth from the shadow map
-			float bias = 0.001; // Adjust the bias value as needed to reduce shadow acne and peter-panning
+			float factor = 0.0;
+			const int samples = 2; // Number of samples for PCF
+			float offset = 1.0 / 1024.0; // Adjust this value based on your shadow map resolution
 
-			return (coord.z - bias) < depth ? 1.0 : 0.0; // Compare the depth values with a bias
+			// Loop through samples
+			for (int x = -samples; x <= samples; ++x) {
+				for (int y = -samples; y <= samples; ++y) {
+					vec2 offsetCoord = coord.xy + vec2(float(x), float(y)) * offset;
+					float depth = texture2D(shadowMaps[index], offsetCoord).r;
+					factor += (coord.z - 0.001) < depth ? 1.0 : 0.0;
+				}
+			}
+
+			// Average the results
+			factor = factor / ((samples * 2 + 1) * (samples * 2 + 1));
+			return factor;
 		}
 		
 		// POM parameters

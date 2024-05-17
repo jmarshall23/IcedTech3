@@ -180,7 +180,6 @@ typedef struct tree_s {
 typedef struct {
 	idRenderLightLocal	def;
 	char		name[MAX_QPATH];		// for naming the shadow volume surface and interactions
-	srfTriangles_t	*shadowTris;
 } mapLight_t;
 
 #define	MAX_GROUP_LIGHTS	16
