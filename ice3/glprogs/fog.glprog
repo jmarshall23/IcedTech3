@@ -42,16 +42,28 @@ glprog postprocess/fog
 			float depth = texture(depthTexture, diffuseST).r;
 			float linearDepth = LinearizeDepth(depth);
 			vec4 sceneColor = texture(colorTexture, diffuseST);
+
+			// Apply sepia tone and enhance contrast
+			vec3 color = sceneColor.rgb;
+			vec3 sepia = vec3(0.393 * color.r + 0.769 * color.g + 0.189 * color.b,
+			                  0.349 * color.r + 0.686 * color.g + 0.168 * color.b,
+			                  0.272 * color.r + 0.534 * color.g + 0.131 * color.b);
+
+			// Blend the sepia tone subtly with the original color
+			color = mix(color, sepia, 0.2);
+
+			// Enhance contrast
+			vec3 enhancedColor = pow(color, vec3(1.1));
 			
 			// Compute fog factor based on view space depth
 			float fogFactor =  clamp((depth - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
 
 			// Calculate the brightness of the scene color (using the luminance formula)
-			float brightness = dot(sceneColor.rgb, vec3(0.299, 0.587, 0.114));
+			float brightness = dot(enhancedColor.rgb, vec3(0.299, 0.587, 0.114));
 
-			vec3 finalColor = mix(sceneColor.rgb + (brightness * 0.05), fogColor.rgb, clamp(fogFactor - (0.5 * brightness), 0.0, 1.0));
+			vec3 finalColor = mix(enhancedColor.rgb + (brightness * 0.05), fogColor.rgb, clamp(fogFactor - (0.5 * brightness), 0.0, 1.0));
 
-			gl_FragColor = vec4(finalColor, sceneColor.a);
+			gl_FragColor = vec4(finalColor, 1);
 		}
 	}
 }
