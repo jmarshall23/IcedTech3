@@ -132,6 +132,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/DeclParticle.h"
 #include "../framework/DeclAF.h"
 #include "../framework/DeclPDA.h"
+#include "../framework/DeclAtmosphere.h"
 
 // We have expression parsing and evaluation code in multiple places:
 // materials, sound shaders, and guis. We should unify them.

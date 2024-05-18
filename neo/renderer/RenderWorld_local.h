@@ -90,6 +90,9 @@ public:
 	virtual	void			FreeLightDef( qhandle_t lightHandle );
 	virtual const renderLight_t *GetRenderLight( qhandle_t lightHandle ) const;
 
+	virtual iceWorldAtmosphere_t GetCurrentAtmosphere() { return atmosphere; }
+	virtual void			SetAtmosphere(iceWorldAtmosphere_t atmosphere) { this->atmosphere = atmosphere; }
+
 	virtual bool			CheckAreaForPortalSky( int areaNum );
 
 	virtual	void			GenerateAllInteractions();
@@ -139,6 +142,8 @@ public:
 
 	areaNode_t *			areaNodes;
 	int						numAreaNodes;
+
+	iceWorldAtmosphere_t	atmosphere;
 
 	portalArea_t *			portalAreas;
 	int						numPortalAreas;

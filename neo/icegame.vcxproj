@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="icegame\Icegame_local.cpp" />
+    <ClCompile Include="icegame\IceWorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">precompiled.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">precompiled.h</PrecompiledHeaderFile>
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ClInclude Include="icegame\Icegame.h" />
     <ClInclude Include="icegame\Icegame_local.h" />
+    <ClInclude Include="icegame\IceWorldSpawn.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

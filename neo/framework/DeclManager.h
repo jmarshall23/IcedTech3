@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __DECLMANAGER_H__
 #define __DECLMANAGER_H__
 
+class iceDeclAtmosphere;
+
 /*
 ===============================================================================
 
@@ -79,6 +81,7 @@ typedef enum {
 	DECL_MODELEXPORT,
 	DECL_MAPDEF,
 	DECL_RENDERPROG,
+	DECL_ATMOSPHERE,
 
 	// new decl types can be added here
 
@@ -315,6 +318,7 @@ public:
 	virtual	const idMaterial *		FindMaterial( const char *name, bool makeDefault = true ) = 0;
 	virtual const idDeclSkin *		FindSkin( const char *name, bool makeDefault = true ) = 0;
 	virtual const idSoundShader *	FindSound( const char *name, bool makeDefault = true ) = 0;
+	virtual const iceDeclAtmosphere* FindAtmosphere(const char* name, bool makeDefault = true) = 0;
 
 	virtual const idMaterial *		MaterialByIndex( int index, bool forceParse = true ) = 0;
 	virtual const idDeclSkin *		SkinByIndex( int index, bool forceParse = true ) = 0;

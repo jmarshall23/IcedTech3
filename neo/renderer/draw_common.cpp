@@ -31,6 +31,17 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 
 /*
+====================
+GL_SelectTextureNoClient
+====================
+*/
+void GL_SelectTextureNoClient(int unit) {
+	backEnd.glState.currenttmu = unit;
+	qglActiveTextureARB(GL_TEXTURE0_ARB + unit);
+	RB_LogComment("glActiveTextureARB( %i )\n", unit);
+}
+
+/*
 =====================
 RB_BakeTextureMatrixIntoTexgen
 =====================
@@ -370,6 +381,8 @@ void RB_T_FillDepthBuffer( const drawSurf_t *surf ) {
 		GL_SelectTexture( 0 );
 	}
 
+	GL_SelectTexture(0);
+
 	if ( !shader->IsDrawn() ) {
 		return;
 	}
@@ -427,14 +440,44 @@ void RB_T_FillDepthBuffer( const drawSurf_t *surf ) {
 	}
 
 	idDrawVert *ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
-	qglVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), ac->xyz.ToFloatPtr() );
-	qglTexCoordPointer( 2, GL_FLOAT, sizeof( idDrawVert ), reinterpret_cast<void *>(&ac->st) );
+	size_t offset = 0;
+
+	// Vertex positions
+	qglEnableVertexAttribArrayARB(0);
+	qglVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+	offset += sizeof(idVec3);
+
+	// Texture coordinates
+	qglEnableVertexAttribArrayARB(1);
+	qglVertexAttribPointerARB(1, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+	offset += sizeof(idVec2);
+
+	// Normals
+	qglEnableVertexAttribArrayARB(2);
+	qglVertexAttribPointerARB(2, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+	offset += sizeof(idVec3);
+
+	// Tangent 0
+	qglEnableVertexAttribArrayARB(3);
+	qglVertexAttribPointerARB(3, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+	offset += sizeof(idVec3);
+
+	// Tangent 1
+	qglEnableVertexAttribArrayARB(4);
+	qglVertexAttribPointerARB(4, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+	offset += sizeof(idVec3);
+
+	// Colors
+	qglEnableVertexAttribArrayARB(5);
+	qglVertexAttribPointerARB(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)offset);
 
 	bool drawSolid = false;
 
 	if ( shader->Coverage() == MC_OPAQUE ) {
 		drawSolid = true;
 	}
+
+	RB_EXP_BindDepthFill();	
 
 	// we may have multiple alpha tested stages
 	if ( shader->Coverage() == MC_PERFORATED ) {
@@ -490,8 +533,31 @@ void RB_T_FillDepthBuffer( const drawSurf_t *surf ) {
 
 	// draw the entire surface solid
 	if ( drawSolid ) {
+		float textureIdentityMatrix[16] = {
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
+
 		qglColor4fv( color );
-		globalImages->whiteImage->Bind();
+		pStage = shader->GetDiffuseStage();
+		if (pStage)
+		{
+			pStage->texture.image->Bind();
+		}
+		else
+		{
+			globalImages->whiteImage->Bind();
+		}
+
+		RB_EXP_UploadTextureMatrix(textureIdentityMatrix);
+
+		// set texture matrix and texGens
+		if (pStage)
+		{
+			RB_PrepareStageTexturing(pStage, surf, ac);
+		}
 
 		// draw it
 		RB_DrawElementsWithCounters( tri );
@@ -508,6 +574,15 @@ void RB_T_FillDepthBuffer( const drawSurf_t *surf ) {
 		GL_State( GLS_DEPTHFUNC_LESS );
 	}
 
+	RB_EXP_UnbindDepthFill();
+
+	// Cleanup
+	qglDisableVertexAttribArrayARB(0);
+	qglDisableVertexAttribArrayARB(1);
+	qglDisableVertexAttribArrayARB(2);
+	qglDisableVertexAttribArrayARB(3);
+	qglDisableVertexAttribArrayARB(4);
+	qglDisableVertexAttribArrayARB(5);
 }
 
 /*
@@ -550,6 +625,7 @@ void RB_STD_FillDepthBuffer( drawSurf_t **drawSurfs, int numDrawSurfs ) {
 	qglEnable( GL_STENCIL_TEST );
 	qglStencilFunc( GL_ALWAYS, 1, 255 );
 
+	
 	RB_RenderDrawSurfListWithFunction( drawSurfs, numDrawSurfs, RB_T_FillDepthBuffer );
 
 	if ( backEnd.viewDef->numClipPlanes ) {
@@ -979,22 +1055,6 @@ int RB_STD_DrawShaderPasses( drawSurf_t **drawSurfs, int numDrawSurfs ) {
 
 	RB_LogComment( "---------- RB_STD_DrawShaderPasses ----------\n" );
 
-	// if we are about to draw the first surface that needs
-	// the rendering in a texture, copy it over
-	if ( drawSurfs[0]->material->GetSort() >= SS_POST_PROCESS ) {
-		if ( r_skipPostProcess.GetBool() ) {
-			return 0;
-		}
-
-		// only dump if in a 3d view
-		if ( backEnd.viewDef->viewEntitys && tr.backEndRenderer == BE_ARB2 ) {
-			globalImages->currentRenderImage->CopyFramebuffer( backEnd.viewDef->viewport.x1,
-				backEnd.viewDef->viewport.y1,  backEnd.viewDef->viewport.x2 -  backEnd.viewDef->viewport.x1 + 1,
-				backEnd.viewDef->viewport.y2 -  backEnd.viewDef->viewport.y1 + 1, true );
-		}
-		backEnd.currentRenderCopied = true;
-	}
-
 	GL_SelectTexture( 1 );
 	globalImages->BindNull();
 
@@ -1032,205 +1092,6 @@ int RB_STD_DrawShaderPasses( drawSurf_t **drawSurfs, int numDrawSurfs ) {
 
 	return i;
 }
-
-
-
-/*
-==============================================================================
-
-BACK END RENDERING OF STENCIL SHADOWS
-
-==============================================================================
-*/
-
-/*
-=====================
-RB_T_Shadow
-
-the shadow volumes face INSIDE
-=====================
-*/
-static void RB_T_Shadow( const drawSurf_t *surf ) {
-	const srfTriangles_t	*tri;
-
-	// set the light position if we are using a vertex program to project the rear surfaces
-	if ( tr.backEndRendererHasVertexPrograms && r_useShadowVertexProgram.GetBool()
-		&& surf->space != backEnd.currentSpace ) {
-		idVec4 localLight;
-
-		R_GlobalPointToLocal( surf->space->modelMatrix, backEnd.vLight->globalLightOrigin, localLight.ToVec3() );
-		localLight.w = 0.0f;
-		qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, localLight.ToFloatPtr() );
-	}
-
-	tri = surf->geo;
-
-	if ( !tri->shadowCache ) {
-		return;
-	}
-
-	qglVertexPointer( 4, GL_FLOAT, sizeof( shadowCache_t ), vertexCache.Position(tri->shadowCache) );
-
-	// we always draw the sil planes, but we may not need to draw the front or rear caps
-	int	numIndexes;
-	bool external = false;
-
-	if ( !r_useExternalShadows.GetInteger() ) {
-		numIndexes = tri->numIndexes;
-	} else if ( r_useExternalShadows.GetInteger() == 2 ) { // force to no caps for testing
-		numIndexes = tri->numShadowIndexesNoCaps;
-	} else if ( !(surf->dsFlags & DSF_VIEW_INSIDE_SHADOW) ) { 
-		// if we aren't inside the shadow projection, no caps are ever needed needed
-		numIndexes = tri->numShadowIndexesNoCaps;
-		external = true;
-	} else if ( !backEnd.vLight->viewInsideLight && !(surf->geo->shadowCapPlaneBits & SHADOW_CAP_INFINITE) ) {
-		// if we are inside the shadow projection, but outside the light, and drawing
-		// a non-infinite shadow, we can skip some caps
-		if ( backEnd.vLight->viewSeesShadowPlaneBits & surf->geo->shadowCapPlaneBits ) {
-			// we can see through a rear cap, so we need to draw it, but we can skip the
-			// caps on the actual surface
-			numIndexes = tri->numShadowIndexesNoFrontCaps;
-		} else {
-			// we don't need to draw any caps
-			numIndexes = tri->numShadowIndexesNoCaps;
-		}
-		external = true;
-	} else {
-		// must draw everything
-		numIndexes = tri->numIndexes;
-	}
-
-	// set depth bounds
-	if( glConfig.depthBoundsTestAvailable && r_useDepthBoundsTest.GetBool() ) {
-		qglDepthBoundsEXT( surf->scissorRect.zmin, surf->scissorRect.zmax );
-	}
-
-	// debug visualization
-	if ( r_showShadows.GetInteger() ) {
-		if ( r_showShadows.GetInteger() == 3 ) {
-			if ( external ) {
-				qglColor3f( 0.1/backEnd.overBright, 1/backEnd.overBright, 0.1/backEnd.overBright );
-			} else {
-				// these are the surfaces that require the reverse
-				qglColor3f( 1/backEnd.overBright, 0.1/backEnd.overBright, 0.1/backEnd.overBright );
-			}
-		} else {
-			// draw different color for turboshadows
-			if ( surf->geo->shadowCapPlaneBits & SHADOW_CAP_INFINITE ) {
-				if ( numIndexes == tri->numIndexes ) {
-					qglColor3f( 1/backEnd.overBright, 0.1/backEnd.overBright, 0.1/backEnd.overBright );
-				} else {
-					qglColor3f( 1/backEnd.overBright, 0.4/backEnd.overBright, 0.1/backEnd.overBright );
-				}
-			} else {
-				if ( numIndexes == tri->numIndexes ) {
-					qglColor3f( 0.1/backEnd.overBright, 1/backEnd.overBright, 0.1/backEnd.overBright );
-				} else if ( numIndexes == tri->numShadowIndexesNoFrontCaps ) {
-					qglColor3f( 0.1/backEnd.overBright, 1/backEnd.overBright, 0.6/backEnd.overBright );
-				} else {
-					qglColor3f( 0.6/backEnd.overBright, 1/backEnd.overBright, 0.1/backEnd.overBright );
-				}
-			}
-		}
-
-		qglStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-		qglDisable( GL_STENCIL_TEST );
-		GL_Cull( CT_TWO_SIDED );
-		RB_DrawShadowElementsWithCounters( tri, numIndexes );
-		GL_Cull( CT_FRONT_SIDED );
-		qglEnable( GL_STENCIL_TEST );
-
-		return;
-	}
-
-	// patent-free work around
-	if ( !external ) {
-		// "preload" the stencil buffer with the number of volumes
-		// that get clipped by the near or far clip plane
-		qglStencilOp( GL_KEEP, tr.stencilDecr, tr.stencilDecr );
-		GL_Cull( CT_FRONT_SIDED );
-		RB_DrawShadowElementsWithCounters( tri, numIndexes );
-		qglStencilOp( GL_KEEP, tr.stencilIncr, tr.stencilIncr );
-		GL_Cull( CT_BACK_SIDED );
-		RB_DrawShadowElementsWithCounters( tri, numIndexes );
-	}
-
-	// traditional depth-pass stencil shadows
-	qglStencilOp( GL_KEEP, GL_KEEP, tr.stencilIncr );
-	GL_Cull( CT_FRONT_SIDED );
-	RB_DrawShadowElementsWithCounters( tri, numIndexes );
-
-	qglStencilOp( GL_KEEP, GL_KEEP, tr.stencilDecr );
-	GL_Cull( CT_BACK_SIDED );
-	RB_DrawShadowElementsWithCounters( tri, numIndexes );
-}
-
-/*
-=====================
-RB_StencilShadowPass
-
-Stencil test should already be enabled, and the stencil buffer should have
-been set to 128 on any surfaces that might receive shadows
-=====================
-*/
-void RB_StencilShadowPass( const drawSurf_t *drawSurfs ) {
-	if ( !r_shadows.GetBool() ) {
-		return;
-	}
-
-	if ( !drawSurfs ) {
-		return;
-	}
-
-	RB_LogComment( "---------- RB_StencilShadowPass ----------\n" );
-
-	globalImages->BindNull();
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	// for visualizing the shadows
-	if ( r_showShadows.GetInteger() ) {
-		if ( r_showShadows.GetInteger() == 2 ) {
-			// draw filled in
-			GL_State( GLS_DEPTHMASK | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_LESS  );
-		} else {
-			// draw as lines, filling the depth buffer
-			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO | GLS_POLYMODE_LINE | GLS_DEPTHFUNC_ALWAYS  );
-		}
-	} else {
-		// don't write to the color buffer, just the stencil buffer
-		GL_State( GLS_DEPTHMASK | GLS_COLORMASK | GLS_ALPHAMASK | GLS_DEPTHFUNC_LESS );
-	}
-
-	if ( r_shadowPolygonFactor.GetFloat() || r_shadowPolygonOffset.GetFloat() ) {
-		qglPolygonOffset( r_shadowPolygonFactor.GetFloat(), -r_shadowPolygonOffset.GetFloat() );
-		qglEnable( GL_POLYGON_OFFSET_FILL );
-	}
-
-	qglStencilFunc( GL_ALWAYS, 1, 255 );
-
-	if ( glConfig.depthBoundsTestAvailable && r_useDepthBoundsTest.GetBool() ) {
-		qglEnable( GL_DEPTH_BOUNDS_TEST_EXT );
-	}
-
-	RB_RenderDrawSurfChainWithFunction( drawSurfs, RB_T_Shadow );
-
-	GL_Cull( CT_FRONT_SIDED );
-
-	if ( r_shadowPolygonFactor.GetFloat() || r_shadowPolygonOffset.GetFloat() ) {
-		qglDisable( GL_POLYGON_OFFSET_FILL );
-	}
-
-	if ( glConfig.depthBoundsTestAvailable && r_useDepthBoundsTest.GetBool() ) {
-		qglDisable( GL_DEPTH_BOUNDS_TEST_EXT );
-	}
-
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	qglStencilFunc( GL_GEQUAL, 128, 255 );
-	qglStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-}
-
-
 
 /*
 =============================================================================================

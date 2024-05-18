@@ -328,6 +328,7 @@ PFNGLDELETESHADERPROC qglDeleteShader = nullptr;
 PFNGLUNIFORM4FVPROC qglUniform4fv = nullptr;
 PFNGLGETUNIFORMLOCATIONPROC qglGetUniformLocation = nullptr;
 PFNGLUNIFORM1IPROC qglUniform1i = nullptr;
+PFNGLUNIFORM1FPROC qglUniform1f = nullptr;
 PFNGLBINDATTRIBLOCATIONPROC qglBindAttribLocation = nullptr;
 PFNGLUNIFORMMATRIX4FVPROC qglUniformMatrix4fv = nullptr;
 
@@ -587,6 +588,7 @@ static void R_CheckPortableExtensions( void ) {
 	qglUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
 	qglGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
 	qglUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
+	qglUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
 	qglBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
 	qglUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
 

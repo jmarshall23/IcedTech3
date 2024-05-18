@@ -627,6 +627,9 @@
     <ClInclude Include="renderer\Model_obj.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="framework\DeclAtmosphere.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cm\CollisionModel_contacts.cpp">
@@ -1822,6 +1825,9 @@
     </ClCompile>
     <ClCompile Include="renderer\Model_obj.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\DeclAtmosphere.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

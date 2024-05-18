@@ -124,7 +124,8 @@ typedef enum {
 	TD_DIFFUSE,				// may be compressed
 	TD_DEFAULT,				// will use compressed formats when possible
 	TD_BUMP,				// may be compressed with 8 bit lookup
-	TD_HIGH_QUALITY			// either 32 bit or a component format, no loss at all
+	TD_HIGH_QUALITY,		// either 32 bit or a component format, no loss at all
+	TD_DEPTH_IMAGE
 } textureDepth_t;
 
 typedef enum {
@@ -406,6 +407,7 @@ public:
 	idImage *			scratchImage2;
 	idImage *			accumImage;
 	idImage *			currentRenderImage;			// for SS_POST_PROCESS shaders
+	idImage	*			currentDepthRenderImage;			// for SS_POST_PROCESS shaders
 	idImage *			scratchCubeMapImage;
 	idImage *			specularTableImage;			// 1D intensity texture with our specular function
 	idImage *			specular2DTableImage;		// 2D intensity texture with our specular function with variable specularity

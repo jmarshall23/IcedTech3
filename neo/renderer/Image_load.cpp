@@ -223,6 +223,10 @@ GLenum idImage::SelectInternalFormat( const byte **dataPtrs, int numDataPtrs, in
 
 	*monochromeResult = true;	// until shown otherwise
 
+	if (minimumDepth == TD_DEPTH_IMAGE) {
+		return GL_DEPTH_COMPONENT;
+	}
+
 	for ( int side = 0 ; side < numDataPtrs ; side++ ) {
 		scan = dataPtrs[side];
 		for ( i = 0; i < c; i++, scan += 4 ) {
@@ -499,8 +503,15 @@ void idImage::GenerateImage( const byte *pic, int width, int height,
 	// select proper internal format before we resample
 	internalFormat = SelectInternalFormat( &pic, 1, width, height, depth, &isMonochrome );
 
-	scaledBuffer = (byte*)R_StaticAlloc(sizeof(unsigned) * scaled_width * scaled_height);
-	memcpy(scaledBuffer, pic, width * height * 4);
+	if (pic != NULL)
+	{
+		scaledBuffer = (byte*)R_StaticAlloc(sizeof(unsigned) * scaled_width * scaled_height);
+		memcpy(scaledBuffer, pic, width * height * 4);
+	}
+	else
+	{
+		scaledBuffer = nullptr;
+	}
 
 	uploadHeight = scaled_height;
 	uploadWidth = scaled_width;
@@ -508,19 +519,22 @@ void idImage::GenerateImage( const byte *pic, int width, int height,
 
 	// zero the border if desired, allowing clamped projection textures
 	// even after picmip resampling or careless artists.
-	if ( repeat == TR_CLAMP_TO_ZERO ) {
-		byte	rgba[4];
+	if (scaledBuffer)
+	{
+		if (repeat == TR_CLAMP_TO_ZERO) {
+			byte	rgba[4];
 
-		rgba[0] = rgba[1] = rgba[2] = 0;
-		rgba[3] = 255;
-		R_SetBorderTexels( (byte *)scaledBuffer, width, height, rgba );
-	}
-	if ( repeat == TR_CLAMP_TO_ZERO_ALPHA ) {
-		byte	rgba[4];
+			rgba[0] = rgba[1] = rgba[2] = 0;
+			rgba[3] = 255;
+			R_SetBorderTexels((byte*)scaledBuffer, width, height, rgba);
+		}
+		if (repeat == TR_CLAMP_TO_ZERO_ALPHA) {
+			byte	rgba[4];
 
-		rgba[0] = rgba[1] = rgba[2] = 255;
-		rgba[3] = 0;
-		R_SetBorderTexels( (byte *)scaledBuffer, width, height, rgba );
+			rgba[0] = rgba[1] = rgba[2] = 255;
+			rgba[3] = 0;
+			R_SetBorderTexels((byte*)scaledBuffer, width, height, rgba);
+		}
 	}
 
 	if ( generatorFunction == NULL && ( depth == TD_BUMP && globalImages->image_writeNormalTGA.GetBool() || depth != TD_BUMP && globalImages->image_writeTGA.GetBool() ) ) {
@@ -567,8 +581,10 @@ void idImage::GenerateImage( const byte *pic, int width, int height,
 	// upload the main image level
 	Bind();
 
-
-	if ( internalFormat == GL_COLOR_INDEX8_EXT ) {
+	if (depth == TD_DEPTH_IMAGE) {
+		qglTexImage2D(GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, internalFormat, GL_FLOAT, nullptr);
+	}
+	else if ( internalFormat == GL_COLOR_INDEX8_EXT ) {
 		/*
 		if ( depth == TD_BUMP ) {
 			for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
@@ -582,7 +598,9 @@ void idImage::GenerateImage( const byte *pic, int width, int height,
 		qglTexImage2D( GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaledBuffer );
 	}
 
-	qglGenerateMipmapEXT(GL_TEXTURE_2D);
+	if (scaledBuffer != 0) {
+		qglGenerateMipmapEXT(GL_TEXTURE_2D);
+	}
 
 	if ( scaledBuffer != 0 ) {
 		R_StaticFree( scaledBuffer );
@@ -1726,19 +1744,19 @@ CopyFramebuffer
 void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bool useOversizedBuffer ) {
 	Bind();
 
-	if ( cvarSystem->GetCVarBool( "g_lowresFullscreenFX" ) ) {
-		imageWidth = 512;
-		imageHeight = 512;
-	}
+	//if ( cvarSystem->GetCVarBool( "g_lowresFullscreenFX" ) ) {
+	//	imageWidth = 512;
+	//	imageHeight = 512;
+	//}
 
 	// if the size isn't a power of 2, the image must be increased in size
 	int	potWidth, potHeight;
 
-	potWidth = MakePowerOfTwo( imageWidth );
-	potHeight = MakePowerOfTwo( imageHeight );
+	potWidth = imageWidth; 
+	potHeight = imageHeight;
 
-	GetDownsize( imageWidth, imageHeight );
-	GetDownsize( potWidth, potHeight );
+	//GetDownsize( imageWidth, imageHeight );
+	//GetDownsize( potWidth, potHeight );
 
 	qglReadBuffer( GL_BACK );
 
@@ -1800,34 +1818,23 @@ This should just be part of copyFramebuffer once we have a proper image type fie
 void idImage::CopyDepthbuffer( int x, int y, int imageWidth, int imageHeight ) {
 	Bind();
 
-	// if the size isn't a power of 2, the image must be increased in size
-	int	potWidth, potHeight;
-
-	potWidth = MakePowerOfTwo( imageWidth );
-	potHeight = MakePowerOfTwo( imageHeight );
-
-	if ( uploadWidth != potWidth || uploadHeight != potHeight ) {
-		uploadWidth = potWidth;
-		uploadHeight = potHeight;
-		if ( potWidth == imageWidth && potHeight == imageHeight ) {
-			qglCopyTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, x, y, imageWidth, imageHeight, 0 );
-		} else {
-			// we need to create a dummy image with power of two dimensions,
-			// then do a qglCopyTexSubImage2D of the data we want
-			qglTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, potWidth, potHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
-			qglCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, x, y, imageWidth, imageHeight );
-		}
+	if ( uploadWidth != imageWidth || uploadHeight != imageHeight) {
+		uploadWidth = imageWidth;
+		uploadHeight = imageHeight;
+		qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, imageWidth, imageHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		qglCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, imageWidth, imageHeight);
 	} else {
 		// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 		// it and don't try and do a texture compression or some other silliness
 		qglCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, x, y, imageWidth, imageHeight );
 	}
 
-//	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-//	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	GL_CheckErrors();
 }
 
 /*

@@ -589,6 +589,19 @@ const void	RB_CopyRender( const void *data ) {
 }
 
 /*
+=============
+RB_RenderPostProcess
+=============
+*/
+const void	RB_RenderPostProcess(const void* data) {
+	const emptyCommand_t* cmd;
+
+	cmd = (const emptyCommand_t*)data;
+
+	RB_Exp_RenderPostProcess();
+}
+
+/*
 ====================
 RB_ExecuteBackEndCommands
 
@@ -637,6 +650,9 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 		case RC_COPY_RENDER:
 			RB_CopyRender( cmds );
 			c_copyRenders++;
+			break;
+		case RC_RENDER_POST:
+			RB_RenderPostProcess(cmds);
 			break;
 		default:
 			common->Error( "RB_ExecuteBackEndCommands: bad commandId" );

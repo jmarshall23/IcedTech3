@@ -1155,6 +1155,8 @@ void R_RenderView( viewDef_t *parms ) {
 		static_cast<idRenderWorldLocal *>(parms->renderWorld)->WriteVisibleDefs( tr.viewDef );
 	}
 
+	parms->atmosphere = tr.primaryWorld->GetCurrentAtmosphere();
+
 	// add the rendering commands for this viewDef
 	R_AddDrawViewCmd( parms );
 

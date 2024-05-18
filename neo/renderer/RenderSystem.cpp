@@ -944,6 +944,16 @@ void idRenderSystemLocal::CaptureRenderToImage( const char *imageName ) {
 }
 
 /*
+================
+idRenderSystemLocal::RenderScenePostProcess
+================
+*/
+void idRenderSystemLocal::RenderScenePostProcess(void) {
+	emptyCommand_t *cmd = (emptyCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	cmd->commandId = RC_RENDER_POST;
+}
+
+/*
 ==============
 CaptureRenderToFile
 

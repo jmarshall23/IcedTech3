@@ -259,6 +259,7 @@
     <ClInclude Include="framework\Console.h" />
     <ClInclude Include="framework\CVarSystem.h" />
     <ClInclude Include="framework\DeclAF.h" />
+    <ClInclude Include="framework\DeclAtmosphere.h" />
     <ClInclude Include="framework\DeclEntityDef.h" />
     <ClInclude Include="framework\DeclFX.h" />
     <ClInclude Include="framework\DeclManager.h" />
@@ -1275,6 +1276,7 @@
     <ClCompile Include="framework\Console.cpp" />
     <ClCompile Include="framework\CVarSystem.cpp" />
     <ClCompile Include="framework\DeclAF.cpp" />
+    <ClCompile Include="framework\DeclAtmosphere.cpp" />
     <ClCompile Include="framework\DeclEntityDef.cpp" />
     <ClCompile Include="framework\DeclFX.cpp" />
     <ClCompile Include="framework\DeclManager.cpp" />

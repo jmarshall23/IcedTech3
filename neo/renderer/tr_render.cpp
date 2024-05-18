@@ -363,6 +363,8 @@ void RB_LoadShaderTextureMatrix( const float *shaderRegisters, const textureStag
 	float	matrix[16];
 
 	RB_GetShaderTextureMatrix( shaderRegisters, texture, matrix );
+	RB_EXP_UploadTextureMatrix(matrix);
+
 	qglMatrixMode( GL_TEXTURE );
 	qglLoadMatrixf( matrix );
 	qglMatrixMode( GL_MODELVIEW );

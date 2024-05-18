@@ -181,6 +181,7 @@ extern PFNGLDELETESHADERPROC qglDeleteShader;
 extern PFNGLUNIFORM4FVPROC qglUniform4fv;
 extern PFNGLGETUNIFORMLOCATIONPROC qglGetUniformLocation;
 extern PFNGLUNIFORM1IPROC qglUniform1i;
+extern PFNGLUNIFORM1FPROC qglUniform1f;
 extern PFNGLBINDATTRIBLOCATIONPROC qglBindAttribLocation;
 extern PFNGLUNIFORMMATRIX4FVPROC qglUniformMatrix4fv;
 

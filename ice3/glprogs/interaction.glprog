@@ -31,7 +31,7 @@ glprog interaction
 		varying vec4 primaryColor;
 		varying vec3 viewDir;
 		varying vec4 shadowCoords[6];
-		
+
 		// Attributes
 		attribute vec4 aPosition;
 		attribute vec4 aTexCoord;
@@ -49,8 +49,11 @@ glprog interaction
 			vec3 tangent1 = aTangent1;
 			vec4 color = aColor;
 			
+			vec4 positionModelSpace = (modelMatrix * vec4(gl_Vertex.xyz, 1.0));
+			vec4 positionViewSpace = (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0));
+			
 			for (int i = 0; i < 6; i++) {
-				shadowCoords[i] = lightMatrices[i] * (modelMatrix * vec4(gl_Vertex.xyz, 1.0));
+				shadowCoords[i] = lightMatrices[i] * positionModelSpace;
 			}
 
 			// Normal map texgen
@@ -91,7 +94,7 @@ glprog interaction
 
 			// Primary color
 			primaryColor = color * colorModulate + colorAdd;
-
+			
 			// Position
 			gl_Position = ftransform();
 		}
@@ -128,7 +131,7 @@ glprog interaction
 			coord = coord * 0.5 + 0.5; // Transform from [-1, 1] range to [0, 1] range
 			
 			if(coord.z > 1)
-				return 1;
+				return 1.0;
 
 			float factor = 0.0;
 			const int samples = 2; // Number of samples for PCF
@@ -138,7 +141,22 @@ glprog interaction
 			for (int x = -samples; x <= samples; ++x) {
 				for (int y = -samples; y <= samples; ++y) {
 					vec2 offsetCoord = coord.xy + vec2(float(x), float(y)) * offset;
-					float depth = texture2D(shadowMaps[index], offsetCoord).r;
+					float depth;
+
+					// Use conditionals to select the correct shadow map
+					if (index == 0) {
+						depth = texture2D(shadowMaps[0], offsetCoord).r;
+					} else if (index == 1) {
+						depth = texture2D(shadowMaps[1], offsetCoord).r;
+					} else if (index == 2) {
+						depth = texture2D(shadowMaps[2], offsetCoord).r;
+					} else if (index == 3) {
+						depth = texture2D(shadowMaps[3], offsetCoord).r;
+					} else if (index == 4) {
+						depth = texture2D(shadowMaps[4], offsetCoord).r;
+					} else if (index == 5) {
+						depth = texture2D(shadowMaps[5], offsetCoord).r;
+					}
 					factor += (coord.z - 0.0005) < depth ? 1.0 : 0.0;
 				}
 			}

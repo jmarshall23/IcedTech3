@@ -1,0 +1,7 @@
+atmosphere doomdefault {
+    fogColor 0.3 0.15 0.1
+    fogDensity 0.02
+	fogStart 0.98
+    fogEnd 1.0
+    ambientLightColor 0.08 0.08 0.08
+}

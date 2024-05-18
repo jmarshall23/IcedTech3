@@ -428,6 +428,8 @@ typedef struct viewDef_s {
 	// crossing a closed door.  This is used to avoid drawing interactions
 	// when the light is behind a closed door.
 
+	iceWorldAtmosphere_t atmosphere;
+
 } viewDef_t;
 
 
@@ -476,6 +478,7 @@ typedef enum {
 	RC_DRAW_VIEW,
 	RC_SET_BUFFER,
 	RC_COPY_RENDER,
+	RC_RENDER_POST,
 	RC_SWAP_BUFFERS		// can't just assume swap at end of list because
 						// of forced list submission before syncs
 } renderCommand_t;
@@ -734,6 +737,7 @@ public:
 	virtual void			GetCardCaps( bool &oldCard, bool &nv10or20 );
 	virtual bool			UploadImage( const char *imageName, const byte *data, int width, int height );
 	virtual const idDeclRenderProg* FindRenderProgram(const char* name, bool makeDefault);
+	virtual void			RenderScenePostProcess(void);
 public:
 	// internal functions
 							idRenderSystemLocal( void );
@@ -1316,6 +1320,16 @@ void	R_ReloadARBPrograms_f( const idCmdArgs &args );
 int		R_FindARBProgram( GLenum target, const char *program );
 
 void	RB_EXP_DrawInteractions(void);
+void	RB_Exp_RenderPostProcess(void);
+void	RB_EXP_BindDepthFill(void);
+void	RB_EXP_UnbindDepthFill(void);
+void	RB_EXP_UploadTextureMatrix(float matrix[16]);
+
+struct idDepthFillUniformState {
+	GLint textureMatrix;
+	GLint ambientLightColor;
+	GLint diffuseImage;
+};
 
 // Define the struct to hold uniform locations
 struct idInteractionUniformState {

@@ -2717,6 +2717,20 @@ const shaderStage_t *idMaterial::GetBumpStage( void ) const {
 
 /*
 ===================
+idMaterial::GetDiffuseStage
+===================
+*/
+const shaderStage_t* idMaterial::GetDiffuseStage(void) const {
+	for (int i = 0; i < numStages; i++) {
+		if (stages[i].lighting == SL_DIFFUSE) {
+			return &stages[i];
+		}
+	}
+	return NULL;
+}
+
+/*
+===================
 idMaterial::ReloadImages
 ===================
 */

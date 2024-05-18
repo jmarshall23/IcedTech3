@@ -771,6 +771,7 @@ public:
 									const float wx, const float wy, const float wz, const float ww );
 					explicit idMat4( const idMat3 &rotation, const idVec3 &translation );
 					explicit idMat4( const float src[ 4 ][ 4 ] );
+					idMat4(const float src[16]);
 
 	const idVec4 &	operator[]( int index ) const;
 	idVec4 &		operator[]( int index );
@@ -821,7 +822,8 @@ public:
 	const float *	ToFloatPtr( void ) const;
 	float *			ToFloatPtr( void );
 	const char *	ToString( int precision = 2 ) const;
-
+	
+	
 private:
 	idVec4			mat[ 4 ];
 };
@@ -831,6 +833,15 @@ extern idMat4 mat4_identity;
 #define mat4_default	mat4_identity
 
 ID_INLINE idMat4::idMat4( void ) {
+}
+
+ID_INLINE idMat4::idMat4(const float src[16]) {
+	for (int i = 0; i < 4; i++) {
+		mat[i].x = src[i * 4 + 0];
+		mat[i].y = src[i * 4 + 1];
+		mat[i].z = src[i * 4 + 2];
+		mat[i].w = src[i * 4 + 3];
+	}
 }
 
 ID_INLINE idMat4::idMat4( const idVec4 &x, const idVec4 &y, const idVec4 &z, const idVec4 &w ) {

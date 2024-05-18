@@ -370,6 +370,7 @@ public:
 						// get the first bump map stage, or NULL if not present.
 						// used for bumpy-specular
 	const shaderStage_t *GetBumpStage( void ) const;
+	const shaderStage_t* GetDiffuseStage(void) const;
 
 						// returns true if the material will draw anything at all.  Triggers, portals,
 						// etc, will not have anything to draw.  A not drawn surface can still castShadow,

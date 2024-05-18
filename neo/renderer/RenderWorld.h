@@ -76,6 +76,23 @@ const int MAX_RENDERENTITY_GUI		= 3;
 
 typedef bool(*deferredEntityCallback_t)( renderEntity_s *, const renderView_s * );
 
+struct iceWorldAtmosphere_t {
+	iceWorldAtmosphere_t();
+
+	idVec3 fogColor;
+	float fogDensity;
+	float fogStart;
+	float fogEnd;
+	idVec3 ambientLightColor;
+};
+
+ID_INLINE iceWorldAtmosphere_t::iceWorldAtmosphere_t() {
+	fogColor.Zero();
+	fogDensity = 0;
+	fogStart = 0;
+	fogEnd = 0;
+	ambientLightColor.Zero();
+}
 
 typedef struct renderEntity_s {
 	idRenderModel *			hModel;				// this can only be null if callback is set
@@ -287,6 +304,10 @@ public:
 	virtual	void			UpdateLightDef( qhandle_t lightHandle, const renderLight_t *rlight ) = 0;
 	virtual	void			FreeLightDef( qhandle_t lightHandle ) = 0;
 	virtual const renderLight_t *GetRenderLight( qhandle_t lightHandle ) const = 0;
+
+	// Gets and sets the current atmosphere for a level. 
+	virtual iceWorldAtmosphere_t GetCurrentAtmosphere() = 0;
+	virtual void			SetAtmosphere(iceWorldAtmosphere_t atmosphere) = 0;
 
 	// Force the generation of all light / surface interactions at the start of a level
 	// If this isn't called, they will all be dynamically generated

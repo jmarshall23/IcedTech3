@@ -209,6 +209,7 @@ public:
 	virtual const idMaterial *		FindMaterial( const char *name, bool makeDefault = true );
 	virtual const idDeclSkin *		FindSkin( const char *name, bool makeDefault = true );
 	virtual const idSoundShader *	FindSound( const char *name, bool makeDefault = true );
+	virtual const iceDeclAtmosphere* FindAtmosphere(const char* name, bool makeDefault = true);
 
 	virtual const idMaterial *		MaterialByIndex( int index, bool forceParse = true );
 	virtual const idDeclSkin *		SkinByIndex( int index, bool forceParse = true );
@@ -818,11 +819,13 @@ void idDeclManagerLocal::Init( void ) {
 	RegisterDeclType( "video",				DECL_VIDEO,			idDeclAllocator<idDeclVideo> );
 	RegisterDeclType( "audio",				DECL_AUDIO,			idDeclAllocator<idDeclAudio> );
 	RegisterDeclType( "glprog",				DECL_RENDERPROG,	idDeclAllocator<idDeclRenderProg>);
+	RegisterDeclType( "atmosphere",			DECL_ATMOSPHERE,    idDeclAllocator<iceDeclAtmosphere>);
 
 	RegisterDeclFolder( "materials",		".mtr",				DECL_MATERIAL );
 	RegisterDeclFolder( "skins",			".skin",			DECL_SKIN );
 	RegisterDeclFolder( "sound",			".sndshd",			DECL_SOUND );
 	RegisterDeclFolder( "glprogs",			".glprog",			DECL_RENDERPROG);
+	RegisterDeclFolder( "atmosphere",		".atm",				DECL_ATMOSPHERE);
 
 	// add console commands
 	cmdSystem->AddCommand( "listDecls", ListDecls_f, CMD_FL_SYSTEM, "lists all decls" );
@@ -1542,6 +1545,10 @@ const idDeclSkin *idDeclManagerLocal::SkinByIndex( int index, bool forceParse ) 
 }
 
 /********************************************************************/
+
+const iceDeclAtmosphere* idDeclManagerLocal::FindAtmosphere(const char* name, bool makeDefault) {
+	return static_cast<const iceDeclAtmosphere*>(FindType(DECL_ATMOSPHERE, name, makeDefault));
+}
 
 const idSoundShader *idDeclManagerLocal::FindSound( const char *name, bool makeDefault ) {
 	return static_cast<const idSoundShader *>( FindType( DECL_SOUND, name, makeDefault ) );

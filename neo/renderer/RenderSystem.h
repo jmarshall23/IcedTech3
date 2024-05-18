@@ -259,6 +259,9 @@ public:
 
 	// Loads in a Render Program.
 	virtual const idDeclRenderProg* FindRenderProgram(const char* name, bool makeDefault) = 0;
+
+	// Renders scene post processing effects.
+	virtual void			RenderScenePostProcess(void) = 0;
 };
 
 extern idRenderSystem *			renderSystem;

@@ -61,7 +61,7 @@ void idWorldspawn::Spawn( void ) {
 	const idKeyValue	*kv;
 
 	assert( gameLocal.world == NULL );
-	gameLocal.world = this;
+	gameLocal.world = (iceWorldspawn *)this;
 
 	g_gravity.SetFloat( spawnArgs.GetFloat( "gravity", va( "%f", DEFAULT_GRAVITY ) ) );
 

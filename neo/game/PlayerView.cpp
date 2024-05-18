@@ -448,6 +448,7 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 	hackedView.viewaxis = hackedView.viewaxis * ShakeAxis();
 
 	gameRenderWorld->RenderScene( &hackedView );
+	renderSystem->RenderScenePostProcess();
 
 	if ( player->spectating ) {
 		return;

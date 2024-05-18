@@ -8,6 +8,8 @@ static GLuint shadowFBO[6];
 static GLuint shadowDepth[6];
 
 const idDeclRenderProg* interactionProgram;
+const idDeclRenderProg* baseDepthFillProgram;
+const idDeclRenderProg* fogProgram;
 
 idCVar r_sb_noShadows("r_sb_noShadows", "0", CVAR_RENDERER | CVAR_BOOL, "don't draw any occluders");
 idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "2048", CVAR_RENDERER | CVAR_FLOAT, "Shadow Map Size");
@@ -35,8 +37,11 @@ static float	viewLightAxialSize;
 
 static int		lightNumSides = -1;
 
+static bool		depthFillActive = false;
+
 // Declare a global variable for uniform state
 idInteractionUniformState interactionUniformState;
+idDepthFillUniformState depthFillUniformState;
 
 /*
 ====================
@@ -88,39 +93,50 @@ void RB_EXP_Init(void) {
 	}
 
 	interactionProgram = renderSystem->FindRenderProgram("interaction", false);
-
-	// Get uniform locations and store them in interactionUniformState
-	GLuint program = interactionProgram->GetProgram();
-	interactionUniformState.lightMatrices = qglGetUniformLocation(program, "lightMatrices");
-	interactionUniformState.modelMatrix = qglGetUniformLocation(program, "modelMatrix");
-	interactionUniformState.lightOrigin = qglGetUniformLocation(program, "lightOrigin");
-	interactionUniformState.viewOrigin = qglGetUniformLocation(program, "viewOrigin");
-	interactionUniformState.lightProjectS = qglGetUniformLocation(program, "lightProjectS");
-	interactionUniformState.lightProjectT = qglGetUniformLocation(program, "lightProjectT");
-	interactionUniformState.lightProjectQ = qglGetUniformLocation(program, "lightProjectQ");
-	interactionUniformState.lightFalloffS = qglGetUniformLocation(program, "lightFalloffS");
-	interactionUniformState.bumpMatrixS = qglGetUniformLocation(program, "bumpMatrixS");
-	interactionUniformState.bumpMatrixT = qglGetUniformLocation(program, "bumpMatrixT");
-	interactionUniformState.diffuseMatrixS = qglGetUniformLocation(program, "diffuseMatrixS");
-	interactionUniformState.diffuseMatrixT = qglGetUniformLocation(program, "diffuseMatrixT");
-	interactionUniformState.specularMatrixS = qglGetUniformLocation(program, "specularMatrixS");
-	interactionUniformState.specularMatrixT = qglGetUniformLocation(program, "specularMatrixT");
-	interactionUniformState.colorModulate = qglGetUniformLocation(program, "colorModulate");
-	interactionUniformState.colorAdd = qglGetUniformLocation(program, "colorAdd");
-	interactionUniformState.diffuse = qglGetUniformLocation(program, "diffuse");
-	interactionUniformState.specular = qglGetUniformLocation(program, "specular");
-	interactionUniformState.bumpImage = qglGetUniformLocation(program, "bumpImage");
-	interactionUniformState.lightFalloffImage = qglGetUniformLocation(program, "lightFalloffImage");
-	interactionUniformState.lightImage = qglGetUniformLocation(program, "lightImage");
-	interactionUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
-	interactionUniformState.specularImage = qglGetUniformLocation(program, "specularImage");
-	interactionUniformState.specularTableImage = qglGetUniformLocation(program, "specularTableImage");
-
-	for (int i = 0; i < 6; i++) {
-		interactionUniformState.shadowMaps[i] = qglGetUniformLocation(program, va("shadowMaps[%d]", i));
+	baseDepthFillProgram = renderSystem->FindRenderProgram("depthfill", false);
+	fogProgram = renderSystem->FindRenderProgram("postprocess/fog", false);
+	
+	{
+		GLuint program = baseDepthFillProgram->GetProgram();
+		depthFillUniformState.textureMatrix = qglGetUniformLocation(program, "textureMatrix");
+		depthFillUniformState.ambientLightColor = qglGetUniformLocation(program, "ambientLightColor");
+		depthFillUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
 	}
 
-	interactionUniformState.numSides = qglGetUniformLocation(program, "numSides");
+	// Get uniform locations and store them in interactionUniformState
+	{
+		GLuint program = interactionProgram->GetProgram();
+		interactionUniformState.lightMatrices = qglGetUniformLocation(program, "lightMatrices");
+		interactionUniformState.modelMatrix = qglGetUniformLocation(program, "modelMatrix");
+		interactionUniformState.lightOrigin = qglGetUniformLocation(program, "lightOrigin");
+		interactionUniformState.viewOrigin = qglGetUniformLocation(program, "viewOrigin");
+		interactionUniformState.lightProjectS = qglGetUniformLocation(program, "lightProjectS");
+		interactionUniformState.lightProjectT = qglGetUniformLocation(program, "lightProjectT");
+		interactionUniformState.lightProjectQ = qglGetUniformLocation(program, "lightProjectQ");
+		interactionUniformState.lightFalloffS = qglGetUniformLocation(program, "lightFalloffS");
+		interactionUniformState.bumpMatrixS = qglGetUniformLocation(program, "bumpMatrixS");
+		interactionUniformState.bumpMatrixT = qglGetUniformLocation(program, "bumpMatrixT");
+		interactionUniformState.diffuseMatrixS = qglGetUniformLocation(program, "diffuseMatrixS");
+		interactionUniformState.diffuseMatrixT = qglGetUniformLocation(program, "diffuseMatrixT");
+		interactionUniformState.specularMatrixS = qglGetUniformLocation(program, "specularMatrixS");
+		interactionUniformState.specularMatrixT = qglGetUniformLocation(program, "specularMatrixT");
+		interactionUniformState.colorModulate = qglGetUniformLocation(program, "colorModulate");
+		interactionUniformState.colorAdd = qglGetUniformLocation(program, "colorAdd");
+		interactionUniformState.diffuse = qglGetUniformLocation(program, "diffuse");
+		interactionUniformState.specular = qglGetUniformLocation(program, "specular");
+		interactionUniformState.bumpImage = qglGetUniformLocation(program, "bumpImage");
+		interactionUniformState.lightFalloffImage = qglGetUniformLocation(program, "lightFalloffImage");
+		interactionUniformState.lightImage = qglGetUniformLocation(program, "lightImage");
+		interactionUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
+		interactionUniformState.specularImage = qglGetUniformLocation(program, "specularImage");
+		interactionUniformState.specularTableImage = qglGetUniformLocation(program, "specularTableImage");
+
+		for (int i = 0; i < 6; i++) {
+			interactionUniformState.shadowMaps[i] = qglGetUniformLocation(program, va("shadowMaps[%d]", i));
+		}
+
+		interactionUniformState.numSides = qglGetUniformLocation(program, "numSides");
+	}	
 }
 
 /*
@@ -132,6 +148,47 @@ void RB_EXP_Shutdown(void) {
 	for (int i = 0; i < 6; i++) {
 		qglDeleteFramebuffersEXT(1, &shadowFBO[i]);
 	}
+}
+
+/*
+====================
+RB_EXP_BindDepthFill
+====================
+*/
+void RB_EXP_BindDepthFill(void) {
+	GLuint program = baseDepthFillProgram->GetProgram(); 
+
+	depthFillActive = true;
+
+	// Use the shader program
+	qglUseProgram(program);
+	qglUniform1i(depthFillUniformState.diffuseImage, 0);
+
+	idVec4 ambientLightColor(backEnd.viewDef->atmosphere.ambientLightColor.x, backEnd.viewDef->atmosphere.ambientLightColor.y, backEnd.viewDef->atmosphere.ambientLightColor.z, 1.0);
+	qglUniform4fv(depthFillUniformState.ambientLightColor, 1, ambientLightColor.ToFloatPtr());
+}
+
+/*
+====================
+RB_EXP_UploadTextureMatrix
+====================
+*/
+void RB_EXP_UploadTextureMatrix(float matrix[16]) {
+	if (!depthFillActive)
+		return;
+
+	qglUniformMatrix4fv(depthFillUniformState.textureMatrix, 1, GL_FALSE, matrix);
+}
+
+/*
+====================
+RB_EXP_UnbindDepthFill
+====================
+*/
+void RB_EXP_UnbindDepthFill(void) {
+	depthFillActive = false;
+
+	qglUseProgram(0);
 }
 
 /*
@@ -621,7 +678,6 @@ void RB_EXP_DrawInteraction(const drawInteraction_t* din) {
 	qglUniform4fv(interactionUniformState.specularMatrixS, 1, din->specularMatrix[0].ToFloatPtr());
 	qglUniform4fv(interactionUniformState.specularMatrixT, 1, din->specularMatrix[1].ToFloatPtr());
 
-
 	static const float zero[4] = { 0, 0, 0, 0 };
 	static const float one[4] = { 1, 1, 1, 1 };
 	static const float negOne[4] = { -1, -1, -1, -1 };
@@ -879,4 +935,120 @@ void RB_EXP_DrawInteractions(void) {
 
 	GL_SelectTexture(0);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+void RB_EXP_BindFog() {
+	GLuint program = fogProgram->GetProgram();
+	qglUseProgram(program);
+
+	idVec4 fogColor(backEnd.viewDef->atmosphere.fogColor.x, backEnd.viewDef->atmosphere.fogColor.y, backEnd.viewDef->atmosphere.fogColor.z, 1.0);
+	qglUniform4fv(qglGetUniformLocation(program, "fogColor"), 1, fogColor.ToFloatPtr());
+	qglUniform1f(qglGetUniformLocation(program, "fogDensity"), backEnd.viewDef->atmosphere.fogDensity);
+	qglUniform1f(qglGetUniformLocation(program, "fogStart"), backEnd.viewDef->atmosphere.fogStart);
+	qglUniform1f(qglGetUniformLocation(program, "fogEnd"), backEnd.viewDef->atmosphere.fogEnd);
+	qglUniform1f(qglGetUniformLocation(program, "near"), backEnd.viewDef->projectionMatrix[14] / (backEnd.viewDef->projectionMatrix[10] - 1.0f));
+
+	// Pass the inverse projection matrix to the shader
+	// Compute the inverse view-projection matrix
+	idMat4 viewMatrix(backEnd.viewDef->worldSpace.modelViewMatrix);
+	idMat4 projectionMatrix(backEnd.viewDef->projectionMatrix);
+	idMat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+	idMat4 inverseViewProjectionMatrix = viewProjectionMatrix.Inverse();
+	qglUniformMatrix4fv(qglGetUniformLocation(fogProgram->GetProgram(), "invProjectionMatrix"), 1, GL_FALSE, inverseViewProjectionMatrix.ToFloatPtr());
+
+	GL_SelectTextureNoClient(1);
+	globalImages->currentRenderImage->Bind();
+	qglUniform1i(qglGetUniformLocation(program, "colorTexture"), 1);
+
+	GL_SelectTextureNoClient(0);
+	globalImages->currentDepthRenderImage->Bind();
+	qglUniform1i(qglGetUniformLocation(program, "depthTexture"), 0);
+}
+
+void RB_Exp_RenderPostProcess(void) {
+	if (r_skipPostProcess.GetBool()) {
+		return;
+	}
+
+	GL_CheckErrors();
+	if (!backEnd.currentRenderCopied)
+	{
+		globalImages->currentRenderImage->CopyFramebuffer(backEnd.viewDef->viewport.x1,
+			backEnd.viewDef->viewport.y1, backEnd.viewDef->viewport.x2 - backEnd.viewDef->viewport.x1 + 1,
+			backEnd.viewDef->viewport.y2 - backEnd.viewDef->viewport.y1 + 1, true);
+
+		globalImages->currentDepthRenderImage->CopyDepthbuffer(backEnd.viewDef->viewport.x1,
+			backEnd.viewDef->viewport.y1, backEnd.viewDef->viewport.x2 - backEnd.viewDef->viewport.x1 + 1,
+			backEnd.viewDef->viewport.y2 - backEnd.viewDef->viewport.y1 + 1);
+
+		GL_SelectTextureNoClient(0);
+		globalImages->BindNull();
+	}
+	backEnd.currentRenderCopied = true;
+
+	// set the window clipping
+	qglViewport(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1,
+		tr.viewportOffset[1] + backEnd.viewDef->viewport.y1,
+		backEnd.viewDef->viewport.x2 + 1 - backEnd.viewDef->viewport.x1,
+		backEnd.viewDef->viewport.y2 + 1 - backEnd.viewDef->viewport.y1);
+
+	// the scissor may be smaller than the viewport for subviews
+	qglScissor(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1 + backEnd.viewDef->scissor.x1,
+		tr.viewportOffset[1] + backEnd.viewDef->viewport.y1 + backEnd.viewDef->scissor.y1,
+		backEnd.viewDef->scissor.x2 + 1 - backEnd.viewDef->scissor.x1,
+		backEnd.viewDef->scissor.y2 + 1 - backEnd.viewDef->scissor.y1);
+
+	float projectionMatrix[16] = {};
+	float modelViewMatrix[16] = {};
+
+	projectionMatrix[0] = 2.0f / SCREEN_WIDTH;
+	projectionMatrix[5] = -2.0f / SCREEN_HEIGHT;
+	projectionMatrix[10] = -2.0f / 1.0f;
+	projectionMatrix[12] = -1.0f;
+	projectionMatrix[13] = 1.0f;
+	projectionMatrix[14] = -1.0f;
+	projectionMatrix[15] = 1.0f;
+
+	modelViewMatrix[0] = 1.0f;
+	modelViewMatrix[5] = 1.0f;
+	modelViewMatrix[10] = 1.0f;
+	modelViewMatrix[15] = 1.0f;
+
+	// Set up matrices for 2D rendering
+	qglMatrixMode(GL_PROJECTION);
+	qglPushMatrix();
+	qglLoadMatrixf(&projectionMatrix[0]);
+
+	qglMatrixMode(GL_MODELVIEW);
+	qglPushMatrix();
+	qglLoadMatrixf(&modelViewMatrix[0]);
+
+	// Render linear fog
+	RB_EXP_BindFog();
+
+	// Draw a full-screen quad
+	qglDepthMask(GL_FALSE);
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(0, 0); qglVertex2f(0, 0);
+	qglTexCoord2f(1, 0); qglVertex2f(SCREEN_WIDTH, 0);
+	qglTexCoord2f(1, 1); qglVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	qglTexCoord2f(0, 1); qglVertex2f(0, SCREEN_HEIGHT);
+	qglEnd();
+	qglDepthMask(GL_TRUE);
+	qglUseProgram(0);
+
+	// Reset texture state
+	GL_SelectTextureNoClient(1);
+	globalImages->BindNull();
+
+	GL_SelectTextureNoClient(0);
+	globalImages->BindNull();
+
+	// Restore matrices
+	qglMatrixMode(GL_PROJECTION);
+	qglPopMatrix();
+	qglMatrixMode(GL_MODELVIEW);
+	qglPopMatrix();
+
+	GL_CheckErrors();
 }

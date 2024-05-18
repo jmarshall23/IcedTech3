@@ -77,6 +77,7 @@ class idProgram;
 class idThread;
 class idEditEntities;
 class idLocationEntity;
+class iceWorldspawn;
 
 #define	MAX_CLIENTS				32
 #define	GENTITYNUM_BITS			12
@@ -251,7 +252,7 @@ public:
 	int						firstFreeIndex;			// first free index in the entities array
 	int						num_entities;			// current number <= MAX_GENTITIES
 	idHashIndex				entityHash;				// hash table to quickly find entities by name
-	idWorldspawn *			world;					// world entity
+	iceWorldspawn*			world;					// world entity
 	idLinkList<idEntity>	spawnedEntities;		// all spawned entities
 	idLinkList<idEntity>	activeEntities;			// all thinking entities (idEntity::thinkFlags != 0)
 	int						numEntitiesToDeactivate;// number of entities that became inactive in current frame
@@ -740,5 +741,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "script/Script_Compiler.h"
 #include "script/Script_Interpreter.h"
 #include "script/Script_Thread.h"
+
+#include "../icegame/IceWorldSpawn.h"
 
 #endif	/* !__GAME_LOCAL_H__ */
