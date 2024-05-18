@@ -49,7 +49,7 @@ glprog postprocess/fog
 			// Calculate the brightness of the scene color (using the luminance formula)
 			float brightness = dot(sceneColor.rgb, vec3(0.299, 0.587, 0.114));
 
-			vec3 finalColor = mix(sceneColor.rgb, fogColor.rgb, clamp(fogFactor - (0.5 * brightness), 0.0, 1.0));
+			vec3 finalColor = mix(sceneColor.rgb + (brightness * 0.05), fogColor.rgb, clamp(fogFactor - (0.5 * brightness), 0.0, 1.0));
 
 			gl_FragColor = vec4(finalColor, sceneColor.a);
 		}
