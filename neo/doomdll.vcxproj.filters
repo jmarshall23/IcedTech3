@@ -106,6 +106,12 @@
     <Filter Include="Ui">
       <UniqueIdentifier>{b3166d25-0562-49da-bc8d-961006fe1785}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libs">
+      <UniqueIdentifier>{2222cd66-3555-433c-9ab5-4e61fa01118d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\aasfile">
+      <UniqueIdentifier>{974e6b0a-8f88-4890-8df7-bba3972b8b56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cm\CollisionModel.h">
@@ -516,21 +522,6 @@
     <ClInclude Include="tools\compilers\aas\AASBuild_local.h">
       <Filter>Tools\Compilers\AAS</Filter>
     </ClInclude>
-    <ClInclude Include="tools\compilers\aas\AASCluster.h">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\compilers\aas\AASFile.h">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\compilers\aas\AASFile_local.h">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\compilers\aas\AASFileManager.h">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\compilers\aas\AASReach.h">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClInclude>
     <ClInclude Include="tools\compilers\aas\Brush.h">
       <Filter>Tools\Compilers\AAS</Filter>
     </ClInclude>
@@ -632,6 +623,21 @@
     </ClInclude>
     <ClInclude Include="tools\radiant\SplashScreen.h">
       <Filter>Tools\Radiant</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\compilers\aas\AASCluster.h">
+      <Filter>Tools\Compilers\AAS</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\compilers\aas\AASReach.h">
+      <Filter>Tools\Compilers\AAS</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\aasfile\AASFile.h">
+      <Filter>Libs\aasfile</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\aasfile\AASFile_local.h">
+      <Filter>Libs\aasfile</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\aasfile\AASFileManager.h">
+      <Filter>Libs\aasfile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1298,24 +1304,6 @@
     <ClCompile Include="tools\compilers\aas\AASBuild_merge.cpp">
       <Filter>Tools\Compilers\AAS</Filter>
     </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASCluster.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASFile.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASFile_optimize.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASFile_sample.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASFileManager.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
-    <ClCompile Include="tools\compilers\aas\AASReach.cpp">
-      <Filter>Tools\Compilers\AAS</Filter>
-    </ClCompile>
     <ClCompile Include="tools\compilers\aas\Brush.cpp">
       <Filter>Tools\Compilers\AAS</Filter>
     </ClCompile>
@@ -1834,6 +1822,24 @@
     </ClCompile>
     <ClCompile Include="tools\radiant\SplashScreen.cpp">
       <Filter>Tools\Radiant</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\compilers\aas\AASCluster.cpp">
+      <Filter>Tools\Compilers\AAS</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\compilers\aas\AASReach.cpp">
+      <Filter>Tools\Compilers\AAS</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\aasfile\AASFile.cpp">
+      <Filter>Libs\aasfile</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\aasfile\AASFile_optimize.cpp">
+      <Filter>Libs\aasfile</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\aasfile\AASFile_sample.cpp">
+      <Filter>Libs\aasfile</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\aasfile\AASFileManager.cpp">
+      <Filter>Libs\aasfile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

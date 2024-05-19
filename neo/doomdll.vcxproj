@@ -285,6 +285,9 @@
     <ClInclude Include="framework\async\MsgChannel.h" />
     <ClInclude Include="framework\async\NetworkSystem.h" />
     <ClInclude Include="framework\async\ServerScan.h" />
+    <ClInclude Include="libs\aasfile\AASFile.h" />
+    <ClInclude Include="libs\aasfile\AASFileManager.h" />
+    <ClInclude Include="libs\aasfile\AASFile_local.h" />
     <ClInclude Include="renderer\Cinematic.h" />
     <ClInclude Include="renderer\DeclRenderProg.h" />
     <ClInclude Include="renderer\glext.h" />
@@ -596,13 +599,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|Win32'">true</ExcludedFromBuild>
     </CustomBuildStep>
+    <ClInclude Include="tools\compilers\aas\AASCluster.h" />
+    <ClInclude Include="tools\compilers\aas\AASReach.h" />
     <ClInclude Include="tools\compilers\compiler_public.h" />
     <ClInclude Include="tools\compilers\aas\AASBuild_local.h" />
-    <ClInclude Include="tools\compilers\aas\AASCluster.h" />
-    <ClInclude Include="tools\compilers\aas\AASFile.h" />
-    <ClInclude Include="tools\compilers\aas\AASFile_local.h" />
-    <ClInclude Include="tools\compilers\aas\AASFileManager.h" />
-    <ClInclude Include="tools\compilers\aas\AASReach.h" />
     <ClInclude Include="tools\compilers\aas\Brush.h" />
     <ClInclude Include="tools\compilers\aas\BrushBSP.h" />
     <ClInclude Include="tools\compilers\dmap\dmap.h" />
@@ -1310,6 +1310,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug with inlines|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="libs\aasfile\AASFile.cpp" />
+    <ClCompile Include="libs\aasfile\AASFileManager.cpp" />
+    <ClCompile Include="libs\aasfile\AASFile_optimize.cpp" />
+    <ClCompile Include="libs\aasfile\AASFile_sample.cpp" />
     <ClCompile Include="renderer\Cinematic.cpp" />
     <ClCompile Include="renderer\DeclRenderProg.cpp" />
     <ClCompile Include="renderer\draw_arb2.cpp" />
@@ -2226,10 +2230,6 @@
     <ClCompile Include="tools\compilers\aas\AASBuild_ledge.cpp" />
     <ClCompile Include="tools\compilers\aas\AASBuild_merge.cpp" />
     <ClCompile Include="tools\compilers\aas\AASCluster.cpp" />
-    <ClCompile Include="tools\compilers\aas\AASFile.cpp" />
-    <ClCompile Include="tools\compilers\aas\AASFile_optimize.cpp" />
-    <ClCompile Include="tools\compilers\aas\AASFile_sample.cpp" />
-    <ClCompile Include="tools\compilers\aas\AASFileManager.cpp" />
     <ClCompile Include="tools\compilers\aas\AASReach.cpp" />
     <ClCompile Include="tools\compilers\aas\Brush.cpp" />
     <ClCompile Include="tools\compilers\aas\BrushBSP.cpp" />

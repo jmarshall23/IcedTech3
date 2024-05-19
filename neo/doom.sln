@@ -4,7 +4,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{347D107C-D787-4408-A60D-86FA45997F9B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "exes", "exes", "{003B01AB-152D-45C8-BF45-E5A035042D7F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{003B01AB-152D-45C8-BF45-E5A035042D7F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dlls", "dlls", "{1E2B3940-65F8-4D8F-9EEE-85E94EBBC6DF}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MayaImport", "MayaImport.vcxproj", "{49BEC5C6-B964-417A-851E-808886B574F1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Icegame", "icegame.vcxproj", "{A89855F7-0437-4F07-9D43-BE418737C7B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Editor", "Editor", "{9CB10BD3-C1B0-4EEA-A65D-6C173F0C4127}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

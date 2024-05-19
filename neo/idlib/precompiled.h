@@ -163,15 +163,11 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #include "../cm/CollisionModel.h"
 
 // AAS files and manager
-#include "../tools/compilers/aas/AASFile.h"
-#include "../tools/compilers/aas/AASFileManager.h"
+#include "../libs/aasfile/AASFile.h"
+#include "../libs/aasfile/AASFileManager.h"
 
 // game
-#if defined(_D3XP)
-#include "../d3xp/Game.h"
-#else
 #include "../game/Game.h"
-#endif
 
 //-----------------------------------------------------
 
@@ -179,11 +175,7 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 #ifdef GAME_DLL
 
-#if defined(_D3XP)
-#include "../d3xp/Game_local.h"
-#else
 #include "../game/Game_local.h"
-#endif
 
 #else
 
