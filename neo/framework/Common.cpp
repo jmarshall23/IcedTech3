@@ -897,7 +897,7 @@ void idCommonLocal::CheckToolMode( void ) {
 		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "debugger" ) ) {
 			com_editors |= EDITOR_DEBUGGER;
 		}
-		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "editor" ) ) {
+		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "idstudio" ) ) {
 			com_editors |= EDITOR_RADIANT;
 		}
 		// Nerve: Add support for the material editor
@@ -906,7 +906,7 @@ void idCommonLocal::CheckToolMode( void ) {
 		}
 		
 		if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "renderbump" )
-			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "editor" )
+			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "idstudio" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "guieditor" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "debugger" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "dmap" )
@@ -2361,7 +2361,7 @@ void idCommonLocal::InitCommands( void ) {
 
 #ifdef ID_ALLOW_TOOLS
 	// editors
-	cmdSystem->AddCommand( "editor", Com_Editor_f, CMD_FL_TOOL, "launches the level editor Radiant" );
+	cmdSystem->AddCommand( "idStudio", Com_Editor_f, CMD_FL_TOOL, "launches the level editor Radiant" );
 	cmdSystem->AddCommand( "editLights", Com_EditLights_f, CMD_FL_TOOL, "launches the in-game Light Editor" );
 	cmdSystem->AddCommand( "editSounds", Com_EditSounds_f, CMD_FL_TOOL, "launches the in-game Sound Editor" );
 	cmdSystem->AddCommand( "editDecls", Com_EditDecls_f, CMD_FL_TOOL, "launches the in-game Declaration Editor" );

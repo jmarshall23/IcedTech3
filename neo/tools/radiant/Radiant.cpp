@@ -128,6 +128,8 @@ void RadiantInit( void ) {
 
 		InitAfx();
 
+		CSplashScreen::ShowSplashScreen(NULL);
+
 		// App global initializations (rare)
 		pApp->InitApplication();
 
@@ -140,6 +142,8 @@ void RadiantInit( void ) {
 
 		// hide the doom window by default
 		::ShowWindow( win32.hWnd, SW_HIDE );
+
+		CSplashScreen::HideSplashScreen();
 	}
 }
 

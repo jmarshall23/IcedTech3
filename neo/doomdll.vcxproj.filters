@@ -630,6 +630,9 @@
     <ClInclude Include="framework\DeclAtmosphere.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="tools\radiant\SplashScreen.h">
+      <Filter>Tools\Radiant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cm\CollisionModel_contacts.cpp">
@@ -1828,6 +1831,9 @@
     </ClCompile>
     <ClCompile Include="framework\DeclAtmosphere.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\radiant\SplashScreen.cpp">
+      <Filter>Tools\Radiant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1094,6 +1094,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 		return -1;
 	}
 
+	HICON m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	SetIcon(m_hIcon, TRUE);
+
 	UINT	nID = (g_PrefsDlg.m_bWideToolbar) ? IDR_TOOLBAR_ADVANCED : IDR_TOOLBAR1;
 
 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP

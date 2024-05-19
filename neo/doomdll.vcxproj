@@ -167,7 +167,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug with inlines and memory log|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -179,7 +179,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug with inlines|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -191,7 +191,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -203,7 +203,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug with inlines|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -215,7 +215,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -227,7 +227,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -239,7 +239,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
       <AdditionalLibraryDirectories>openal\lib;sys\win32\dongle;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>../Doom3.exe</OutputFile>
+      <OutputFile>../Icetech.exe</OutputFile>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -1237,6 +1237,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|Win32'">true</ExcludedFromBuild>
     </CustomBuildStep>
+    <ClInclude Include="tools\radiant\SplashScreen.h" />
     <ClInclude Include="ui\BindWindow.h" />
     <ClInclude Include="ui\ChoiceWindow.h" />
     <ClInclude Include="ui\DeviceContext.h" />
@@ -2487,6 +2488,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="tools\radiant\SplashScreen.cpp" />
     <ClCompile Include="tools\sound\DialogSound.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug with inlines|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|Win32'">true</ExcludedFromBuild>

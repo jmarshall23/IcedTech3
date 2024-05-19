@@ -53,7 +53,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\doom.ico"
+IDR_MAINFRAME           ICON                    "res\\icon2.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -76,6 +76,7 @@ IDB_BITMAP_GROUPS       BITMAP                  "res\\bmp00003.bmp"
 IDB_BITMAP_MATERIAL     BITMAP                  "res\\bmp00004.bmp"
 IDB_BITMAP_HSB          BITMAP                  "res\\cchsb.bmp"
 IDB_BITMAP_RGB          BITMAP                  "res\\ccrgb.bmp"
+IDB_IDSTUDIO_SPLASH     BITMAP                  "res\\idstudio.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

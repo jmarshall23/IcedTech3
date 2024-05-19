@@ -875,6 +875,8 @@ If you have questions concerning this license or the applicable additional terms
 #define ID_ENTITY_START                          40000
 #define ID_ENTITY_END                            45000
 
+#define IDB_IDSTUDIO_SPLASH						 45001
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
