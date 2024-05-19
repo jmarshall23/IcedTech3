@@ -157,6 +157,9 @@ protected:
 	bool	BuildBrushRenderData(brush_t *brush);
 	void	DrawEntityData();
 
+	bool m_bMouseLook = false; // To track if we are in mouse look mode
+	CPoint m_LastMousePos; // To store the last mouse position
+	float m_MouseSensitivity = 0.5; // Sensitivity for mouse look
 
 	camera_t m_Camera;
 	int	m_nCambuttonstate;
@@ -175,6 +178,10 @@ protected:
 
 	// Generated message map functions
 protected:
+	void EnableMouseLook(bool enable);
+	void UpdateCameraOrientation(float dx, float dy);
+	void UpdateCameraPosition(float dx, float dy, float dz);
+
 	void OriginalMouseDown(UINT nFlags, CPoint point);
 	void OriginalMouseUp(UINT nFlags, CPoint point);
 	//{{AFX_MSG(CCamWnd)

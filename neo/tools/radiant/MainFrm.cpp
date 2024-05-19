@@ -127,11 +127,11 @@ SCommandInfo	g_Commands[] = {
 	{ "Edit_Undo",              'Z', RAD_CONTROL, ID_EDIT_UNDO },
 	{ "Edit_Redo",              'Y', RAD_CONTROL, ID_EDIT_REDO },
 
-	{ "Camera_Forward",          VK_UP, 0, ID_CAMERA_FORWARD },
-	{ "Camera_Back",             VK_DOWN, 0, ID_CAMERA_BACK },
-	{ "Camera_Left",             VK_LEFT, 0, ID_CAMERA_LEFT },
-	{ "Camera_Right",            VK_RIGHT, 0, ID_CAMERA_RIGHT },
-	{ "Camera_Up",               'D', 0, ID_CAMERA_UP },
+	{ "Camera_Forward",          'W', 0, ID_CAMERA_FORWARD},
+	{ "Camera_Back",             'S', 0, ID_CAMERA_BACK},
+	{ "Camera_Left",             'A', 0, ID_CAMERA_LEFT},
+	{ "Camera_Right",            'D', 0, ID_CAMERA_RIGHT},
+	{ "Camera_Up",               'Q', 0, ID_CAMERA_UP },
 	{ "Camera_Down",             'C', 0, ID_CAMERA_DOWN },
 	{ "Camera_AngleUp",          'A', 0, ID_CAMERA_ANGLEUP },
 	{ "Camera_AngleDown",        'Z', 0, ID_CAMERA_ANGLEDOWN },
@@ -221,10 +221,10 @@ SCommandInfo	g_Commands[] = {
 	{ "ViewTab_EntityInfo",     'N', 0, ID_VIEW_ENTITY },
 	{ "ViewTab_Console",        'O', 0, ID_VIEW_CONSOLE },
 	{ "ViewTab_Textures",       'T', 0, ID_VIEW_TEXTURE },
-	{ "ViewTab_MediaBrowser",   'M', 0, ID_VIEW_MEDIABROWSER },
+	{ "ViewTab_MediaBrowser",   'B', 0, ID_VIEW_MEDIABROWSER },
 
-	{ "Window_SurfaceInspector",'S', 0, ID_TEXTURES_INSPECTOR },
-	{ "Window_PatchInspector",  'S', RAD_SHIFT, ID_PATCH_INSPECTOR },
+	{ "Window_SurfaceInspector",'M', 0, ID_TEXTURES_INSPECTOR },
+	{ "Window_PatchInspector",  'M', RAD_SHIFT, ID_PATCH_INSPECTOR },
 	{ "Window_EntityList",      'I', 0, ID_EDIT_ENTITYINFO },
 	{ "Window_Preferences",     'P', 0, ID_PREFS },
 	{ "Window_ToggleCamera",    'C', RAD_CONTROL|RAD_SHIFT, ID_TOGGLECAMERA },
@@ -3757,7 +3757,11 @@ void CMainFrame::OnCameraDown() {
  =======================================================================================================================
  */
 void CMainFrame::OnCameraForward() {
-	VectorMA(m_pCamWnd->Camera().origin, SPEED_MOVE, m_pCamWnd->Camera().forward, m_pCamWnd->Camera().origin);
+	idVec3 forward = m_pCamWnd->Camera().forward;
+    idVec3 right = m_pCamWnd->Camera().right;
+    idVec3 up = idVec3(0, 0, 1);
+    
+	m_pCamWnd->Camera().origin += forward * SPEED_MOVE + right * 0 + up * 0;
 
 	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
 	Sys_UpdateWindows(nUpdate);
@@ -3768,7 +3772,8 @@ void CMainFrame::OnCameraForward() {
  =======================================================================================================================
  */
 void CMainFrame::OnCameraLeft() {
-	m_pCamWnd->Camera().angles[1] += SPEED_TURN;
+	idVec3 right = m_pCamWnd->Camera().right;
+	m_pCamWnd->Camera().origin += right * SPEED_MOVE;
 
 	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
 	Sys_UpdateWindows(nUpdate);
@@ -3779,7 +3784,8 @@ void CMainFrame::OnCameraLeft() {
  =======================================================================================================================
  */
 void CMainFrame::OnCameraRight() {
-	m_pCamWnd->Camera().angles[1] -= SPEED_TURN;
+	idVec3 right = m_pCamWnd->Camera().right;
+	m_pCamWnd->Camera().origin -= right * SPEED_MOVE;
 
 	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
 	Sys_UpdateWindows(nUpdate);
