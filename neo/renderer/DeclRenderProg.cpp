@@ -103,7 +103,7 @@ bool idDeclRenderProg::Parse(const char* text, const int textLength) {
 				vertexCode += token;
 				vertexCode += "\n";
 			}
-			vertexSource = "#version 130\n" + vertexCode;
+			vertexSource = "#version 130\nprecision highp float;\n" + vertexCode;
 		}
 		else if (token == "pixel") {
 			idStr fragmentCode;
@@ -122,7 +122,7 @@ bool idDeclRenderProg::Parse(const char* text, const int textLength) {
 				fragmentCode += token;
 				fragmentCode += "\n";
 			}
-			fragmentSource = "#version 130\n" + fragmentCode;
+			fragmentSource = "#version 130\nprecision highp float;\n" + fragmentCode;
 		}
 		else {
 			common->Warning("idDeclRenderProg::Parse: Unknown token %s\n", token.c_str());

@@ -21,16 +21,16 @@ glprog interaction
 		uniform mat4 modelMatrix;
 
 		// Varying variables
-		varying vec3 lightVector;
-		varying vec2 bumpST;
-		varying vec2 lightFalloff;
-		varying vec3 lightProjection;
-		varying vec2 diffuseST;
-		varying vec2 specularST;
-		varying vec3 halfAngleVector;
-		varying vec4 primaryColor;
-		varying vec3 viewDir;
-		varying vec4 shadowCoords[6];
+		out vec3 lightVector;
+		out vec2 bumpST;
+		out vec2 lightFalloff;
+		out vec3 lightProjection;
+		out vec2 diffuseST;
+		out vec2 specularST;
+		out vec3 halfAngleVector;
+		out vec4 primaryColor;
+		out vec3 viewDir;
+		out vec4 shadowCoords[6];
 
 		// Attributes
 		attribute vec4 aPosition;
@@ -76,7 +76,7 @@ glprog interaction
 
 			vec3 L = lightOrigin.xyz - position.xyz;
 			vec3 V = viewOrigin.xyz - position.xyz;
-			vec3 H = normalize(L) + normalize(V);
+			vec3 H = L + V;
 
 			lightVector = vec3(
 				dot(L, tangent0),
@@ -103,16 +103,16 @@ glprog interaction
 	pixel
 	{
 		// Varying variables from the vertex shader
-		varying vec4 primaryColor;
-		varying vec3 lightVector;
-		varying vec2 bumpST;
-		varying vec2 lightFalloff;
-		varying vec3 lightProjection;
-		varying vec2 diffuseST;
-		varying vec2 specularST;
-		varying vec3 halfAngleVector;
-		varying vec3 viewDir;
-		varying vec4 shadowCoords[6];
+		in vec4 primaryColor;
+		in vec3 lightVector;
+		in vec2 bumpST;
+		in vec2 lightFalloff;
+		in vec3 lightProjection;
+		in vec2 diffuseST;
+		in vec2 specularST;
+		in vec3 halfAngleVector;
+		in vec3 viewDir;
+		in vec4 shadowCoords[6];
 		
 		// Uniforms
 		uniform vec4 diffuse;
@@ -216,7 +216,7 @@ glprog interaction
 			float NdotH = clamp(dot(N, H), 0.0, 1.0);
 
 			// Compute specular power
-			const float specularPower = 10.0f;
+			const float specularPower = 32.0f;
 			float specPower = pow(NdotH, specularPower);
 			vec4 spec = specular * specPower;
 
