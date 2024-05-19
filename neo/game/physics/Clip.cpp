@@ -403,7 +403,7 @@ void idClipModel::Save( idSaveGame *savefile ) const {
 	savefile->WriteBounds( absBounds );
 	savefile->WriteMaterial( material );
 	savefile->WriteInt( contents );
-	if ( collisionModel >= 0 ) {
+	if ( collisionModel != nullptr ) {
 		savefile->WriteString(collisionModel->GetName());
 	} else {
 		savefile->WriteString( "" );
