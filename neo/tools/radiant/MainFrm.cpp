@@ -1017,59 +1017,48 @@ void MFCCreate( HINSTANCE hInstance )
 	long l = i;
 
 	g_qeglobals.d_savedinfo.exclude |= (EXCLUDE_HINT | EXCLUDE_CLIP);
-	LoadRegistryInfo("radiant_SavedInfo", &g_qeglobals.d_savedinfo, &l);
 
-	int nOldSize = g_qeglobals.d_savedinfo.iSize;
-	if (g_qeglobals.d_savedinfo.iSize != sizeof(g_qeglobals.d_savedinfo)) {
-		// fill in new defaults
-		g_qeglobals.d_savedinfo.iSize = sizeof(g_qeglobals.d_savedinfo);
-		g_qeglobals.d_savedinfo.fGamma = 1.0;
-		g_qeglobals.d_savedinfo.iTexMenu = ID_VIEW_BILINEARMIPMAP;
-		g_qeglobals.d_savedinfo.m_nTextureTweak = 1.0;
-  
-		//g_qeglobals.d_savedinfo.exclude = INCLUDE_EASY | INCLUDE_NORMAL | INCLUDE_HARD | INCLUDE_DEATHMATCH;
-		g_qeglobals.d_savedinfo.show_coordinates = true;
-		g_qeglobals.d_savedinfo.show_names       = false;
+	// fill in new defaults
+	g_qeglobals.d_savedinfo.iSize = sizeof(g_qeglobals.d_savedinfo);
+	g_qeglobals.d_savedinfo.fGamma = 1.0;
+	g_qeglobals.d_savedinfo.iTexMenu = ID_VIEW_BILINEARMIPMAP;
+	g_qeglobals.d_savedinfo.m_nTextureTweak = 1.0;
 
-		for (i=0 ; i<3 ; i++) {
-			g_qeglobals.d_savedinfo.colors[COLOR_TEXTUREBACK][i] = 0;
-			g_qeglobals.d_savedinfo.colors[COLOR_GRIDBACK][i] = 1.0;
-			g_qeglobals.d_savedinfo.colors[COLOR_GRIDMINOR][i] = 0.75;
-			g_qeglobals.d_savedinfo.colors[COLOR_GRIDMAJOR][i] = 0.5;
-			g_qeglobals.d_savedinfo.colors[COLOR_CAMERABACK][i] = 0.25;
-		}
+	// g_qeglobals.d_savedinfo.exclude = INCLUDE_EASY | INCLUDE_NORMAL | INCLUDE_HARD | INCLUDE_DEATHMATCH;
+	g_qeglobals.d_savedinfo.show_coordinates = true;
+	g_qeglobals.d_savedinfo.show_names = false;
 
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][0] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][2] = 1.0;
-
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][0] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][2] = 0.0;
-
-		g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][0] = 1.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][2] = 0.0;
-
-		g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][0] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][2] = 1.0;
-
-		g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][0] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][2] = 0.0;
-
-		g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][0] = 0.5;
-		g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][1] = 0.0;
-		g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][2] = 0.75;
-
-
-		// old size was smaller, reload original prefs
-		if (nOldSize > 0 && nOldSize < sizeof(g_qeglobals.d_savedinfo)) {
-			long l = nOldSize;
-			LoadRegistryInfo("radiant_SavedInfo", &g_qeglobals.d_savedinfo, &l);
-		}
+	for (i = 0; i < 3; i++) {
+		g_qeglobals.d_savedinfo.colors[COLOR_TEXTUREBACK][i] = 0.1;
+		g_qeglobals.d_savedinfo.colors[COLOR_GRIDBACK][i] = 0.2;
+		g_qeglobals.d_savedinfo.colors[COLOR_GRIDMINOR][i] = 0.3;
+		g_qeglobals.d_savedinfo.colors[COLOR_GRIDMAJOR][i] = 0.4;
+		g_qeglobals.d_savedinfo.colors[COLOR_CAMERABACK][i] = 0.15;
 	}
+
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][0] = 0.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][1] = 0.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDBLOCK][2] = 1.0;
+
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][0] = 0.9;
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][1] = 0.9;
+	g_qeglobals.d_savedinfo.colors[COLOR_GRIDTEXT][2] = 0.9;
+
+	g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][0] = 1.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][1] = 0.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_SELBRUSHES][2] = 0.0;
+
+	g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][0] = 0.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][1] = 0.0;
+	g_qeglobals.d_savedinfo.colors[COLOR_CLIPPER][2] = 1.0;
+
+	g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][0] = 0.8;
+	g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][1] = 0.8;
+	g_qeglobals.d_savedinfo.colors[COLOR_BRUSHES][2] = 0.8;
+
+	g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][0] = 0.6;
+	g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][1] = 0.6;
+	g_qeglobals.d_savedinfo.colors[COLOR_VIEWNAME][2] = 0.6;
 }
 
 /*
