@@ -1443,6 +1443,77 @@ bool LoadWindowPlacement(HWND hwnd, const char *pName) {
 
 /*
  =======================================================================================================================
+ Load the state of the splitter window
+ =======================================================================================================================
+ */
+bool LoadSplitterInfo(CSplitterWnd& splitter, const char* pName) {
+	int rowCount = splitter.GetRowCount();
+	int colCount = splitter.GetColumnCount();
+
+	idList<int> rowSizes;
+	rowSizes.SetNum(rowCount);
+	idList<int> colSizes;
+	colSizes.SetNum(colCount);
+
+	long rowSize = rowSizes.Num() * sizeof(int);
+	long colSize = colSizes.Num() * sizeof(int);
+
+	idStr rowKey = va("%s_rows", pName);
+	idStr colKey = va("%s_cols", pName);
+
+	if (!LoadRegistryInfo(rowKey.c_str(), rowSizes.Ptr(), &rowSize) ||
+		!LoadRegistryInfo(colKey.c_str(), colSizes.Ptr(), &colSize)) {
+		return false;
+	}
+
+	for (int i = 0; i < rowCount; ++i) {
+		splitter.SetRowInfo(i, rowSizes[i], 0);
+	}
+	for (int j = 0; j < colCount; ++j) {
+		splitter.SetColumnInfo(j, colSizes[j], 0);
+	}
+
+	splitter.RecalcLayout();
+	return true;
+}
+
+
+/*
+=======================================================================================================================
+Save the state of the splitter window
+=======================================================================================================================
+*/
+
+bool SaveSplitterInfo(CSplitterWnd& splitter, const char* pName) {
+	int rowCount = splitter.GetRowCount();
+	int colCount = splitter.GetColumnCount();
+
+	idList<int> rowSizes;
+	rowSizes.SetNum(rowCount);
+	idList<int> colSizes;
+	colSizes.SetNum(colCount);
+
+	for (int i = 0; i < rowCount; ++i) {
+		int curSize, minSize;
+		splitter.GetRowInfo(i, curSize, minSize);
+		rowSizes[i] = curSize;
+	}
+	for (int j = 0; j < colCount; ++j) {
+		int curSize, minSize;
+		splitter.GetColumnInfo(j, curSize, minSize);
+		colSizes[j] = curSize;
+	}
+
+	idStr rowKey = va("%s_rows", pName);
+	idStr colKey = va("%s_cols", pName);
+
+	SaveRegistryInfo(rowKey.c_str(), rowSizes.Ptr(), rowSizes.Num() * sizeof(int));
+	SaveRegistryInfo(colKey.c_str(), colSizes.Ptr(), colSizes.Num() * sizeof(int));
+	return true;
+}
+
+/*
+ =======================================================================================================================
  =======================================================================================================================
  */
 void SaveWindowPlacement(HWND hwnd, const char *pName) {
@@ -1471,11 +1542,7 @@ void CMainFrame::OnDestroy() {
 
 	SaveWindowPlacement(GetSafeHwnd(), "radiant_MainWindowPlace");
 
-	SaveWindowPlacement(m_pXYWnd->GetSafeHwnd(), "radiant_xywindow");
-	SaveWindowPlacement(m_pXZWnd->GetSafeHwnd(), "radiant_xzwindow");
-	SaveWindowPlacement(m_pYZWnd->GetSafeHwnd(), "radiant_yzwindow");
-	SaveWindowPlacement(m_pCamWnd->GetSafeHwnd(), "radiant_camerawindow");
-	SaveWindowPlacement(m_pZWnd->GetSafeHwnd(), "radiant_zwindow");
+	SaveSplitterInfo(m_wndSplitter, "radiant_main_splitter");
 	SaveWindowState(g_Inspectors->texWnd.GetSafeHwnd(), "radiant_texwindow");
 
 	if (m_pXYWnd->GetSafeHwnd()) {
@@ -1723,45 +1790,63 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext) {
 	CRect rctParent;
 	GetClientRect(rctParent);
 
-	m_pCamWnd = new CCamWnd();
-	m_pCamWnd->Create(CAMERA_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1234);
-
+	// Create a splitter with 2 rows and 2 columns
+	if (!m_wndSplitter.CreateStatic(this, 2, 2))
+	{
+		TRACE0("Failed to create splitter window\n");
+		return FALSE; // failed to create
+	}
+	
 	m_pZWnd = new CZWnd();
 	m_pZWnd->Create(Z_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1238);
 
-	m_pXYWnd = new CXYWnd();
-	m_pXYWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1235);
+	//m_pCamWnd = new CCamWnd();
+	//m_pCamWnd->Create(CAMERA_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1234);
+	//
+	//m_pXYWnd = new CXYWnd();
+	//m_pXYWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1235);
+	//m_pXYWnd->SetViewType(XY);
+	//
+	//m_pXZWnd = new CXYWnd();
+	//m_pXZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1236);
+	//m_pXZWnd->SetViewType(XZ);
+	//
+	//m_pYZWnd = new CXYWnd();
+	//m_pYZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1237);
+	//m_pYZWnd->SetViewType(YZ);
+
+	 // Create the views inside the splitter panes
+	if (!m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CCamWnd), CSize(100, 100), pContext) ||
+		!m_wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext) ||
+		!m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext) ||
+		!m_wndSplitter.CreateView(1, 1, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext))
+	{
+		TRACE0("Failed to create splitter window panes\n");
+		return FALSE;
+	}
+
+	// Get pointers to the views created in the splitter panes
+	m_pCamWnd = (CCamWnd*)m_wndSplitter.GetPane(0, 0);
+	m_pXZWnd = (CXYWnd*)m_wndSplitter.GetPane(0, 1);
+	m_pYZWnd = (CXYWnd*)m_wndSplitter.GetPane(1, 0);
+	m_pXYWnd = (CXYWnd*)m_wndSplitter.GetPane(1, 1);
+
+	// Set view types for each window
 	m_pXYWnd->SetViewType(XY);
-
-	m_pXZWnd = new CXYWnd();
-	m_pXZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1236);
 	m_pXZWnd->SetViewType(XZ);
-
-	m_pYZWnd = new CXYWnd();
-	m_pYZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1237);
 	m_pYZWnd->SetViewType(YZ);
-
 	m_pCamWnd->SetXYFriend(m_pXYWnd);
 
+
 	CRect	rctWork;
+	
+	// Set the initial layout
+	m_wndSplitter.SetColumnInfo(0, 100, 50);
+	m_wndSplitter.SetColumnInfo(1, 100, 50);
+	m_wndSplitter.SetRowInfo(0, 100, 50);
+	m_wndSplitter.SetRowInfo(1, 100, 50);
 
-	LoadWindowPlacement(m_pXYWnd->GetSafeHwnd(), "radiant_xywindow");
-	LoadWindowPlacement(m_pXZWnd->GetSafeHwnd(), "radiant_xzwindow");
-	LoadWindowPlacement(m_pYZWnd->GetSafeHwnd(), "radiant_yzwindow");
-	LoadWindowPlacement(m_pCamWnd->GetSafeHwnd(), "radiant_camerawindow");
-	LoadWindowPlacement(m_pZWnd->GetSafeHwnd(), "radiant_zwindow");
-
-	if (!g_PrefsDlg.m_bXZVis) {
-		m_pXZWnd->ShowWindow(SW_HIDE);
-	}
-
-	if (!g_PrefsDlg.m_bYZVis) {
-		m_pYZWnd->ShowWindow(SW_HIDE);
-	}
-
-	if (!g_PrefsDlg.m_bZVis) {
-		m_pZWnd->ShowWindow(SW_HIDE);
-	}
+	LoadSplitterInfo(m_wndSplitter, "radiant_main_splitter");
 
 	CreateQEChildren();
 

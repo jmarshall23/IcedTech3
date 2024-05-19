@@ -153,6 +153,7 @@ protected:  // control bar embedded members
 	CZWnd* m_pZWnd;
 	CString m_strStatus[15];
 	CXYWnd* m_pActiveXY;
+	CSplitterWnd m_wndSplitter;
 	bool m_bCamPreview;
 	bool busy;
 	bool nurbMode;
