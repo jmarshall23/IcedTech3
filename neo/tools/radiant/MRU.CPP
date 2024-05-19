@@ -517,12 +517,7 @@ WORD i;
 
 BOOL IsWin395OrHigher(void)
 {
-  WORD wVer;
-
-  wVer = LOWORD(GetVersion());
-  wVer = (((WORD)LOBYTE(wVer)) << 8) | (WORD)HIBYTE(wVer);
-
-  return (wVer >= 0x035F);              // 5F = 95 dec
+    return true;
 }
 
 
@@ -662,18 +657,6 @@ DWORD dwType;
 //*************************************************************
 WIN32KIND GetWin32Kind()
 {
-BOOL IsWin395OrHigher(void);
-
-  WORD wVer;
-
-  if ((GetVersion() & 0x80000000) == 0)
-    return WINNT;
-  wVer = LOWORD(GetVersion());
-  wVer = (((WORD)LOBYTE(wVer)) << 8) | (WORD)HIBYTE(wVer);
-
-  if (wVer >= 0x035F)
     return WIN95ORGREATHER;
-  else
-    return WIN32S;
 }
 #endif

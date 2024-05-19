@@ -2807,8 +2807,8 @@ LPCSTR String_ToLower(LPCSTR psString)
 bool FindNextBrush(brush_t* pPrevFoundBrush)	// can be NULL for fresh search
 {	
 	bool bFoundSomething = false;
-	entity_t *pLastFoundEnt;
-	brush_t  *pLastFoundBrush;
+	entity_t *pLastFoundEnt = nullptr;
+	brush_t  *pLastFoundBrush = nullptr;
 
 	CWaitCursor waitcursor;
 

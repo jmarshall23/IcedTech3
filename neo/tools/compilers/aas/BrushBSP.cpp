@@ -1364,8 +1364,8 @@ void idBrushBSP::LeakFile( const idStr &fileName ) {
 	int count, next, s;
 	idVec3 mid;
 	idFile *lineFile;
-	idBrushBSPNode *node, *nextNode;
-	idBrushBSPPortal *p, *nextPortal;
+	idBrushBSPNode *node = nullptr, *nextNode = nullptr;
+	idBrushBSPPortal *p, *nextPortal = nullptr;
 	idStr qpath, name;
 
 	if ( !outside->occupied ) {

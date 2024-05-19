@@ -606,7 +606,7 @@ RemoveIfColinear
 #define	COLINEAR_EPSILON	0.1
 static	void RemoveIfColinear( optVertex_t *ov, optIsland_t *island ) {
 	optEdge_t	*e, *e1, *e2;
-	optVertex_t *v1, *v2, *v3;
+	optVertex_t *v1 = nullptr, *v2, *v3 = nullptr;
 	idVec3		dir1, dir2;
 	float		len, dist;
 	idVec3		point;
@@ -931,10 +931,10 @@ CreateOptTri
 ===============
 */
 static void CreateOptTri( optVertex_t *first, optEdge_t *e1, optEdge_t *e2, optIsland_t *island ) {
-	optEdge_t		*opposite;
-	optVertex_t		*second, *third;
-	optTri_t		*optTri;
-	mapTri_t		*tri;
+	optEdge_t		*opposite = nullptr;
+	optVertex_t		*second = nullptr, *third = nullptr;
+	optTri_t		*optTri = nullptr;
+	mapTri_t		*tri = nullptr;
 
 	if ( e1->v1 == first ) {
 		second = e1->v2;
@@ -1086,8 +1086,8 @@ Generate a new list of triangles from the optEdeges
 ====================
 */
 static void BuildOptTriangles( optIsland_t *island ) {
-	optVertex_t		*ov, *second, *third, *middle;
-	optEdge_t		*e1, *e1Next, *e2, *e2Next, *check, *checkNext;
+	optVertex_t* ov = nullptr, * second = nullptr, * third = nullptr, * middle = nullptr;
+	optEdge_t* e1 = nullptr, * e1Next = nullptr, * e2 = nullptr, * e2Next = nullptr, * check = nullptr, * checkNext = nullptr;
 
 	// free them
 	FreeOptTriangles( island );

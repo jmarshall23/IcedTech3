@@ -366,7 +366,7 @@ ID_INLINE int idHashTable<Type>::Num( void ) const {
 #define __GNUC__ 99
 #endif
 
-#if !defined(__GNUC__) || __GNUC__ < 4
+#if 0
 /*
 ================
 idHashTable<Type>::GetSpread

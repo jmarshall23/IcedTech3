@@ -1169,7 +1169,7 @@ void RenderBump_f( const idCmdArgs &args ) {
 	int		i, j;
 	const char	*cmdLine;
 	int		numRenderBumps;
-	renderBump_t	*renderBumps, *rb;
+	renderBump_t	*renderBumps = nullptr, *rb = nullptr;
 	renderBump_t	opt;
 	int		startTime, endTime;
 
