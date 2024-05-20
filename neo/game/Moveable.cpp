@@ -1027,7 +1027,7 @@ void idExplodingBarrel::Killed( idEntity *inflictor, idEntity *attacker, int dam
 			dir.Normalize();
 
 			gameLocal.SpawnEntityDef( *debris_args, &ent, false );
-			if ( !ent || !ent->IsType( idDebris::Type ) ) {
+			if ( !ent || !ent->IsType( idDebris::GetClassType() ) ) {
 				gameLocal.Error( "'projectile_debris' is not an idDebris" );
 			}
 
@@ -1108,7 +1108,7 @@ void idExplodingBarrel::Event_Respawn() {
 	if ( minRespawnDist ) {
 		float minDist = -1;
 		for ( i = 0; i < gameLocal.numClients; i++ ) {
-			if ( !gameLocal.entities[ i ] || !gameLocal.entities[ i ]->IsType( idPlayer::Type ) ) {
+			if ( !gameLocal.entities[ i ] || !gameLocal.entities[ i ]->IsType( idPlayer::GetClassType() ) ) {
 				continue;
 			}
 			idVec3 v = gameLocal.entities[ i ]->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();

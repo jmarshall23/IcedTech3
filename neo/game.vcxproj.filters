@@ -165,6 +165,9 @@
     <ClCompile Include="game\Weapon.cpp" />
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp" />
+    <ClCompile Include="game\gamesys\State.cpp">
+      <Filter>GameSys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AAS.h">
@@ -295,6 +298,9 @@
     <ClInclude Include="game\Trigger.h" />
     <ClInclude Include="game\Weapon.h" />
     <ClInclude Include="game\WorldSpawn.h" />
+    <ClInclude Include="game\gamesys\State.h">
+      <Filter>GameSys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game\Game.def" />

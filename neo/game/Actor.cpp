@@ -688,7 +688,7 @@ void idActor::SetupHead( void ) {
 			sndKV = spawnArgs.MatchPrefix( "snd_", sndKV );
 		}
 
-		headEnt = static_cast<idAFAttachment *>( gameLocal.SpawnEntityType( idAFAttachment::Type, &args ) );
+		headEnt = static_cast<idAFAttachment *>( gameLocal.SpawnEntityType( idAFAttachment::GetClassType(), &args ) );
 		headEnt->SetName( va( "%s_head", name.c_str() ) );
 		headEnt->SetBody( this, headModel, damageJoint );
 		head = headEnt;
@@ -992,7 +992,7 @@ void idActor::Hide( void ) {
 		next = ent->GetNextTeamEntity();
 		if ( ent->GetBindMaster() == this ) {
 			ent->Hide();
-			if ( ent->IsType( idLight::Type ) ) {
+			if ( ent->IsType( idLight::GetClassType() ) ) {
 				static_cast<idLight *>( ent )->Off();
 			}
 		}
@@ -1017,7 +1017,7 @@ void idActor::Show( void ) {
 		next = ent->GetNextTeamEntity();
 		if ( ent->GetBindMaster() == this ) {
 			ent->Show();
-			if ( ent->IsType( idLight::Type ) ) {
+			if ( ent->IsType( idLight::GetClassType() ) ) {
 				static_cast<idLight *>( ent )->On();
 			}
 		}
@@ -1458,7 +1458,7 @@ bool idActor::CanSee( idEntity *ent, bool useFov ) const {
 		return false;
 	}
 
-	if ( ent->IsType( idActor::Type ) ) {
+	if ( ent->IsType( idActor::GetClassType() ) ) {
 		toPos = ( ( idActor * )ent )->GetEyePosition();
 	} else {
 		toPos = ent->GetPhysics()->GetOrigin();
@@ -2165,7 +2165,7 @@ void idActor::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir
 		attacker = gameLocal.world;
 	}
 
-	if ( finalBoss && !inflictor->IsType( idSoulCubeMissile::Type ) ) {
+	if ( finalBoss && !inflictor->IsType( idSoulCubeMissile::GetClassType() ) ) {
 		return;
 	}
 
@@ -3180,7 +3180,7 @@ void idActor::Event_NextEnemy( idEntity *ent ) {
 	if ( !ent || ( ent == this ) ) {
 		actor = enemyList.Next();
 	} else {
-		if ( !ent->IsType( idActor::Type ) ) {
+		if ( !ent->IsType( idActor::GetClassType() ) ) {
 			gameLocal.Error( "'%s' cannot be an enemy", ent->name.c_str() );
 		}
 

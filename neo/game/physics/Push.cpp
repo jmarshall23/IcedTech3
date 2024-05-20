@@ -65,7 +65,7 @@ void idPush::SaveEntityPosition( idEntity *ent ) {
 	pushed[numPushed].ent = ent;
 
 	// if the entity is an actor
-	if ( ent->IsType( idActor::Type ) ) {
+	if ( ent->IsType( idActor::GetClassType() ) ) {
 		// save the delta view angles
 		pushed[numPushed].deltaViewAngles = static_cast<idActor *>(ent)->GetDeltaViewAngles();
 	}
@@ -87,7 +87,7 @@ void idPush::RestorePushedEntityPositions( void ) {
 	for ( i = 0; i < numPushed; i++ ) {
 
 		// if the entity is an actor
-		if ( pushed[i].ent->IsType( idActor::Type ) ) {
+		if ( pushed[i].ent->IsType( idActor::GetClassType() ) ) {
 			// set back the delta view angles
 			static_cast<idActor *>(pushed[i].ent)->SetDeltaViewAngles( pushed[i].deltaViewAngles );
 		}
@@ -171,7 +171,7 @@ bool idPush::CanPushEntity( idEntity *ent, idEntity *pusher, idEntity *initialPu
 	}
 
 	// if we should only push idMoveable entities
-	if ( ( flags & PUSHFL_ONLYMOVEABLE ) && !ent->IsType( idMoveable::Type ) ) {
+	if ( ( flags & PUSHFL_ONLYMOVEABLE ) && !ent->IsType( idMoveable::GetClassType() ) ) {
 		return false;
 	}
 
@@ -636,7 +636,7 @@ float idPush::ClipRotationalPush( trace_t &results, idEntity *pusher, const int 
 		// rotate any actors back to axial
 		for ( i = 1; i < pushedGroupSize; i++ ) {
 			// if the entity is using actor physics
-			if ( pushedGroup[i].ent->GetPhysics()->IsType( idPhysics_Actor::Type ) ) {
+			if ( pushedGroup[i].ent->GetPhysics()->IsType( idPhysics_Actor::GetClassType() ) ) {
 
 				// rotate the collision model back to axial
 				if ( !RotateEntityToAxial( pushedGroup[i].ent, pushedGroup[i].ent->GetPhysics()->GetOrigin() ) ) {
@@ -821,7 +821,7 @@ int idPush::TryRotatePushEntity( trace_t &results, idEntity *check, idClipModel 
 #endif
 
 	// if the entity uses actor physics
-	if ( physics->IsType( idPhysics_Actor::Type ) ) {
+	if ( physics->IsType( idPhysics_Actor::GetClassType() ) ) {
 
 		// rotate the collision model back to axial
 		if ( !RotateEntityToAxial( check, rotationPoint ) ) {
@@ -839,7 +839,7 @@ int idPush::TryRotatePushEntity( trace_t &results, idEntity *check, idClipModel 
 #endif
 
 	// if the entity is an actor using actor physics
-	if ( check->IsType( idActor::Type ) && physics->IsType( idPhysics_Actor::Type ) ) {
+	if ( check->IsType( idActor::GetClassType() ) && physics->IsType( idPhysics_Actor::GetClassType() ) ) {
 
 		// if the entity is standing ontop of the pusher
 		if ( physics->IsGroundClipModel( clipModel->GetEntity()->entityNumber, clipModel->GetId() ) ) {
@@ -1009,12 +1009,12 @@ int idPush::DiscardEntities( idEntity *entityList[], int numEntities, int flags,
 		}
 
 		// don't push players in noclip mode
-		if ( check->IsType( idPlayer::Type ) && static_cast<idPlayer *>(check)->noclip ) {
+		if ( check->IsType( idPlayer::GetClassType() ) && static_cast<idPlayer *>(check)->noclip ) {
 			continue;
 		}
 
 		// if we should only push idMoveable entities
-		if ( ( flags & PUSHFL_ONLYMOVEABLE ) && !check->IsType( idMoveable::Type ) ) {
+		if ( ( flags & PUSHFL_ONLYMOVEABLE ) && !check->IsType( idMoveable::GetClassType() ) ) {
 			continue;
 		}
 
@@ -1167,7 +1167,7 @@ float idPush::ClipTranslationalPush( trace_t &results, idEntity *pusher, const i
 		}
 
 		// if the blocking entity is a projectile
-		if ( check->IsType( idProjectile::Type ) ) {
+		if ( check->IsType( idProjectile::GetClassType() ) ) {
 			check->ProcessEvent( &EV_Explode );
 			continue;
 		}
@@ -1179,14 +1179,14 @@ float idPush::ClipTranslationalPush( trace_t &results, idEntity *pusher, const i
 		}
 
 		// if the entity is an active articulated figure and gibs
-		if ( check->IsType( idAFEntity_Base::Type ) && check->spawnArgs.GetBool( "gib" ) ) {
+		if ( check->IsType( idAFEntity_Base::GetClassType() ) && check->spawnArgs.GetBool( "gib" ) ) {
 			if ( static_cast<idAFEntity_Base *>(check)->IsActiveAF() ) {
 				check->ProcessEvent( &EV_Gib, "damage_Gib" );
 			}
 		}
 
 		// if the entity is a moveable item and gibs
-		if ( check->IsType( idMoveableItem::Type ) && check->spawnArgs.GetBool( "gib" ) ) {
+		if ( check->IsType( idMoveableItem::GetClassType() ) && check->spawnArgs.GetBool( "gib" ) ) {
 			check->ProcessEvent( &EV_Gib, "damage_Gib" );
 		}
 
@@ -1337,7 +1337,7 @@ float idPush::ClipRotationalPush( trace_t &results, idEntity *pusher, const int 
 		}
 
 		// if the blocking entity is a projectile
-		if ( check->IsType( idProjectile::Type ) ) {
+		if ( check->IsType( idProjectile::GetClassType() ) ) {
 			check->ProcessEvent( &EV_Explode );
 			continue;
 		}
@@ -1349,7 +1349,7 @@ float idPush::ClipRotationalPush( trace_t &results, idEntity *pusher, const int 
 		}
 
 		// if the entity is an active articulated figure and gibs
-		if ( check->IsType( idAFEntity_Base::Type ) && check->spawnArgs.GetBool( "gib" ) ) {
+		if ( check->IsType( idAFEntity_Base::GetClassType() ) && check->spawnArgs.GetBool( "gib" ) ) {
 			if ( static_cast<idAFEntity_Base *>(check)->IsActiveAF() ) {
 				check->ProcessEvent( &EV_Gib, "damage_Gib" );
 			}

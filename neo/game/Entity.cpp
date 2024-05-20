@@ -930,7 +930,7 @@ void idEntity::BecomeActive( int flags ) {
 			teamMaster->BecomeActive( TH_PHYSICS );
 		} else if ( !( thinkFlags & TH_PHYSICS ) ) {
 			// if this is a pusher
-			if ( physics->IsType( idPhysics_Parametric::Type ) || physics->IsType( idPhysics_Actor::Type ) ) {
+			if ( physics->IsType( idPhysics_Parametric::GetClassType() ) || physics->IsType( idPhysics_Actor::GetClassType() ) ) {
 				gameLocal.sortPushers = true;
 			}
 		}
@@ -1758,7 +1758,7 @@ bool idEntity::InitBind( idEntity *master ) {
 	Unbind();
 
 	// add any bind constraints to an articulated figure
-	if ( master && IsType( idAFEntity_Base::Type ) ) {
+	if ( master && IsType( idAFEntity_Base::GetClassType() ) ) {
 		static_cast<idAFEntity_Base *>(this)->AddBindConstraints();
 	}
 
@@ -1923,7 +1923,7 @@ void idEntity::Unbind( void ) {
 	idEntity *	ent;
 
 	// remove any bind constraints from an articulated figure
-	if ( IsType( idAFEntity_Base::Type ) ) {
+	if ( IsType( idAFEntity_Base::GetClassType() ) ) {
 		static_cast<idAFEntity_Base *>(this)->RemoveBindConstraints();
 	}
 
@@ -2666,7 +2666,7 @@ idEntity::UpdateFromPhysics
 */
 void idEntity::UpdateFromPhysics( bool moveBack ) {
 
-	if ( IsType( idActor::Type ) ) {
+	if ( IsType( idActor::GetClassType() ) ) {
 		idActor *actor = static_cast<idActor *>( this );
 
 		// set master delta angles for actors
@@ -2703,7 +2703,7 @@ idEntity::SetAxis
 */
 void idEntity::SetAxis( const idMat3 &axis ) {
 
-	if ( GetPhysics()->IsType( idPhysics_Actor::Type ) ) {
+	if ( GetPhysics()->IsType( idPhysics_Actor::GetClassType() ) ) {
 		static_cast<idActor *>(this)->viewAxis = axis;
 	} else {
 		GetPhysics()->SetAxis( axis );
@@ -4398,11 +4398,11 @@ void idEntity::Event_RestorePosition( void ) {
 		if ( part->bindMaster != this ) {
 			continue;
 		}
-		if ( part->GetPhysics()->IsType( idPhysics_Parametric::Type ) ) {
+		if ( part->GetPhysics()->IsType( idPhysics_Parametric::GetClassType() ) ) {
 			if ( static_cast<idPhysics_Parametric *>(part->GetPhysics())->IsPusher() ) {
 				gameLocal.Warning( "teleported '%s' which has the pushing mover '%s' bound to it\n", GetName(), part->GetName() );
 			}
-		} else if ( part->GetPhysics()->IsType( idPhysics_AF::Type ) ) {
+		} else if ( part->GetPhysics()->IsType( idPhysics_AF::GetClassType() ) ) {
 			gameLocal.Warning( "teleported '%s' which has the articulated figure '%s' bound to it\n", GetName(), part->GetName() );
 		}
 	}
@@ -5187,7 +5187,7 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 	}
 
 	// can't see wounds on the player model in single player mode
-	if ( !( IsType( idPlayer::Type ) && !gameLocal.isMultiplayer ) ) {
+	if ( !( IsType( idPlayer::GetClassType() ) && !gameLocal.isMultiplayer ) ) {
 		// place a wound overlay on the model
 		key = va( "mtr_wound_%s", materialType );
 		decal = spawnArgs.RandomPrefix( key, gameLocal.random );

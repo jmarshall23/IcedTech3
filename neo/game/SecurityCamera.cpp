@@ -214,7 +214,7 @@ void idSecurityCamera::Event_AddLight( void ) {
 	args.Set( "light_up", up.ToString() );
 	args.SetFloat( "angle", GetPhysics()->GetAxis()[0].ToYaw() );
 
-	spotLight = static_cast<idLight *>( gameLocal.SpawnEntityType( idLight::Type, &args ) );
+	spotLight = static_cast<idLight *>( gameLocal.SpawnEntityType( idLight::GetClassType(), &args ) );
 	spotLight->Bind( this, true );
 	spotLight->UpdateVisuals();
 }

@@ -327,7 +327,7 @@ void idAI::Event_FindEnemy( int useFOV ) {
 		for ( i = 0; i < gameLocal.numClients ; i++ ) {
 			ent = gameLocal.entities[ i ];
 
-			if ( !ent || !ent->IsType( idActor::Type ) ) {
+			if ( !ent || !ent->IsType( idActor::GetClassType() ) ) {
 				continue;
 			}
 
@@ -365,7 +365,7 @@ void idAI::Event_FindEnemyAI( int useFOV ) {
 	bestDist = idMath::INFINITY;
 	bestEnemy = NULL;
 	for ( ent = gameLocal.activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() ) {
-		if ( ent->fl.hidden || ent->fl.isDormant || !ent->IsType( idActor::Type ) ) {
+		if ( ent->fl.hidden || ent->fl.isDormant || !ent->IsType( idActor::GetClassType() ) ) {
 			continue;
 		}
 
@@ -411,7 +411,7 @@ void idAI::Event_FindEnemyInCombatNodes( void ) {
 	for ( i = 0; i < gameLocal.numClients ; i++ ) {
 		ent = gameLocal.entities[ i ];
 
-		if ( !ent || !ent->IsType( idActor::Type ) ) {
+		if ( !ent || !ent->IsType( idActor::GetClassType() ) ) {
 			continue;
 		}
 
@@ -422,7 +422,7 @@ void idAI::Event_FindEnemyInCombatNodes( void ) {
 
 		for( j = 0; j < targets.Num(); j++ ) {
 			targetEnt = targets[ j ].GetEntity();
-			if ( !targetEnt || !targetEnt->IsType( idCombatNode::Type ) ) {
+			if ( !targetEnt || !targetEnt->IsType( idCombatNode::GetClassType() ) ) {
 				continue;
 			}
 
@@ -453,7 +453,7 @@ void idAI::Event_ClosestReachableEnemyOfEntity( idEntity *team_mate ) {
 	int		enemyAreaNum;
 	aasPath_t path;
 	
-	if ( !team_mate->IsType( idActor::Type ) ) {
+	if ( !team_mate->IsType( idActor::GetClassType() ) ) {
 		gameLocal.Error( "Entity '%s' is not an AI character or player", team_mate->GetName() );
 	}
 
@@ -512,7 +512,7 @@ idAI::Event_SetEnemy
 void idAI::Event_SetEnemy( idEntity *ent ) {
 	if ( !ent ) {
 		ClearEnemy();
-	} else if ( !ent->IsType( idActor::Type ) ) {
+	} else if ( !ent->IsType( idActor::GetClassType() ) ) {
 		gameLocal.Error( "'%s' is not an idActor (player or ai controlled character)", ent->name.c_str() );
 	} else {
 		SetEnemy( static_cast<idActor *>( ent ) );
@@ -754,7 +754,7 @@ void idAI::Event_MeleeAttackToJoint( const char *jointname, const char *meleeDef
 	gameLocal.clip.TranslationEntities( trace, start, end, NULL, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	if ( trace.fraction < 1.0f ) {
 		hitEnt = gameLocal.GetTraceEntity( trace );
-		if ( hitEnt && hitEnt->IsType( idActor::Type ) ) {
+		if ( hitEnt && hitEnt->IsType( idActor::GetClassType() ) ) {
 			DirectDamage( meleeDefName, hitEnt );
 			idThread::ReturnInt( true );
 			return;
@@ -1129,7 +1129,7 @@ void idAI::Event_GetCombatNode( void ) {
 	bestDist = ( myPos - lastVisibleEnemyPos ).LengthSqr();
 	for( i = 0; i < targets.Num(); i++ ) {
 		targetEnt = targets[ i ].GetEntity();
-		if ( !targetEnt || !targetEnt->IsType( idCombatNode::Type ) ) {
+		if ( !targetEnt || !targetEnt->IsType( idCombatNode::GetClassType() ) ) {
 			continue;
 		}
 
@@ -1169,7 +1169,7 @@ void idAI::Event_EnemyInCombatCone( idEntity *ent, int use_current_enemy_locatio
 		return;
 	}
 
-	if ( !ent || !ent->IsType( idCombatNode::Type ) ) {
+	if ( !ent || !ent->IsType( idCombatNode::GetClassType() ) ) {
 		// not a combat node
 		idThread::ReturnInt( false );
 		return;
@@ -1295,7 +1295,7 @@ idAI::Event_SetTalkTarget
 =====================
 */
 void idAI::Event_SetTalkTarget( idEntity *target ) {
-	if ( target && !target->IsType( idActor::Type ) ) {
+	if ( target && !target->IsType( idActor::GetClassType() ) ) {
 		gameLocal.Error( "Cannot set talk target to '%s'.  Not a character or player.", target->GetName() );
 	}
 	talkTarget = static_cast<idActor *>( target );
@@ -1449,7 +1449,7 @@ void idAI::Event_CanHitEnemy( void ) {
 	hit = gameLocal.GetTraceEntity( tr );
 	if ( tr.fraction >= 1.0f || ( hit == enemyEnt ) ) {
 		lastHitCheckResult = true;
-	} else if ( ( tr.fraction < 1.0f ) && ( hit->IsType( idAI::Type ) ) && 
+	} else if ( ( tr.fraction < 1.0f ) && ( hit->IsType( idAI::GetClassType() ) ) && 
 		( static_cast<idAI *>( hit )->team != team ) ) {
 		lastHitCheckResult = true;
 	} else {
@@ -2328,7 +2328,7 @@ void idAI::Event_ThrowMoveable( void ) {
 	idEntity *moveable = NULL;
 
 	for ( ent = GetNextTeamEntity(); ent != NULL; ent = ent->GetNextTeamEntity() ) {
-		if ( ent->GetBindMaster() == this && ent->IsType( idMoveable::Type ) ) {
+		if ( ent->GetBindMaster() == this && ent->IsType( idMoveable::GetClassType() ) ) {
 			moveable = ent;
 			break;
 		}
@@ -2349,7 +2349,7 @@ void idAI::Event_ThrowAF( void ) {
 	idEntity *af = NULL;
 
 	for ( ent = GetNextTeamEntity(); ent != NULL; ent = ent->GetNextTeamEntity() ) {
-		if ( ent->GetBindMaster() == this && ent->IsType( idAFEntity_Base::Type ) ) {
+		if ( ent->GetBindMaster() == this && ent->IsType( idAFEntity_Base::GetClassType() ) ) {
 			af = ent;
 			break;
 		}
@@ -2561,7 +2561,7 @@ void idAI::Event_FindActorsInBounds( const idVec3 &mins, const idVec3 &maxs ) {
 	numListedEntities = gameLocal.clip.EntitiesTouchingBounds( idBounds( mins, maxs ), CONTENTS_BODY, entityList, MAX_GENTITIES );
 	for( i = 0; i < numListedEntities; i++ ) {
 		ent = entityList[ i ];
-		if ( ent != this && !ent->IsHidden() && ( ent->health > 0 ) && ent->IsType( idActor::Type ) ) {
+		if ( ent != this && !ent->IsHidden() && ( ent->health > 0 ) && ent->IsType( idActor::GetClassType() ) ) {
 			idThread::ReturnEntity( ent );
 			return;
 		}
@@ -2610,7 +2610,7 @@ void idAI::Event_CanReachEntity( idEntity *ent ) {
 			idThread::ReturnInt( false );
 			return;
 		}
-		if ( ent->IsType( idActor::Type ) && static_cast<idActor *>( ent )->OnLadder() ) {
+		if ( ent->IsType( idActor::GetClassType() ) && static_cast<idActor *>( ent )->OnLadder() ) {
 			idThread::ReturnInt( false );
 			return;
 		}
@@ -2690,7 +2690,7 @@ void idAI::Event_GetReachableEntityPosition( idEntity *ent ) {
 			// NOTE: not a good way to return 'false'
 			return idThread::ReturnVector( vec3_zero );
 		}
-		if ( ent->IsType( idActor::Type ) && static_cast<idActor *>( ent )->OnLadder() ) {
+		if ( ent->IsType( idActor::GetClassType() ) && static_cast<idActor *>( ent )->OnLadder() ) {
 			// NOTE: not a good way to return 'false'
 			return idThread::ReturnVector( vec3_zero );
 		}
