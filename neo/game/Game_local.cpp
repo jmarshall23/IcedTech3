@@ -1834,7 +1834,7 @@ void idGameLocal::SpawnPlayer( int clientNum ) {
 
 	args.SetInt( "spawn_entnum", clientNum );
 	args.Set( "name", va( "player%d", clientNum + 1 ) );
-	args.Set( "classname", isMultiplayer ? "player_doommarine_mp" : "player_doommarine" );
+	args.Set( "classname", "player_doommarine"  );
 	if ( !SpawnEntityDef( args, &ent ) || !entities[ clientNum ] ) {
 		Error( "Failed to spawn player as '%s'", args.GetString( "classname" ) );
 	}
@@ -3090,12 +3090,7 @@ idGameLocal::FindEntityDef
 */
 const idDeclEntityDef *idGameLocal::FindEntityDef( const char *name, bool makeDefault ) const {
 	const idDecl *decl = NULL;
-	if ( isMultiplayer ) {
-		decl = declManager->FindType( DECL_ENTITYDEF, va( "%s_mp", name ), false );
-	}
-	if ( !decl ) {
-		decl = declManager->FindType( DECL_ENTITYDEF, name, makeDefault );
-	}
+	decl = declManager->FindType(DECL_ENTITYDEF, name, makeDefault);
 	return static_cast<const idDeclEntityDef *>( decl );
 }
 

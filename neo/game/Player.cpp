@@ -1441,11 +1441,7 @@ void idPlayer::Spawn( void ) {
 	if ( !gameLocal.isMultiplayer || entityNumber == gameLocal.localClientNum ) {
 
 		// load HUD
-		if ( gameLocal.isMultiplayer ) {
-			hud = uiManager->FindGui( "guis/mphud.gui", true, false, true );
-		} else if ( spawnArgs.GetString( "hud", "", temp ) ) {
-			hud = uiManager->FindGui( temp, true, false, true );
-		}
+		hud = uiManager->FindGui(temp, true, false, true);
 		if ( hud ) {
 			hud->Activate( true, gameLocal.time );
 		}
@@ -2564,7 +2560,7 @@ void idPlayer::UpdateHudWeapon( bool flashWeapon ) {
 	if ( gameLocal.localClientNum >= 0 && gameLocal.entities[ gameLocal.localClientNum ] && gameLocal.entities[ gameLocal.localClientNum ]->IsType( idPlayer::GetClassType() ) ) {
 		idPlayer *p = static_cast< idPlayer * >( gameLocal.entities[ gameLocal.localClientNum ] );
 		if ( p->spectating && p->spectator == entityNumber ) {
-			assert( p->hud );
+	//		assert( p->hud );
 			hud = p->hud;
 		}
 	}

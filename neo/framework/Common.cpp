@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #pragma hdrstop
 
+#include "Session_local.h"
+
 #include "../renderer/Image.h"
 
 #define	MAX_PRINT_MSG_SIZE	4096
@@ -2543,8 +2545,10 @@ void idCommonLocal::Frame( void ) {
 					gameTimeResidual -= frameDelay;
 					gameFrame++;
 					numGameFrames++;
-					// if there is enough residual left, we may run additional frames
+					com_ticNumber++;
 				}
+
+				sessLocal.latchedTicNumber = com_ticNumber;
 
 				if (numGameFrames > 0) {
 					// ready to actually run them
@@ -2571,7 +2575,7 @@ void idCommonLocal::Frame( void ) {
 			gameFrame++;
 		}
 
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		com_frameTime = Sys_Milliseconds();
 
 		idAsyncNetwork::RunFrame();
 
