@@ -168,6 +168,9 @@
     <ClCompile Include="game\gamesys\State.cpp">
       <Filter>GameSys</Filter>
     </ClCompile>
+    <ClCompile Include="game\ai\AI_script.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AAS.h">
