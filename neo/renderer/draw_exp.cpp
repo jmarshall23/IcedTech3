@@ -35,6 +35,14 @@ static GLuint shadowDepth[6];
 const idDeclRenderProg* interactionProgram;
 const idDeclRenderProg* baseDepthFillProgram;
 const idDeclRenderProg* fogProgram;
+const idDeclRenderProg* brightPassProgram;
+const idDeclRenderProg* blurProgram;
+const idDeclRenderProg* combineProgram;
+
+static GLuint brightPassFBO;
+static GLuint brightPassTexture;
+static GLuint blurFBO;
+static GLuint blurTexture;
 
 idCVar r_sb_noShadows("r_sb_noShadows", "0", CVAR_RENDERER | CVAR_BOOL, "don't draw any occluders");
 idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "2048", CVAR_RENDERER | CVAR_FLOAT, "Shadow Map Size");
@@ -88,14 +96,17 @@ static void RB_EXP_CreateFBO(GLuint* fbo, GLuint* color, GLuint* depth, int widt
 	}
 
 	// Create depth texture
-	qglGenTextures(1, depth);
-	qglBindTexture(GL_TEXTURE_2D, *depth);
-	qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	qglFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, *depth, 0);
+	if (depth != nullptr)
+	{
+		qglGenTextures(1, depth);
+		qglBindTexture(GL_TEXTURE_2D, *depth);
+		qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		qglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		qglFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, *depth, 0);
+	}
 
 	GLenum status = qglCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	if (status != GL_FRAMEBUFFER_COMPLETE_EXT) {
@@ -121,6 +132,16 @@ void RB_EXP_Init(void) {
 	baseDepthFillProgram = renderSystem->FindRenderProgram("depthfill", false);
 	fogProgram = renderSystem->FindRenderProgram("postprocess/fog", false);
 	
+	brightPassProgram = renderSystem->FindRenderProgram("postprocess/brightpass", false);
+	blurProgram = renderSystem->FindRenderProgram("postprocess/blur", false);
+	combineProgram = renderSystem->FindRenderProgram("postprocess/combine", false);
+
+	// Create FBO and texture for bright pass
+	RB_EXP_CreateFBO(&brightPassFBO, &brightPassTexture, nullptr, tr.GetScreenWidth(), tr.GetScreenHeight());
+
+	// Create FBO and texture for blur pass
+	RB_EXP_CreateFBO(&blurFBO, &blurTexture, nullptr, tr.GetScreenWidth(), tr.GetScreenHeight());
+
 	{
 		GLuint program = baseDepthFillProgram->GetProgram();
 		depthFillUniformState.textureMatrix = qglGetUniformLocation(program, "textureMatrix");
@@ -173,6 +194,14 @@ void RB_EXP_Shutdown(void) {
 	for (int i = 0; i < 6; i++) {
 		qglDeleteFramebuffersEXT(1, &shadowFBO[i]);
 	}
+
+	// Delete bright pass FBO and texture
+	qglDeleteFramebuffersEXT(1, &brightPassFBO);
+	qglDeleteTextures(1, &brightPassTexture);
+
+	// Delete blur FBO and texture
+	qglDeleteFramebuffersEXT(1, &blurFBO);
+	qglDeleteTextures(1, &blurTexture);
 }
 
 /*
@@ -962,7 +991,20 @@ void RB_EXP_DrawInteractions(void) {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-void RB_EXP_BindFog() {
+
+void RB_EXP_DrawFullScreenQuad(void) {
+	// Draw a full-screen quad
+	qglDepthMask(GL_FALSE);
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(0, 0); qglVertex2f(0, 0);
+	qglTexCoord2f(1, 0); qglVertex2f(SCREEN_WIDTH, 0);
+	qglTexCoord2f(1, 1); qglVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+	qglTexCoord2f(0, 1); qglVertex2f(0, SCREEN_HEIGHT);
+	qglEnd();
+	qglDepthMask(GL_TRUE);
+}
+
+void RB_EXP_RenderFog() {
 	GLuint program = fogProgram->GetProgram();
 	qglUseProgram(program);
 
@@ -988,6 +1030,61 @@ void RB_EXP_BindFog() {
 	GL_SelectTextureNoClient(0);
 	globalImages->currentDepthRenderImage->Bind();
 	qglUniform1i(qglGetUniformLocation(program, "depthTexture"), 0);
+
+	RB_EXP_DrawFullScreenQuad();
+}
+
+void RB_EXP_RenderBrightPass() {
+	qglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, brightPassFBO);
+
+	GLuint program = brightPassProgram->GetProgram();
+	qglUseProgram(program);
+
+	GL_SelectTextureNoClient(0);
+	globalImages->currentRenderImage->Bind();
+	qglUniform1i(qglGetUniformLocation(program, "colorTexture"), 0);
+	qglUniform1f(qglGetUniformLocation(program, "threshold"), 0.8f); // Adjust the threshold as needed
+
+	RB_EXP_DrawFullScreenQuad();
+
+	qglUseProgram(0);
+	qglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+void RB_EXP_RenderBlurPass() {
+	qglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, blurFBO);
+
+	GLuint program = blurProgram->GetProgram();
+	qglUseProgram(program);
+
+	GL_SelectTextureNoClient(1);
+	qglEnable(GL_TEXTURE_2D);
+	qglBindTexture(GL_TEXTURE_2D, brightPassTexture);
+	qglUniform1i(qglGetUniformLocation(program, "brightTexture"), 1);
+	//qglUniform2f(qglGetUniformLocation(program, "texelSize"), 1.0f / tr.GetScreenWidth(), 1.0f / tr.);
+
+	RB_EXP_DrawFullScreenQuad();
+
+	qglUseProgram(0);
+	qglBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+void RB_EXP_RenderCombinePass() {
+	GLuint program = combineProgram->GetProgram();
+	qglUseProgram(program);
+
+	GL_SelectTextureNoClient(1);
+	globalImages->currentRenderImage2->Bind();
+	qglUniform1i(qglGetUniformLocation(program, "sceneTexture"), 1);
+
+	GL_SelectTextureNoClient(0);
+	qglEnable(GL_TEXTURE_2D);
+	qglBindTexture(GL_TEXTURE_2D, blurTexture);
+	qglUniform1i(qglGetUniformLocation(program, "blurTexture"), 0);
+
+	RB_EXP_DrawFullScreenQuad();
+
+	qglUseProgram(0);
 }
 
 void RB_Exp_RenderPostProcess(void) {
@@ -996,8 +1093,7 @@ void RB_Exp_RenderPostProcess(void) {
 	}
 
 	GL_CheckErrors();
-	if (!backEnd.currentRenderCopied)
-	{
+	if (!backEnd.currentRenderCopied) {
 		globalImages->currentRenderImage->CopyFramebuffer(backEnd.viewDef->viewport.x1,
 			backEnd.viewDef->viewport.y1, backEnd.viewDef->viewport.x2 - backEnd.viewDef->viewport.x1 + 1,
 			backEnd.viewDef->viewport.y2 - backEnd.viewDef->viewport.y1 + 1, true);
@@ -1011,13 +1107,13 @@ void RB_Exp_RenderPostProcess(void) {
 	}
 	backEnd.currentRenderCopied = true;
 
-	// set the window clipping
+	// Set the window clipping
 	qglViewport(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1,
 		tr.viewportOffset[1] + backEnd.viewDef->viewport.y1,
 		backEnd.viewDef->viewport.x2 + 1 - backEnd.viewDef->viewport.x1,
 		backEnd.viewDef->viewport.y2 + 1 - backEnd.viewDef->viewport.y1);
 
-	// the scissor may be smaller than the viewport for subviews
+	// The scissor may be smaller than the viewport for subviews
 	qglScissor(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1 + backEnd.viewDef->scissor.x1,
 		tr.viewportOffset[1] + backEnd.viewDef->viewport.y1 + backEnd.viewDef->scissor.y1,
 		backEnd.viewDef->scissor.x2 + 1 - backEnd.viewDef->scissor.x1,
@@ -1049,17 +1145,22 @@ void RB_Exp_RenderPostProcess(void) {
 	qglLoadMatrixf(&modelViewMatrix[0]);
 
 	// Render linear fog
-	RB_EXP_BindFog();
+	RB_EXP_RenderFog();
 
-	// Draw a full-screen quad
-	qglDepthMask(GL_FALSE);
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(0, 0); qglVertex2f(0, 0);
-	qglTexCoord2f(1, 0); qglVertex2f(SCREEN_WIDTH, 0);
-	qglTexCoord2f(1, 1); qglVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
-	qglTexCoord2f(0, 1); qglVertex2f(0, SCREEN_HEIGHT);
-	qglEnd();
-	qglDepthMask(GL_TRUE);
+	globalImages->currentRenderImage2->CopyFramebuffer(backEnd.viewDef->viewport.x1,
+		backEnd.viewDef->viewport.y1, backEnd.viewDef->viewport.x2 - backEnd.viewDef->viewport.x1 + 1,
+		backEnd.viewDef->viewport.y2 - backEnd.viewDef->viewport.y1 + 1, true);
+
+	// Render bright pass
+	RB_EXP_RenderBrightPass();
+
+	// Render blur pass
+	RB_EXP_RenderBlurPass();
+
+	// Combine original scene with blurred bright areas
+	RB_EXP_RenderCombinePass();
+
+	// Reset the render state.
 	qglUseProgram(0);
 
 	// Reset texture state

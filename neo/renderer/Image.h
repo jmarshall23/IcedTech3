@@ -407,6 +407,7 @@ public:
 	idImage *			scratchImage2;
 	idImage *			accumImage;
 	idImage *			currentRenderImage;			// for SS_POST_PROCESS shaders
+	idImage*			currentRenderImage2;			// for SS_POST_PROCESS shaders
 	idImage	*			currentDepthRenderImage;			// for SS_POST_PROCESS shaders
 	idImage *			scratchCubeMapImage;
 	idImage *			specularTableImage;			// 1D intensity texture with our specular function
