@@ -617,11 +617,6 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 				}
 			}
 
-			//
-			// create a new interaction, but don't do any work other than bbox to frustum culling
-			//
-			idInteraction *inter = idInteraction::AllocAndLink( edef, ldef );
-
 			// do a check of the entity reference bounds against the light frustum,
 			// trying to avoid creating a viewEntity if it hasn't been already
 			float	modelMatrix[16];
@@ -635,9 +630,13 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 			}
 
 			if ( R_CullLocalBox( edef->referenceBounds, m, 6, ldef->frustum ) ) {
-				inter->MakeEmpty();
 				continue;
 			}
+
+			//
+			// create a new interaction, but don't do any work other than bbox to frustum culling
+			//
+			idInteraction* inter = idInteraction::AllocAndLink(edef, ldef);
 
 			// we will do a more precise per-surface check when we are checking the entity
 
