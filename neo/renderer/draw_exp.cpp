@@ -29,8 +29,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "tr_local.h"
 
-static GLuint shadowFBO[6];
-static GLuint shadowDepth[6];
+#define NUM_SHADOW_GROUPS			2
+
+static GLuint shadowFBO[NUM_SHADOW_GROUPS][6];
+static GLuint shadowDepth[NUM_SHADOW_GROUPS][6];
 
 const idDeclRenderProg* interactionProgram;
 const idDeclRenderProg* baseDepthFillProgram;
@@ -63,6 +65,8 @@ static float	viewLightAxialSize;
 static int		lightNumSides = -1;
 
 static bool		depthFillActive = false;
+
+static int		shadowGroupNum = 0;
 
 // Declare a global variable for uniform state
 idInteractionUniformState interactionUniformState;
@@ -113,8 +117,11 @@ RB_EXP_Init
 void RB_EXP_Init(void) {
 	lightBufferSize = r_sb_shadowMapSize.GetInteger();
 
-	for (int i = 0; i < 6; i++) {
-		RB_EXP_CreateFBO(&shadowFBO[i], nullptr, &shadowDepth[i], lightBufferSize, lightBufferSize);
+	for (int d = 0; d < NUM_SHADOW_GROUPS; d++)
+	{
+		for (int i = 0; i < 6; i++) {
+			RB_EXP_CreateFBO(&shadowFBO[d][i], nullptr, &shadowDepth[d][i], lightBufferSize, lightBufferSize);
+		}
 	}
 
 	interactionProgram = renderSystem->FindRenderProgram("interaction", false);
@@ -170,8 +177,11 @@ RB_EXP_Shutdown
 ====================
 */
 void RB_EXP_Shutdown(void) {
-	for (int i = 0; i < 6; i++) {
-		qglDeleteFramebuffersEXT(1, &shadowFBO[i]);
+	for (int d = 0; d < NUM_SHADOW_GROUPS; d++)
+	{
+		for (int i = 0; i < 6; i++) {
+			qglDeleteFramebuffersEXT(1, &shadowFBO[d][i]);
+		}
 	}
 }
 
@@ -435,7 +445,7 @@ void RB_RenderShadowBuffer(viewLight_t * vLight, int side) {
 	lightProjectionMatrix[11] = -1;
 	lightProjectionMatrix[15] = 0;
 
-	RB_EXP_BindFBO(shadowFBO[side]);
+	RB_EXP_BindFBO(shadowFBO[shadowGroupNum][side]);
 
 	qglMatrixMode(GL_PROJECTION);
 	qglLoadMatrixf(lightProjectionMatrix);
@@ -750,7 +760,7 @@ void RB_EXP_DrawInteraction(const drawInteraction_t* din) {
 	for (int i = 0; i < 6; i++) {
 		GL_SelectTextureNoClient(7 + i);
 		qglEnable(GL_TEXTURE_2D);
-		qglBindTexture(GL_TEXTURE_2D, shadowDepth[i]);
+		qglBindTexture(GL_TEXTURE_2D, shadowDepth[shadowGroupNum][i]);
 		qglUniform1i(interactionUniformState.shadowMaps[i], 7 + i);
 	}
 
@@ -954,6 +964,8 @@ void RB_EXP_DrawInteractions(void) {
 			RB_EXP_CreateDrawInteractions(vLight->translucentInteractions);
 			backEnd.depthFunc = GLS_DEPTHFUNC_EQUAL;
 		}
+
+		shadowGroupNum = (shadowGroupNum + 1) % NUM_SHADOW_GROUPS;
 
 		qglUseProgram(0);
 	}
