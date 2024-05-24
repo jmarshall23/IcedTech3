@@ -225,10 +225,54 @@ int Brush_ToTris(idEditorBrush* brush, idTriList* tris, idMatList* mats, bool mo
 			tri->indexes[tri->numIndexes++] = i;
 		}
 
-		tris->Append(tri);
-		mats->Append(face->d_texture);
-		numSurfaces++;
+		const idMaterial *material = face->d_texture;
+		bool found = false;
+
+		for (int j = 0; j < tris->Num(); j++) {
+			if ((*mats)[j] == material) {
+				found = true;
+				srfTriangles_t* existingTri = (*tris)[j];
+
+				int startVert = existingTri->numVerts;
+				int startIndex = existingTri->numIndexes;
+
+				// Allocate new vertices and indexes arrays with increased sizes
+				int newNumVerts = existingTri->numVerts + tri->numVerts;
+				int newNumIndexes = existingTri->numIndexes + tri->numIndexes;
+
+				R_ResizeStaticTriSurfVerts(existingTri, newNumVerts);
+				R_ResizeStaticTriSurfIndexes(existingTri, newNumIndexes);
+
+				idDrawVert* newVerts = existingTri->verts;
+				glIndex_t* newIndexes = existingTri->indexes;
+
+				// Copy new vertices
+				for (int k = 0; k < tri->numVerts; k++) {
+					newVerts[startVert + k] = tri->verts[k];
+				}
+
+				// Copy new indexes with updated indices
+				for (int k = 0; k < tri->numIndexes; k++) {
+					newIndexes[startIndex + k] = tri->indexes[k] + startVert;
+				}
+
+				// Free the temporary triangle
+				R_FreeStaticTriSurf(tri);
+
+				// Update numVerts and numIndexes for the existing triangle(resize above doesn't actually do this).
+				existingTri->numVerts = newNumVerts;
+				existingTri->numIndexes = newNumIndexes;
+				break;
+			}
+		}
+
+		if (!found) {
+			tris->Append(tri);
+			mats->Append(material);
+			numSurfaces++;
+		}		
 	}
+
 
 	return numSurfaces;
 }
