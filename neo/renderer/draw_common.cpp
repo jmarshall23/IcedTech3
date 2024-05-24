@@ -1133,10 +1133,7 @@ static void RB_T_BlendLight( const drawSurf_t *surf ) {
 	if ( tri->ambientCache ) {
 		idDrawVert	*ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
 		qglVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), ac->xyz.ToFloatPtr() );
-	} else if ( tri->shadowCache ) {
-		shadowCache_t	*sc = (shadowCache_t *)vertexCache.Position( tri->shadowCache );
-		qglVertexPointer( 3, GL_FLOAT, sizeof( shadowCache_t ), sc->xyz.ToFloatPtr() );
-	}
+	} 
 
 	RB_DrawElementsWithCounters( tri );
 }
