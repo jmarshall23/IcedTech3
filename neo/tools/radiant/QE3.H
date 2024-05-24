@@ -493,4 +493,6 @@ bool GetCvarBinary(const char *name, void *pv, int size);
 
 void UpdateRadiantColor( float r, float g, float b, float a );
 
+extern std::chrono::steady_clock::time_point lastFrameTime;
+
 #endif /* !__QE3_H__ */

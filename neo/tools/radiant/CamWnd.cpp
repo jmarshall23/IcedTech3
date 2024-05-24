@@ -1256,10 +1256,6 @@ Creates or updates modelDef and lightDef for an entity
 */
 
 void CCamWnd::BuildEntityRenderState( idEditorEntity *ent, bool update) {
-	if (!rebuildMode) {
-		return;
-	}
-
 	ent->BuildEntityRenderState(update);
 }
 
@@ -1437,10 +1433,6 @@ void CCamWnd::BuildRendererState() {
 			}
 
 			if (FilterBrush(brush)) {
-				continue;
-			}
-
-			if (CullBrush(brush, true)) {
 				continue;
 			}
 

@@ -31,6 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef __cplusplus
 
+#define FLT_EPSILON 1.19209290E-07F
+#include <cfloat>
+#include <limits>
+#include <chrono>
+
 //-----------------------------------------------------
 
 #define ID_TIME_T time_t

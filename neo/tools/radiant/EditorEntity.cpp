@@ -76,6 +76,13 @@ void idEditorEntity::BuildEntityRenderState(bool update) {
 	// any entity can have a model
 	name = ValueForKey(this, "name");
 	v = spawnArgs.GetString("model");
+
+
+	// Don't build the light frustum geometry.
+	if (lightDef != -1) {
+		v = nullptr;
+	}
+
 	if (v && *v) {
 		renderEntity_t	refent;
 
