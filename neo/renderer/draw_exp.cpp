@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "tr_local.h"
 
-#define NUM_SHADOW_GROUPS			2
+#define NUM_SHADOW_GROUPS			6
 
 static GLuint shadowFBO[NUM_SHADOW_GROUPS][6];
 static GLuint shadowDepth[NUM_SHADOW_GROUPS][6];
@@ -38,6 +38,8 @@ const idDeclRenderProg* interactionProgram;
 const idDeclRenderProg* baseDepthFillProgram;
 const idDeclRenderProg* fogProgram;
 
+idCVar r_sb_maxDrawDistance("r_sb_maxDrawDistance", "-1", CVAR_RENDERER | CVAR_INTEGER, "don't draw anything beyond this point");
+idCVar r_sb_shadowDrawDistance("r_sb_shadowDrawDistance", "1000", CVAR_RENDERER | CVAR_INTEGER, "don't draw shadows beyond this point");
 idCVar r_sb_noShadows("r_sb_noShadows", "0", CVAR_RENDERER | CVAR_BOOL, "don't draw any occluders");
 idCVar r_sb_shadowMapSize("r_sb_shadowMapSize", "2048", CVAR_RENDERER | CVAR_FLOAT, "Shadow Map Size");
 idCVar r_sb_frustomFOV("r_sb_frustomFOV", "92", CVAR_RENDERER | CVAR_FLOAT, "oversize FOV for point light side matching");
@@ -897,11 +899,21 @@ void RB_EXP_DrawInteractions(void) {
 		// and non-cubic lights must take the largest length
 		viewLightAxialSize = R_EXP_CalcLightAxialSize(vLight);
 
+		float dist = idMath::Distance(vLight->lightDef->parms.origin, backEnd.viewDef->renderView.vieworg);
+
+		if (r_sb_maxDrawDistance.GetInteger() >= 0)
+		{
+			if (dist >= r_sb_maxDrawDistance.GetInteger())
+			{
+				continue;
+			}
+		}
+
 		int	side, sideStop;
 
 		idScreenRect currentScissor = backEnd.currentScissor;
 
-		if (vLight->lightShader->LightCastsShadows() && !r_sb_noShadows.GetBool())
+		if (vLight->lightShader->LightCastsShadows() && !r_sb_noShadows.GetBool() && dist < r_sb_shadowDrawDistance.GetInteger())
 		{
 			if (vLight->lightDef->parms.pointLight) {
 				if (r_sb_singleSide.GetInteger() != -1) {

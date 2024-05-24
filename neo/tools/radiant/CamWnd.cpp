@@ -982,6 +982,7 @@ void CCamWnd::Cam_Draw() {
 
 	if (renderMode) {
 		Cam_Render();
+		return;
 	}
 
 	qglViewport(0, 0, m_Camera.width, m_Camera.height);
@@ -1926,6 +1927,9 @@ CCamWnd::ToggleRebuildMode
 */
 void CCamWnd::ToggleRebuildMode() {
 	rebuildMode ^= 1;
+	if (rebuildMode)
+		worldDirty = true;
+
 	UpdateCaption();
 }
 
@@ -2098,11 +2102,13 @@ void CCamWnd::Cam_Render() {
 	//	qwglSwapBuffers(dc.m_hDC);
 
 	// create the model, using explicit normals
-	if ( rebuildMode && worldDirty ) {
+	if ( worldDirty ) {
 		BuildRendererState();
 	}
 
-	// render it
+	cvarSystem->SetCVarInteger("r_sb_maxDrawDistance", 1000);
+
+	// render it	
 	renderSystem->BeginFrame( m_Camera.width, m_Camera.height );
 
 	memset( &refdef, 0, sizeof( refdef ) );
@@ -2136,6 +2142,8 @@ void CCamWnd::Cam_Render() {
 	qglMatrixMode( GL_MODELVIEW );
 	qglLoadIdentity();
 	Cam_BuildMatrix();
+
+	cvarSystem->SetCVarInteger("r_sb_maxDrawDistance", -1);
 }
 
 

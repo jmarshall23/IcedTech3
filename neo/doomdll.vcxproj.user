@@ -37,9 +37,9 @@
     <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>c:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 +idstudio</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>c:\projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

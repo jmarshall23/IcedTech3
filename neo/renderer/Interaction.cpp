@@ -908,51 +908,46 @@ void idInteraction::AddActiveInteraction( void ) {
 			srfTriangles_t *lightTris = sint->lightTris;
 
 			if ( lightTris ) {
-
-				// try to cull before adding
-				// FIXME: this may not be worthwhile. We have already done culling on the ambient,
-				// but individual surfaces may still be cropped somewhat more
-				if ( !R_CullLocalBox( lightTris->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) ) {
-
-					// make sure the original surface has its ambient cache created
-					srfTriangles_t *tri = sint->ambientTris;
-					if ( !tri->ambientCache ) {
-						if ( !R_CreateAmbientCache( tri, sint->shader->ReceivesLighting() ) ) {
-							// skip if we were out of vertex memory
-							continue;
-						}
+				// make sure the original surface has its ambient cache created
+				srfTriangles_t* tri = sint->ambientTris;
+				if (!tri->ambientCache) {
+					if (!R_CreateAmbientCache(tri, sint->shader->ReceivesLighting())) {
+						// skip if we were out of vertex memory
+						continue;
 					}
+				}
 
-					// reference the original surface's ambient cache
-					lightTris->ambientCache = tri->ambientCache;
+				// reference the original surface's ambient cache
+				lightTris->ambientCache = tri->ambientCache;
 
-					// touch the ambient surface so it won't get purged
-					vertexCache.Touch( lightTris->ambientCache );
+				// touch the ambient surface so it won't get purged
+				vertexCache.Touch(lightTris->ambientCache);
 
-					if ( !lightTris->indexCache && r_useIndexBuffers.GetBool() ) {
-						vertexCache.Alloc( lightTris->indexes, lightTris->numIndexes * sizeof( lightTris->indexes[0] ), &lightTris->indexCache, true );
-					}
-					if ( lightTris->indexCache ) {
-						vertexCache.Touch( lightTris->indexCache );
-					}
+				if (!lightTris->indexCache && r_useIndexBuffers.GetBool()) {
+					vertexCache.Alloc(lightTris->indexes, lightTris->numIndexes * sizeof(lightTris->indexes[0]), &lightTris->indexCache, true);
+				}
+				if (lightTris->indexCache) {
+					vertexCache.Touch(lightTris->indexCache);
+				}
 
-					// add the surface to the light list
+				// add the surface to the light list
 
-					const idMaterial *shader = sint->shader;
-					R_GlobalShaderOverride( &shader );
+				const idMaterial* shader = sint->shader;
+				R_GlobalShaderOverride(&shader);
 
-					// there will only be localSurfaces if the light casts shadows and
-					// there are surfaces with NOSELFSHADOW
-					if ( sint->shader->Coverage() == MC_TRANSLUCENT ) {
-						R_LinkLightSurf( &vLight->translucentInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
-					} else if ( !lightDef->parms.noShadows && sint->shader->TestMaterialFlag(MF_NOSELFSHADOW) ) {
-						R_LinkLightSurf( &vLight->localInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
-					} else {
-						R_LinkLightSurf( &vLight->globalInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
-					}
+				// there will only be localSurfaces if the light casts shadows and
+				// there are surfaces with NOSELFSHADOW
+				if (sint->shader->Coverage() == MC_TRANSLUCENT) {
+					R_LinkLightSurf(&vLight->translucentInteractions, lightTris,
+						vEntity, lightDef, shader, lightScissor, false);
+				}
+				else if (!lightDef->parms.noShadows && sint->shader->TestMaterialFlag(MF_NOSELFSHADOW)) {
+					R_LinkLightSurf(&vLight->localInteractions, lightTris,
+						vEntity, lightDef, shader, lightScissor, false);
+				}
+				else {
+					R_LinkLightSurf(&vLight->globalInteractions, lightTris,
+						vEntity, lightDef, shader, lightScissor, false);
 				}
 			}
 		}		

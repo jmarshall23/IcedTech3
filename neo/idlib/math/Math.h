@@ -200,6 +200,8 @@ public:
 
 	static int					FloatHash( const float *array, const int numFloats );
 
+	static float				Distance(idVec3 point1, idVec3 point2);
+
 	static const float			PI;							// pi
 	static const float			TWO_PI;						// pi * 2
 	static const float			HALF_PI;					// pi / 2
