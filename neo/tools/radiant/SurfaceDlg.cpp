@@ -178,7 +178,7 @@ void CSurfaceDlg::SetTexMods() {
 		selFace = reinterpret_cast < face_t * > (g_ptrSelectedFaces.GetAt(0));
 	} else {
 		if (selected_brushes.next != &selected_brushes) {
-			brush_t *b = selected_brushes.next; 
+			idEditorBrush *b = selected_brushes.next; 
 			if (!b->pPatch) {
 				selFace = b->brush_faces;
 			}
@@ -490,7 +490,7 @@ void CSurfaceDlg::OnBtnBrushfit() {
 void CSurfaceDlg::OnBtnFacefit() {
 	UpdateData(TRUE);
 /*
-	brush_t *b;
+	idEditorBrush *b;
 	for (b=selected_brushes.next ; b != &selected_brushes ; b=b->next) {
 		if (!b->patchBrush) {
 			for (face_t* pFace = b->brush_faces; pFace; pFace = pFace->next) {

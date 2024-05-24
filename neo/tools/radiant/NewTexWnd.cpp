@@ -710,7 +710,7 @@ const idMaterial *Texture_ForName(const char *name) {
 void Texture_ShowInuse(void) {
 	Texture_HideAll();
 
-	brush_t *b;
+	idEditorBrush *b;
 	for (b = active_brushes.next; b != NULL && b != &active_brushes; b = b->next) {
 		if (b->pPatch) {
 			Texture_ForName(b->pPatch->d_texture->GetName());

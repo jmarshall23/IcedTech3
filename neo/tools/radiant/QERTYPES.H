@@ -226,7 +226,7 @@ typedef struct {
 
 
 struct brush_s;
-typedef struct brush_s brush_t;
+class idEditorBrush;
 
 typedef struct {
 	int			width, height;		// in control points, not patches
@@ -237,7 +237,7 @@ typedef struct {
 	const idMaterial *d_texture;
 	idDrawVert *verts;
 	//idDrawVert *ctrl;
-	brush_t *	pSymbiot;
+	idEditorBrush *	pSymbiot;
 	bool		bSelected;
 	bool		bOverlay;
 	int			nListID;
@@ -274,12 +274,13 @@ enum {
 };
 
 
-typedef struct brush_s
+class idEditorBrush
 {
-	struct brush_s	*prev, *next;	// links in active/selected
-	struct brush_s	*oprev, *onext;	// links in entity
-	brush_t *   list;				//keep a handy link to the list its in
-	struct entity_s	*owner;
+public:
+	class idEditorBrush*prev, *next;	// links in active/selected
+	class idEditorBrush*oprev, *onext;	// links in entity
+	idEditorBrush *   list;				//keep a handy link to the list its in
+	class idEditorEntity *owner;
 	idVec3 mins, maxs;
 
 	idVec3	lightCenter;			// for moving the shading center of point lights
@@ -309,7 +310,7 @@ typedef struct brush_s
 	bool	forceVisibile;
 
 	patchMesh_t *pPatch;
-	struct entity_s *pUndoOwner;
+	class idEditorEntity *pUndoOwner;
 
 	int undoId;						//undo ID
 	int redoId;						//redo ID
@@ -329,7 +330,7 @@ typedef struct brush_s
 	// brush primitive only
 	idDict	epairs;
 
-} brush_t;
+};
 
 
 #define	MAX_FLAGS	8

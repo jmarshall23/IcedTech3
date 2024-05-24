@@ -86,7 +86,7 @@ int FindEdge(int p1, int p2, face_t *f) {
 }
 
 #ifdef NEWEDGESEL
-void MakeFace (brush_t * b, face_t * f)
+void MakeFace (idEditorBrush * b, face_t * f)
 #else
 void MakeFace (face_t * f)
 #endif 
@@ -118,7 +118,7 @@ void MakeFace (face_t * f)
  */
 void SetupVertexSelection(void) {
 	face_t	*f;
-	brush_t *b;
+	idEditorBrush *b;
 
 	g_qeglobals.d_numpoints = 0;
 	g_qeglobals.d_numedges = 0;
@@ -143,7 +143,7 @@ void SetupVertexSelection(void) {
 }
 
 #ifdef NEWEDGESEL
-void SelectFaceEdge (brush_t * b, face_t * f, int p1, int p2)
+void SelectFaceEdge (idEditorBrush * b, face_t * f, int p1, int p2)
 #else
 void SelectFaceEdge (face_t * f, int p1, int p2)
 #endif 
@@ -190,7 +190,7 @@ void SelectFaceEdge (face_t * f, int p1, int p2)
  =======================================================================================================================
  */
 void SelectVertex(int p1) {
-	brush_t		*b;
+	idEditorBrush		*b;
 	idWinding	*w;
 	int			i, j, k;
 	face_t		*f;
@@ -300,7 +300,7 @@ void SelectEdgeByRay(idVec3 org, idVec3 dir) {
 	g_qeglobals.d_num_move_points = 0;
 	e = &g_qeglobals.d_edges[besti];
 #ifdef NEWEDGESEL
-	for (brush_t * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		SelectFaceEdge(b, e->f1, e->p1, e->p2);
 		SelectFaceEdge(b, e->f2, e->p2, e->p1);
 	}

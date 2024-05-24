@@ -248,7 +248,7 @@ static void Drag_Setup( int x, int y, int buttons,
 		// yes, special handling
 		bool bOK = ( g_PrefsDlg.m_bALTEdge ) ? ( ::GetAsyncKeyState( VK_MENU ) != 0 ) : true;
 		if (bOK) {
-			for (brush_t * pBrush = selected_brushes.next; pBrush != &selected_brushes; pBrush = pBrush->next) {
+			for (idEditorBrush * pBrush = selected_brushes.next; pBrush != &selected_brushes; pBrush = pBrush->next) {
 				if (buttons & MK_CONTROL) {
 					Brush_SideSelect(pBrush, origin, dir, true);
 				}
@@ -473,7 +473,7 @@ void Drag_Begin( int x, int y, int buttons,
 }
 
 
-void Brush_GetBounds(brush_t *b, idVec3 &mins, idVec3 &maxs) {
+void Brush_GetBounds(idEditorBrush *b, idVec3 &mins, idVec3 &maxs) {
 	int		i;
 
 	for (i = 0; i < 3; i++) {
@@ -500,7 +500,7 @@ MoveSelection
 */
 static void MoveSelection( const idVec3 &orgMove ) {
 	int		i, success;
-	brush_t *b;
+	idEditorBrush *b;
 	CString strStatus;
 	idVec3	vTemp, vTemp2, end, move;
 

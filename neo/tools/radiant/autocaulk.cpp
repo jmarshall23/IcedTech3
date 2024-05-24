@@ -90,7 +90,7 @@ static LPCSTR vtos(idVec3 &v3)
 struct PairBrushFace_t
 {
 	face_t*		pFace;
-	brush_t*	pBrush;
+	idEditorBrush*	pBrush;
 };
 idList < PairBrushFace_t > FacesToCaulk;
 void Select_AutoCaulk()
@@ -102,8 +102,8 @@ void Select_AutoCaulk()
 	int iSystemBrushesSkipped = 0;
 	face_t *pSelectedFace;
 
-	brush_t *next;
-	for (brush_t *pSelectedBrush = selected_brushes.next ; pSelectedBrush != &selected_brushes ; pSelectedBrush = next)
+	idEditorBrush *next;
+	for (idEditorBrush *pSelectedBrush = selected_brushes.next ; pSelectedBrush != &selected_brushes ; pSelectedBrush = next)
 	{
 		next = pSelectedBrush->next;
 		
@@ -129,8 +129,8 @@ void Select_AutoCaulk()
 
 		for (int iBrushListToScan = 0; iBrushListToScan<2; iBrushListToScan++)
 		{		
-			brush_t	*snext;
-			for (brush_t *pScannedBrush = (iBrushListToScan?active_brushes.next:selected_brushes.next); pScannedBrush != (iBrushListToScan?&active_brushes:&selected_brushes) ; pScannedBrush = snext)
+			idEditorBrush	*snext;
+			for (idEditorBrush *pScannedBrush = (iBrushListToScan?active_brushes.next:selected_brushes.next); pScannedBrush != (iBrushListToScan?&active_brushes:&selected_brushes) ; pScannedBrush = snext)
 			{
 				snext = pScannedBrush->next;
 
@@ -311,7 +311,7 @@ void Select_AutoCaulk()
 			{
 				PairBrushFace_t &PairBrushFace = FacesToCaulk[iListEntry];
 				face_t *pFace = PairBrushFace.pFace;
-				brush_t*pBrush= PairBrushFace.pBrush;
+				idEditorBrush*pBrush= PairBrushFace.pBrush;
 
 				pFace->d_texture = pCaulk;				
 				pFace->texdef = tex;

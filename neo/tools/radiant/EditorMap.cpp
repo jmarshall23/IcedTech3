@@ -36,17 +36,17 @@ int			mapModified;			// for quit confirmation (0 = clean, 1 = unsaved,
 // 2 = autosaved, but not regular saved)
 char		currentmap[1024];
 
-brush_t		active_brushes;			// brushes currently being displayed
-brush_t		selected_brushes;		// highlighted
+idEditorBrush		active_brushes;			// brushes currently being displayed
+idEditorBrush		selected_brushes;		// highlighted
 
 face_t		*selected_face;
-brush_t		*selected_face_brush;
+idEditorBrush		*selected_face_brush;
 
-brush_t		filtered_brushes;		// brushes that have been filtered or regioned
+idEditorBrush		filtered_brushes;		// brushes that have been filtered or regioned
 
-entity_t	entities;				// head/tail of doubly linked list
+idEditorEntity	entities;				// head/tail of doubly linked list
 
-entity_t	*world_entity = NULL;	// "classname" "worldspawn" !
+idEditorEntity	*world_entity = NULL;	// "classname" "worldspawn" !
 
 void		AddRegionBrushes(void);
 void		RemoveRegionBrushes(void);
@@ -63,8 +63,8 @@ void DupLists() {
  * Cross map selection saving this could mess this up if you have only part of a
  * complex entity selected...
  */
-brush_t		between_brushes;
-entity_t	between_entities;
+idEditorBrush		between_brushes;
+idEditorEntity	between_entities;
 
 bool		g_bRestoreBetween = false;
 
@@ -99,7 +99,7 @@ void Map_RestoreBetween(void) {
  =======================================================================================================================
  =======================================================================================================================
  */
-bool CheckForTinyBrush(brush_t *b, int n, float fSize) {
+bool CheckForTinyBrush(idEditorBrush *b, int n, float fSize) {
 	bool	bTiny = false;
 	for (int i = 0; i < 3; i++) {
 		if (b->maxs[i] - b->mins[i] < fSize) {
@@ -119,7 +119,7 @@ bool CheckForTinyBrush(brush_t *b, int n, float fSize) {
  =======================================================================================================================
  */
 void Map_BuildBrushData(void) {
-	brush_t *b, *next;
+	idEditorBrush *b, *next;
 
 	if (active_brushes.next == NULL) {
 		return;
@@ -144,8 +144,8 @@ void Map_BuildBrushData(void) {
  =======================================================================================================================
  =======================================================================================================================
  */
-entity_t *Map_FindClass(char *cname) {
-	entity_t	*ent;
+idEditorEntity *Map_FindClass(char *cname) {
+	idEditorEntity	*ent;
 
 	for (ent = entities.next; ent != &entities; ent = ent->next) {
 		if (!strcmp(cname, ValueForKey(ent, "classname"))) {
@@ -161,7 +161,7 @@ entity_t *Map_FindClass(char *cname) {
  =======================================================================================================================
  */
 int Map_GetUniqueEntityID(const char *prefix, const char *eclass) {
-	entity_t	*ent;
+	idEditorEntity	*ent;
 	int			id = 0;
 	for (ent = entities.next; ent != &entities; ent = ent->next) {
 		if (!strcmp(eclass, ValueForKey(ent, "classname"))) {
@@ -192,7 +192,7 @@ int Map_GetUniqueEntityID(const char *prefix, const char *eclass) {
  =======================================================================================================================
  */
 bool Entity_NameIsUnique(const char *name) {
-	entity_t	*ent;
+	idEditorEntity	*ent;
 	if (name == NULL) {
 		return false;
 	}
@@ -268,8 +268,8 @@ void Map_Free(void) {
  =======================================================================================================================
  =======================================================================================================================
  */
-entity_t *AngledEntity() {
-	entity_t	*ent = Map_FindClass("info_player_start");
+idEditorEntity *AngledEntity() {
+	idEditorEntity	*ent = Map_FindClass("info_player_start");
 	if (!ent) {
 		ent = Map_FindClass("info_player_deathmatch");
 	}
@@ -298,7 +298,7 @@ entity_t *AngledEntity() {
 }
 
 
-brush_t *BrushFromMapPatch(idMapPatch *mappatch, idVec3 origin) {
+idEditorBrush *BrushFromMapPatch(idMapPatch *mappatch, idVec3 origin) {
 	patchMesh_t *pm = MakeNewPatch(mappatch->GetWidth(), mappatch->GetHeight());
 	pm->d_texture = Texture_ForName(mappatch->GetMaterial());
 	for (int i = 0; i < mappatch->GetWidth(); i++) {
@@ -314,12 +314,12 @@ brush_t *BrushFromMapPatch(idMapPatch *mappatch, idVec3 origin) {
 		pm->epairs = new idDict;
 		*pm->epairs = mappatch->epairs;
 	}
-	brush_t *b = AddBrushForPatch(pm, false);
+	idEditorBrush *b = AddBrushForPatch(pm, false);
 	return b;
 }
 
-brush_t *BrushFromMapBrush(idMapBrush *mapbrush, idVec3 origin) {
-	brush_t *b = NULL;
+idEditorBrush *BrushFromMapBrush(idMapBrush *mapbrush, idVec3 origin) {
+	idEditorBrush *b = NULL;
 	if (mapbrush) {
 		b = Brush_Alloc();
 		int count = mapbrush->GetNumSides();
@@ -365,8 +365,8 @@ brush_t *BrushFromMapBrush(idMapBrush *mapbrush, idVec3 origin) {
 	return b;
 }
 
-entity_t *EntityFromMapEntity(idMapEntity *mapent, CWaitDlg *dlg) {
-	entity_t *ent = NULL;
+idEditorEntity *EntityFromMapEntity(idMapEntity *mapent, CWaitDlg *dlg) {
+	idEditorEntity *ent = NULL;
 	if (mapent) {
 		ent = Entity_New();
 		ent->brushes.onext = ent->brushes.oprev = &ent->brushes;
@@ -393,7 +393,7 @@ entity_t *EntityFromMapEntity(idMapEntity *mapent, CWaitDlg *dlg) {
 					return ent;
 				}
 
-				brush_t *b = NULL;
+				idEditorBrush *b = NULL;
 				if (prim->GetType() == idMapPrimitive::TYPE_BRUSH) {
 					idMapBrush *mapbrush = reinterpret_cast<idMapBrush*>(prim);
 					b = BrushFromMapBrush(mapbrush, ent->origin);
@@ -415,14 +415,14 @@ entity_t *EntityFromMapEntity(idMapEntity *mapent, CWaitDlg *dlg) {
 	return ent;
 }
 
-extern entity_t *Entity_PostParse(entity_t *ent, brush_t *pList);
+extern idEditorEntity *Entity_PostParse(idEditorEntity *ent, idEditorBrush *pList);
  /*
  =======================================================================================================================
     Map_LoadFile
  =======================================================================================================================
  */
 void Map_LoadFile(const char *filename) {
-	entity_t *ent;
+	idEditorEntity *ent;
 	CWaitDlg dlg;
 	idStr fileStr, status;
 	idMapFile mapfile;
@@ -556,7 +556,7 @@ void Map_VerifyCurrentMap(const char *map) {
 	}
 }
 
-idMapPrimitive *BrushToMapPrimitive( const brush_t *b, const idVec3 &origin ) {
+idMapPrimitive *BrushToMapPrimitive( const idEditorBrush *b, const idVec3 &origin ) {
 	if ( b->pPatch ) {
 		idMapPatch *patch = new idMapPatch( b->pPatch->width * 6, b->pPatch->height * 6 );
 		patch->SetSize( b->pPatch->width, b->pPatch->height );
@@ -611,14 +611,14 @@ idMapPrimitive *BrushToMapPrimitive( const brush_t *b, const idVec3 &origin ) {
 	}
 }
 
-idMapEntity *EntityToMapEntity(entity_t *e, bool use_region, CWaitDlg *dlg) {
+idMapEntity *EntityToMapEntity(idEditorEntity *e, bool use_region, CWaitDlg *dlg) {
 	idMapEntity *mapent = new idMapEntity;
 	mapent->epairs = e->epairs;
 	idStr status;
 	int count = 0;
 	long lastUpdate = 0;
 	if ( !EntityHasModel( e ) ) {
-		for ( brush_t *b = e->brushes.onext; b != &e->brushes; b = b->onext ) {
+		for ( idEditorBrush *b = e->brushes.onext; b != &e->brushes; b = b->onext ) {
 			count++;					
 			if ( e->eclass->fixedsize && !b->entityModel ) {
 				continue;
@@ -651,10 +651,10 @@ idMapEntity *EntityToMapEntity(entity_t *e, bool use_region, CWaitDlg *dlg) {
  =======================================================================================================================
  */
 bool Map_SaveFile(const char *filename, bool use_region, bool autosave) {
-	entity_t	*e, *next;
+	idEditorEntity	*e, *next;
 	idStr		temp;
 	int			count;
-	brush_t		*b;
+	idEditorBrush		*b;
 	idStr status;
 
 	int len = strlen(filename);
@@ -836,7 +836,7 @@ bool	region_active;
 idVec3	region_mins(MIN_WORLD_COORD, MIN_WORLD_COORD, MIN_WORLD_COORD);
 idVec3	region_maxs(MAX_WORLD_COORD, MAX_WORLD_COORD, MAX_WORLD_COORD);
 
-brush_t *region_sides[6];
+idEditorBrush *region_sides[6];
 
 /*
  =======================================================================================================================
@@ -921,7 +921,7 @@ void RemoveRegionBrushes(void) {
  =======================================================================================================================
  =======================================================================================================================
  */
-bool Map_IsBrushFiltered(brush_t *b) {
+bool Map_IsBrushFiltered(idEditorBrush *b) {
 	int i;
 
 	if (!region_active) {
@@ -947,7 +947,7 @@ bool Map_IsBrushFiltered(brush_t *b) {
  =======================================================================================================================
  */
 void Map_RegionOff(void) {
-	brush_t *b, *next;
+	idEditorBrush *b, *next;
 	int		i;
 
 	region_active = false;
@@ -979,7 +979,7 @@ void Map_RegionOff(void) {
  =======================================================================================================================
  */
 void Map_ApplyRegion(void) {
-	brush_t *b, *next;
+	idEditorBrush *b, *next;
 
 	region_active = true;
 	for (b = active_brushes.next; b != &active_brushes; b = next) {
@@ -1065,7 +1065,7 @@ void Map_RegionXY(void) {
  =======================================================================================================================
  */
 void Map_RegionTallBrush(void) {
-	brush_t *b;
+	idEditorBrush *b;
 
 	if (!QE_SingleBrush()) {
 		return;
@@ -1090,7 +1090,7 @@ void Map_RegionTallBrush(void) {
  =======================================================================================================================
  */
 void Map_RegionBrush(void) {
-	brush_t *b;
+	idEditorBrush *b;
 
 	if (!QE_SingleBrush()) {
 		return;
@@ -1114,7 +1114,7 @@ void Map_RegionBrush(void) {
 void UniqueTargetName(idStr &rStr) {
 	// make a unique target value
 	int maxtarg = 0;
-	for (entity_t * e = entities.next; e != &entities; e = e->next) {
+	for (idEditorEntity * e = entities.next; e != &entities; e = e->next) {
 		const char	*tn = ValueForKey(e, "name");
 		if (tn && tn[0]) {
 			int targetnum = atoi(tn + 1);
@@ -1143,8 +1143,8 @@ void UniqueTargetName(idStr &rStr) {
 // =======================================================================================================================
 //
 void Map_ImportBuffer(char *buf, bool renameEntities) {
-	entity_t	*ent;
-	brush_t		*b = NULL;
+	idEditorEntity	*ent;
+	idEditorBrush		*b = NULL;
 	CPtrArray	ptrs;
 
 	Select_Deselect();
@@ -1200,7 +1200,7 @@ void Map_ImportBuffer(char *buf, bool renameEntities) {
 				// world brushes need to be added to the current world entity
 				b = ent->brushes.onext;
 				while (b && b != &ent->brushes) {
-					brush_t *bNext = b->onext;
+					idEditorBrush *bNext = b->onext;
 					Entity_UnlinkBrush(b);
 					Entity_LinkBrush(world_entity, b);
 					ptrs.Add(b);
@@ -1268,8 +1268,8 @@ void Map_ImportBuffer(char *buf, bool renameEntities) {
 			LPCSTR psOldName = pKeyVal->GetKey().c_str();
 			LPCSTR psNewName = pKeyVal->GetValue().c_str();
 
-			entity_t *pEntOld = FindEntity("name", psOldName);	// original ent we cloned from
-			entity_t *pEntNew = FindEntity("name", psNewName);	// cloned ent
+			idEditorEntity *pEntOld = FindEntity("name", psOldName);	// original ent we cloned from
+			idEditorEntity *pEntNew = FindEntity("name", psNewName);	// cloned ent
 
 			if (pEntOld && pEntNew)
 			{
@@ -1279,7 +1279,7 @@ void Map_ImportBuffer(char *buf, bool renameEntities) {
 					// ok, this ent was targeted at another ent, so it's clone needs updating to point to
 					//	the clone of that target, so...
 					//
-					entity_t *pEntOldTarget = FindEntity("name", cstrTargetNameOld);
+					idEditorEntity *pEntOldTarget = FindEntity("name", cstrTargetNameOld);
 					if ( pEntOldTarget )
 					{
 						LPCSTR psNewTargetName = RemappedNames.GetString( cstrTargetNameOld );
@@ -1299,8 +1299,8 @@ void Map_ImportBuffer(char *buf, bool renameEntities) {
 	//
 	g_bScreenUpdates = false;
 	for (int i = 0; i < ptrs.GetSize(); i++) {
-		Brush_Build(reinterpret_cast < brush_t * > (ptrs[i]), true, false);
-		Select_Brush(reinterpret_cast < brush_t * > (ptrs[i]), true, false);
+		Brush_Build(reinterpret_cast < idEditorBrush * > (ptrs[i]), true, false);
+		Select_Brush(reinterpret_cast < idEditorBrush * > (ptrs[i]), true, false);
 	}
 
 	// ::LockWindowUpdate(NULL);
@@ -1350,7 +1350,7 @@ void Map_ImportFile(char *fileName) {
 // =======================================================================================================================
 //
 void Map_SaveSelected(char *fileName) {
-	entity_t	*e, *next;
+	idEditorEntity	*e, *next;
 	FILE		*f;
 	idStr		temp;
 	int			count;
@@ -1390,7 +1390,7 @@ void Map_SaveSelected(char *fileName) {
 // =======================================================================================================================
 //
 void Map_SaveSelected(CMemFile *pMemFile, CMemFile *pPatchFile) {
-	entity_t	*e, *next;
+	idEditorEntity	*e, *next;
 	int			count;
 	CString		strTemp;
 

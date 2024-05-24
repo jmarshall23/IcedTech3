@@ -290,7 +290,7 @@ bool QE_SaveProject(const char *pProjectFile) {
  =======================================================================================================================
  */
 void ConnectEntities(void) {
-	entity_t	*e1;
+	idEditorEntity	*e1;
 	const char		*target;
 	idStr strTarget;
 	int i, t;
@@ -405,8 +405,8 @@ void QE_CountBrushesAndUpdateStatusBar(void) {
 	static int	s_lastbrushcount, s_lastentitycount;
 	static bool s_didonce;
 
-	// entity_t *e;
-	brush_t		*b, *next;
+	// idEditorEntity *e;
+	idEditorBrush		*b, *next;
 
 	g_numbrushes = 0;
 	g_numentities = 0;

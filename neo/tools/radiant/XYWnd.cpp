@@ -59,12 +59,12 @@ CClipPoint		g_Clip1;
 CClipPoint		g_Clip2;
 CClipPoint		g_Clip3;
 CClipPoint		*g_pMovingClip;
-brush_t			g_brFrontSplits;
-brush_t			g_brBackSplits;
+idEditorBrush			g_brFrontSplits;
+idEditorBrush			g_brBackSplits;
 
-brush_t			g_brClipboard;
-brush_t			g_brUndo;
-entity_t		g_enClipboard;
+idEditorBrush			g_brClipboard;
+idEditorBrush			g_brUndo;
+idEditorEntity		g_enClipboard;
 
 idVec3			g_vRotateOrigin;
 idVec3			g_vRotation;
@@ -202,7 +202,7 @@ CDragPoint *PointRay(const idVec3 &org, const idVec3 &dir, float *dist) {
  =======================================================================================================================
  =======================================================================================================================
  */
-void ClearSelectablePoints(brush_t *b) {
+void ClearSelectablePoints(idEditorBrush *b) {
 	if (b == NULL) {
 		dragPoints.RemoveAll();
 	}
@@ -227,7 +227,7 @@ void ClearSelectablePoints(brush_t *b) {
  =======================================================================================================================
  =======================================================================================================================
  */
-void AddSelectablePoint(brush_t *b, idVec3 v, int type, bool priority) {
+void AddSelectablePoint(idEditorBrush *b, idVec3 v, int type, bool priority) {
 	dragPoints.Add(new CDragPoint(b, v, type, priority));
 }
 
@@ -235,7 +235,7 @@ void AddSelectablePoint(brush_t *b, idVec3 v, int type, bool priority) {
  =======================================================================================================================
  =======================================================================================================================
  */
-void UpdateSelectablePoint(brush_t *b, idVec3 v, int type) {
+void UpdateSelectablePoint(idEditorBrush *b, idVec3 v, int type) {
 	int count = dragPoints.GetSize();
 	for (int i = 0; i < count; i++) {
 		CDragPoint	*drag = reinterpret_cast < CDragPoint * > (dragPoints.GetAt(i));
@@ -370,8 +370,8 @@ static void RotateLight(idVec3 &target, idVec3 &up, idVec3 &right, const idVec3 
  =======================================================================================================================
  =======================================================================================================================
 */
-extern idVec3 Brush_TransformedPoint(brush_t *b, const idVec3 &in);
-extern idMat3 Brush_RotationMatrix(brush_t *b);
+extern idVec3 Brush_TransformedPoint(idEditorBrush *b, const idVec3 &in);
+extern idMat3 Brush_RotationMatrix(idEditorBrush *b);
 bool UpdateActiveDragPoint(const idVec3 &move) {
 	if (activeDrag) {
 		idMat3 mat = Brush_RotationMatrix(activeDrag->pBrush);
@@ -941,7 +941,7 @@ float Betwixt(float f1, float f2) {
  =======================================================================================================================
  =======================================================================================================================
  */
-void CXYWnd::ProduceSplits(brush_t **pFront, brush_t **pBack) {
+void CXYWnd::ProduceSplits(idEditorBrush **pFront, idEditorBrush **pBack) {
 	*pFront = NULL;
 	*pBack = NULL;
 	if (ClipMode()) {
@@ -985,10 +985,10 @@ void CXYWnd::ProduceSplits(brush_t **pFront, brush_t **pBack) {
  =======================================================================================================================
  =======================================================================================================================
  */
-void CleanList(brush_t *pList) {
-	brush_t *pBrush = pList->next;
+void CleanList(idEditorBrush *pList) {
+	idEditorBrush *pBrush = pList->next;
 	while (pBrush != NULL && pBrush != pList) {
-		brush_t *pNext = pBrush->next;
+		idEditorBrush *pNext = pBrush->next;
 		Brush_Free(pBrush);
 		pBrush = pNext;
 	}
@@ -1002,8 +1002,8 @@ void CXYWnd::ProduceSplitLists() {
 	if (AnyPatchesSelected()) {
 		Sys_Status("Deslecting patches for clip operation.\n");
 
-		brush_t *next;
-		for (brush_t * pb = selected_brushes.next; pb != &selected_brushes; pb = next) {
+		idEditorBrush *next;
+		for (idEditorBrush * pb = selected_brushes.next; pb != &selected_brushes; pb = next) {
 			next = pb->next;
 			if (pb->pPatch) {
 				Brush_RemoveFromList(pb);
@@ -1018,10 +1018,10 @@ void CXYWnd::ProduceSplitLists() {
 	g_brFrontSplits.next = &g_brFrontSplits;
 	g_brBackSplits.next = &g_brBackSplits;
 
-	brush_t *pBrush;
+	idEditorBrush *pBrush;
 	for (pBrush = selected_brushes.next; pBrush != NULL && pBrush != &selected_brushes; pBrush = pBrush->next) {
-		brush_t *pFront = NULL;
-		brush_t *pBack = NULL;
+		idEditorBrush *pFront = NULL;
+		idEditorBrush *pBack = NULL;
 		if (ClipMode()) {
 			if (g_Clip1.Set() && g_Clip2.Set()) {
 				face_t	face;
@@ -1069,10 +1069,10 @@ void CXYWnd::ProduceSplitLists() {
  =======================================================================================================================
  =======================================================================================================================
  */
-void Brush_CopyList(brush_t *pFrom, brush_t *pTo) {
-	brush_t *pBrush = pFrom->next;
+void Brush_CopyList(idEditorBrush *pFrom, idEditorBrush *pTo) {
+	idEditorBrush *pBrush = pFrom->next;
 	while (pBrush != NULL && pBrush != pFrom) {
-		brush_t *pNext = pBrush->next;
+		idEditorBrush *pNext = pBrush->next;
 		Brush_RemoveFromList(pBrush);
 		Brush_AddToList(pBrush, pTo);
 		pBrush = pNext;
@@ -1563,8 +1563,8 @@ void CXYWnd::OnPaint() {
 			if (g_Clip1.Set() && g_Clip2.Set() && selected_brushes.next != &selected_brushes) {
 				ProduceSplitLists();
 
-				brush_t *pBrush;
-				brush_t *pList = ((m_nViewType == XZ) ? !g_bSwitch : g_bSwitch) ? &g_brBackSplits : &g_brFrontSplits;
+				idEditorBrush *pBrush;
+				idEditorBrush *pList = ((m_nViewType == XZ) ? !g_bSwitch : g_bSwitch) ? &g_brBackSplits : &g_brFrontSplits;
 				for (pBrush = pList->next; pBrush != NULL && pBrush != pList; pBrush = pBrush->next) {
 					qglColor3f(1, 1, 0);
 
@@ -1633,12 +1633,12 @@ void CXYWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 
 //
 // =======================================================================================================================
-//    FIXME: the brush_t *pBrush is never used. ( Entity_Create uses selected_brushes )
+//    FIXME: the idEditorBrush *pBrush is never used. ( Entity_Create uses selected_brushes )
 // =======================================================================================================================
 //
-void CreateEntityFromName(char *pName, brush_t *pBrush, bool forceFixed, idVec3 min, idVec3 max, idVec3 org) {
+void CreateEntityFromName(char *pName, idEditorBrush *pBrush, bool forceFixed, idVec3 min, idVec3 max, idVec3 org) {
 	eclass_t	*pecNew;
-	entity_t	*petNew;
+	idEditorEntity	*petNew;
 	if (stricmp(pName, "worldspawn") == 0) {
 		g_pParentWnd->MessageBox("Can't create an entity with worldspawn.", "info", 0);
 		return;
@@ -1665,7 +1665,7 @@ void CreateEntityFromName(char *pName, brush_t *pBrush, bool forceFixed, idVec3 
 
 	if (petNew == NULL) {
 		if (!((selected_brushes.next == &selected_brushes) || (selected_brushes.next->next != &selected_brushes))) {
-			brush_t *b = selected_brushes.next;
+			idEditorBrush *b = selected_brushes.next;
 			if (b->owner != world_entity && ((b->owner->eclass->fixedsize && pecNew->fixedsize) || forceFixed)) {
 				idVec3	mins, maxs;
 				idVec3	origin;
@@ -1676,7 +1676,7 @@ void CreateEntityFromName(char *pName, brush_t *pBrush, bool forceFixed, idVec3 
 				VectorAdd(pecNew->mins, origin, mins);
 				VectorAdd(pecNew->maxs, origin, maxs);
 
-				brush_t *nb = Brush_Create(mins, maxs, &pecNew->texdef);
+				idEditorBrush *nb = Brush_Create(mins, maxs, &pecNew->texdef);
 				Entity_LinkBrush(b->owner, nb);
 				nb->owner->eclass = pecNew;
 				SetKeyValue(nb->owner, "classname", pName);
@@ -1695,7 +1695,7 @@ void CreateEntityFromName(char *pName, brush_t *pBrush, bool forceFixed, idVec3 
 	Select_Deselect();
 
 	//
-	// entity_t* pEntity = world_entity; if (selected_brushes.next !=
+	// idEditorEntity* pEntity = world_entity; if (selected_brushes.next !=
 	// &selected_brushes) pEntity = selected_brushes.next->owner;
 	//
 	Select_Brush(petNew->brushes.onext);
@@ -1707,11 +1707,11 @@ void CreateEntityFromName(char *pName, brush_t *pBrush, bool forceFixed, idVec3 
  =======================================================================================================================
  =======================================================================================================================
  */
-brush_t *CreateEntityBrush(int x, int y, CXYWnd *pWnd) {
+idEditorBrush *CreateEntityBrush(int x, int y, CXYWnd *pWnd) {
 	idVec3	mins, maxs;
 	int		i;
 	float	temp;
-	brush_t *n;
+	idEditorBrush *n;
 
 	pWnd->SnapToPoint(x, y, mins);
 	x += 32;
@@ -1761,7 +1761,7 @@ void CreateRightClickEntity(CXYWnd *pWnd, int x, int y, char *pName) {
 	CRect	rctZ;
 	pWnd->GetClientRect(rctZ);
 
-	brush_t *pBrush;
+	idEditorBrush *pBrush;
 	if (selected_brushes.next == &selected_brushes) {
 		pBrush = CreateEntityBrush(x, rctZ.Height() - 1 - y, pWnd);
 		min.Zero();
@@ -1778,10 +1778,10 @@ void CreateRightClickEntity(CXYWnd *pWnd, int x, int y, char *pName) {
  =======================================================================================================================
  =======================================================================================================================
  */
-brush_t *CreateSmartBrush(idVec3 v) {
+idEditorBrush *CreateSmartBrush(idVec3 v) {
 	idVec3	mins, maxs;
 	int		i;
-	brush_t *n;
+	idEditorBrush *n;
 
 	for (i = 0; i < 3; i++) {
 		mins[i] = v[i] - 16;
@@ -1853,11 +1853,11 @@ void CreateSmartEntity(CXYWnd *pWnd, int x, int y, const char *pName) {
 		array.Add(reinterpret_cast < void * > (selected_brushes.next));
 		Select_Deselect();
 
-		brush_t *pBrush = CreateSmartBrush(g_PathPoints[0]);
+		idEditorBrush *pBrush = CreateSmartBrush(g_PathPoints[0]);
 		array.Add(pBrush);
 		Select_Deselect();
-		Select_Brush(reinterpret_cast < brush_t * > (array.GetAt(0)));
-		Select_Brush(reinterpret_cast < brush_t * > (array.GetAt(1)));
+		Select_Brush(reinterpret_cast < idEditorBrush * > (array.GetAt(0)));
+		Select_Brush(reinterpret_cast < idEditorBrush * > (array.GetAt(1)));
 		ConnectEntities();
 		g_bScreenUpdates = true;
 	}
@@ -1871,7 +1871,7 @@ void FinishSmartCreation() {
 	CPtrArray	array;
 	HideInfoDialog();
 
-	brush_t *pEntities = NULL;
+	idEditorBrush *pEntities = NULL;
 	if (g_strSmartEntity.Find("Smart_Train") >= 0) {
 		g_bScreenUpdates = false;
 		CreateRightClickEntity(g_pParentWnd->ActiveXY(), g_nSmartX, g_nSmartY, "func_train");
@@ -1891,8 +1891,8 @@ void FinishSmartCreation() {
 
 		for (n = 0; n < g_nPathCount; n++) {
 			Select_Deselect();
-			Select_Brush(reinterpret_cast < brush_t * > (array.GetAt(n)));
-			Select_Brush(reinterpret_cast < brush_t * > (array.GetAt(n + 1)));
+			Select_Brush(reinterpret_cast < idEditorBrush * > (array.GetAt(n)));
+			Select_Brush(reinterpret_cast < idEditorBrush * > (array.GetAt(n + 1)));
 			ConnectEntities();
 		}
 
@@ -1939,7 +1939,7 @@ void CXYWnd::OnEntityCreate(unsigned int nID) {
 		}
 		else if (strItem.CompareNoCase("Remove") == 0) {
 			// remove selected brushes from their current group
-			brush_t *b;
+			idEditorBrush *b;
 			for (b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 			}
 		}
@@ -2524,7 +2524,7 @@ void CXYWnd::NewBrushDrag(int x, int y) {
 	idVec3	mins, maxs, junk;
 	int		i;
 	float	temp;
-	brush_t *n;
+	idEditorBrush *n;
 
 	if ( radiant_entityMode.GetBool() ) {
 		return;
@@ -3164,7 +3164,7 @@ void CXYWnd::DrawZIcon(void) {
     FilterBrush
  =======================================================================================================================
  */
-bool FilterBrush(brush_t *pb) {
+bool FilterBrush(idEditorBrush *pb) {
 	
 	if (!pb->owner) {
 		return false;	// during construction
@@ -3314,15 +3314,15 @@ bool FilterBrush(brush_t *pb) {
 void DrawPathLines(void) {
 	int			i, k;
 	idVec3		mid, mid1;
-	entity_t	*se, *te;
-	brush_t		*sb, *tb;
+	idEditorEntity	*se, *te;
+	idEditorBrush		*sb, *tb;
 	const char		*psz;
 	idVec3		dir, s1, s2;
 	float		len, f;
 	int			arrows;
 	int			num_entities;
 	const char		*ent_target[MAX_MAP_ENTITIES];
-	entity_t	*ent_entity[MAX_MAP_ENTITIES];
+	idEditorEntity	*ent_entity[MAX_MAP_ENTITIES];
 
 	if (g_qeglobals.d_savedinfo.exclude & EXCLUDE_PATHS) {
 		return;
@@ -3530,16 +3530,16 @@ void CXYWnd::PaintSizeInfo(int nDim1, int nDim2, idVec3 vMinBounds, idVec3 vMaxB
 /* XY_Draw */
 long		g_lCount = 0;
 long		g_lTotal = 0;
-extern void DrawBrushEntityName(brush_t *b);
+extern void DrawBrushEntityName(idEditorBrush *b);
 
 /*
  =======================================================================================================================
  =======================================================================================================================
  */
 void CXYWnd::XY_Draw() {
-	brush_t		*brush;
+	idEditorBrush		*brush;
 	float		w, h;
-	entity_t	*e;
+	idEditorEntity	*e;
 	idVec3		mins, maxs;
 	int			drawn, culled;
 	int			i;
@@ -3865,7 +3865,7 @@ void CXYWnd::OnSize(UINT nType, int cx, int cy) {
 	InvalidateRect(NULL, false);
 }
 
-brush_t hold_brushes;
+idEditorBrush hold_brushes;
 
 /*
  =======================================================================================================================
@@ -3876,8 +3876,8 @@ void CXYWnd::Clip() {
 		hold_brushes.next = &hold_brushes;
 		ProduceSplitLists();
 
-		// brush_t* pList = (g_bSwitch) ? &g_brFrontSplits : &g_brBackSplits;
-		brush_t *pList;
+		// idEditorBrush* pList = (g_bSwitch) ? &g_brFrontSplits : &g_brBackSplits;
+		idEditorBrush *pList;
 		if (g_PrefsDlg.m_bSwitchClip) {
 			pList = ((m_nViewType == XZ) ? g_bSwitch : !g_bSwitch) ? &g_brFrontSplits : &g_brBackSplits;
 		}
@@ -3951,7 +3951,7 @@ void CXYWnd::FlipClip() {
 void CXYWnd::PositionView() {
 	int		nDim1 = (m_nViewType == YZ) ? 1 : 0;
 	int		nDim2 = (m_nViewType == XY) ? 1 : 2;
-	brush_t *b = selected_brushes.next;
+	idEditorBrush *b = selected_brushes.next;
 	if (b && b->next != b) {
 		m_vOrigin[nDim1] = b->mins[nDim1];
 		m_vOrigin[nDim2] = b->mins[nDim2];
@@ -4084,9 +4084,9 @@ void CXYWnd::OnSelectMouserotate() {
  =======================================================================================================================
  */
 void CleanCopyEntities() {
-	entity_t	*pe = g_enClipboard.next;
+	idEditorEntity	*pe = g_enClipboard.next;
 	while (pe != NULL && pe != &g_enClipboard) {
-		entity_t	*next = pe->next;
+		idEditorEntity	*next = pe->next;
 		pe->epairs.Clear();
 
 		Entity_Free(pe);
@@ -4100,8 +4100,8 @@ void CleanCopyEntities() {
  =======================================================================================================================
  =======================================================================================================================
  */
-entity_t *Entity_CopyClone(entity_t *e) {
-	entity_t	*n;
+idEditorEntity *Entity_CopyClone(idEditorEntity *e) {
+	idEditorEntity	*n;
 
 	n = Entity_New();
 	n->brushes.onext = n->brushes.oprev = &n->brushes;
@@ -4123,10 +4123,10 @@ entity_t *Entity_CopyClone(entity_t *e) {
  =======================================================================================================================
  =======================================================================================================================
  */
-bool OnList(entity_t *pFind, CPtrArray *pList) {
+bool OnList(idEditorEntity *pFind, CPtrArray *pList) {
 	int nSize = pList->GetSize();
 	while (nSize-- > 0) {
-		entity_t	*pEntity = reinterpret_cast < entity_t * > (pList->GetAt(nSize));
+		idEditorEntity	*pEntity = reinterpret_cast < idEditorEntity * > (pList->GetAt(nSize));
 		if (pEntity == pFind) {
 			return true;
 		}
@@ -4183,20 +4183,20 @@ void CXYWnd::Copy()
 	CPtrArray	holdArray;
 	CleanList(&g_brClipboard);
 	CleanCopyEntities();
-	for (brush_t * pBrush = selected_brushes.next; pBrush != NULL && pBrush != &selected_brushes; pBrush = pBrush->next) {
+	for (idEditorBrush * pBrush = selected_brushes.next; pBrush != NULL && pBrush != &selected_brushes; pBrush = pBrush->next) {
 		if (pBrush->owner == world_entity) {
-			brush_t *pClone = Brush_Clone(pBrush);
+			idEditorBrush *pClone = Brush_Clone(pBrush);
 			pClone->owner = NULL;
 			Brush_AddToList(pClone, &g_brClipboard);
 		}
 		else {
 			if (!OnList(pBrush->owner, &holdArray)) {
-				entity_t	*e = pBrush->owner;
+				idEditorEntity	*e = pBrush->owner;
 				holdArray.Add(reinterpret_cast < void * > (e));
 
-				entity_t	*pEClone = Entity_CopyClone(e);
-				for (brush_t * pEB = e->brushes.onext; pEB != &e->brushes; pEB = pEB->onext) {
-					brush_t *pClone = Brush_Clone(pEB);
+				idEditorEntity	*pEClone = Entity_CopyClone(e);
+				for (idEditorBrush * pEB = e->brushes.onext; pEB != &e->brushes; pEB = pEB->onext) {
+					idEditorBrush *pClone = Brush_Clone(pEB);
 
 					// Brush_AddToList (pClone, &g_brClipboard);
 					Entity_LinkBrush(pEClone, pClone);
@@ -4215,8 +4215,8 @@ void CXYWnd::Copy()
 void CXYWnd::Undo() {
 	/*
 	 * if (g_brUndo.next != &g_brUndo) { g_bScreenUpdates = false; Select_Delete();
-	 * for (brush_t* pBrush = g_brUndo.next ; pBrush != NULL && pBrush != &g_brUndo ;
-	 * pBrush=pBrush->next) { brush_t* pClone = Brush_Clone(pBrush); Brush_AddToList
+	 * for (idEditorBrush* pBrush = g_brUndo.next ; pBrush != NULL && pBrush != &g_brUndo ;
+	 * pBrush=pBrush->next) { idEditorBrush* pClone = Brush_Clone(pBrush); Brush_AddToList
 	 * (pClone, &active_brushes); Entity_LinkBrush (pBrush->pUndoOwner, pClone);
 	 * Brush_Build(pClone); Select_Brush(pClone); } CleanList(&g_brUndo);
 	 * g_bScreenUpdates = true; Sys_UpdateWindows(W_ALL); } else common->Printf("Nothing
@@ -4238,8 +4238,8 @@ void CXYWnd::UndoClear() {
  */
 void CXYWnd::UndoCopy() {
 	/*
-	 * CleanList(&g_brUndo); for (brush_t* pBrush = selected_brushes.next ; pBrush !=
-	 * NULL && pBrush != &selected_brushes ; pBrush=pBrush->next) { brush_t* pClone =
+	 * CleanList(&g_brUndo); for (idEditorBrush* pBrush = selected_brushes.next ; pBrush !=
+	 * NULL && pBrush != &selected_brushes ; pBrush=pBrush->next) { idEditorBrush* pClone =
 	 * Brush_Clone(pBrush); pClone->pUndoOwner = pBrush->owner; Brush_AddToList
 	 * (pClone, &g_brUndo); }
 	 */
@@ -4308,8 +4308,8 @@ void CXYWnd::Paste()
 	if (g_brClipboard.next != &g_brClipboard || g_enClipboard.next != &g_enClipboard) {
 		Select_Deselect();
 
-		for (brush_t * pBrush = g_brClipboard.next; pBrush != NULL && pBrush != &g_brClipboard; pBrush = pBrush->next) {
-			brush_t *pClone = Brush_Clone(pBrush);
+		for (idEditorBrush * pBrush = g_brClipboard.next; pBrush != NULL && pBrush != &g_brClipboard; pBrush = pBrush->next) {
+			idEditorBrush *pClone = Brush_Clone(pBrush);
 
 			// pClone->owner = pBrush->owner;
 			if (pClone->owner == NULL) {
@@ -4322,13 +4322,13 @@ void CXYWnd::Paste()
 
 		for
 		(
-			entity_t * pEntity = g_enClipboard.next;
+			idEditorEntity * pEntity = g_enClipboard.next;
 			pEntity != NULL && pEntity != &g_enClipboard;
 			pEntity = pEntity->next
 		) {
-			entity_t	*pEClone = Entity_Clone(pEntity);
-			for (brush_t * pEB = pEntity->brushes.onext; pEB != &pEntity->brushes; pEB = pEB->onext) {
-				brush_t *pClone = Brush_Clone(pEB);
+			idEditorEntity	*pEClone = Entity_Clone(pEntity);
+			for (idEditorBrush * pEB = pEntity->brushes.onext; pEB != &pEntity->brushes; pEB = pEB->onext) {
+				idEditorBrush *pClone = Brush_Clone(pEB);
 				Brush_AddToList(pClone, &selected_brushes);
 				Entity_LinkBrush(pEClone, pClone);
 				Brush_Build(pClone);

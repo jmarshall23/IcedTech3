@@ -259,7 +259,7 @@ void CEntityDlg::OnCbnSelchangeComboClass()
 				multipleEntities = false;
 			} else {
 				editEntity = selected_brushes.next->owner;
-				for (brush_t *b = selected_brushes.next->next; b != &selected_brushes; b = b->next) {
+				for (idEditorBrush *b = selected_brushes.next->next; b != &selected_brushes; b = b->next) {
 					if (b->owner != editEntity) {
 						multipleEntities = true;
 						break;
@@ -471,7 +471,7 @@ void CEntityDlg::DelProp() {
 
 	editKey.GetWindowText(key);
 	if (multipleEntities) {
-		for (brush_t *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+		for (idEditorBrush *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 			DeleteKey(b->owner, key);
 			Entity_UpdateCurveData( b->owner );
 		}
@@ -608,7 +608,7 @@ void CEntityDlg::AddProp() {
 	bool isOrigin = ( idStr::Icmp( Key, "origin" ) == 0 );
 
 	if (multipleEntities) {
-		brush_t *b;
+		idEditorBrush *b;
 		for (b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 			if (isName) {
 				Entity_SetName(b->owner, Value);
@@ -796,7 +796,7 @@ CPreviewDlg *CEntityDlg::ShowParticleChooser() {
 	return &modelDlg;
 }
 
-CPreviewDlg *CEntityDlg::ShowSkinChooser(entity_t *ent) {
+CPreviewDlg *CEntityDlg::ShowSkinChooser(idEditorEntity *ent) {
 	static CPreviewDlg modelDlg;
 	modelDlg.SetMode(CPreviewDlg::SKINS);
 	modelDlg.SetModal();
@@ -940,7 +940,7 @@ void CEntityDlg::OnCbnDblclkComboClass()
 // =======================================================================================================================
 //
 void CEntityDlg::CreateEntity() {
-	entity_t	*petNew = nullptr;
+	idEditorEntity	*petNew = nullptr;
 	bool		forceFixed = false;
 
 	// check to make sure we have a brush
@@ -949,7 +949,7 @@ void CEntityDlg::CreateEntity() {
 		CRect	rctZ;
 		pWnd->GetClientRect(rctZ);
 
-		brush_t *pBrush;
+		idEditorBrush *pBrush;
 		if (selected_brushes.next == &selected_brushes) {
 			pBrush = CreateEntityBrush(g_nSmartX, rctZ.Height() - 1 - g_nSmartY, pWnd);
 			forceFixed = true;
@@ -981,14 +981,14 @@ void CEntityDlg::CreateEntity() {
 	// create it
 	if ((GetAsyncKeyState(VK_CONTROL) & 0x8000)) {
 		// MAJOR hack for xian
-extern void Brush_CopyList(brush_t *pFrom, brush_t *pTo);
-		brush_t temp_brushes;
+extern void Brush_CopyList(idEditorBrush *pFrom, idEditorBrush *pTo);
+		idEditorBrush temp_brushes;
 		temp_brushes.next = &temp_brushes;
 		Brush_CopyList(&selected_brushes, &temp_brushes);
 		Select_Deselect();
-		brush_t *pBrush = temp_brushes.next;
+		idEditorBrush *pBrush = temp_brushes.next;
 		while (pBrush != NULL && pBrush != &temp_brushes) {
-			brush_t *pNext = pBrush->next;
+			idEditorBrush *pNext = pBrush->next;
 			Brush_RemoveFromList(pBrush);
 			Brush_AddToList(pBrush, &selected_brushes);
 			pBrush = pNext;

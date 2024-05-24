@@ -44,7 +44,7 @@ const int SCALE_X = 0x01;
 const int SCALE_Y = 0x02;
 const int SCALE_Z = 0x04;
 
-bool FilterBrush(brush_t *pb);
+bool FilterBrush(idEditorBrush *pb);
 
 typedef void (PFNPathCallback)(bool, int);
 // as i didn't really encapsulate anything this
@@ -220,7 +220,7 @@ protected:
 
 	void OriginalButtonUp(UINT nFlags, CPoint point);
 	void OriginalButtonDown(UINT nFlags, CPoint point);
-  void ProduceSplits(brush_t** pFront, brush_t** pBack);
+  void ProduceSplits(idEditorBrush** pFront, idEditorBrush** pBack);
   void ProduceSplitLists();
   void HandleDrop();
   void PaintSizeInfo(int nDim1, int nDim2, idVec3 vMinBounds, idVec3 vMaxBounds);

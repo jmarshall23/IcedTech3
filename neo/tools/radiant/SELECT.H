@@ -46,18 +46,18 @@ typedef enum
 class CDragPoint {
 public:
 	idVec3 vec;
-	brush_t *pBrush;
+	idEditorBrush *pBrush;
 	int nType;
 	bool priority;
 	CDragPoint() {};
-	CDragPoint(brush_t *b, idVec3 v, int type, bool p) {
+	CDragPoint(idEditorBrush *b, idVec3 v, int type, bool p) {
 		pBrush = b;
 		VectorCopy(v, vec);
 		nType = type;
 		priority = p;
 	}
 
-	void Set(brush_t *b, idVec3 v, int type) {
+	void Set(idEditorBrush *b, idVec3 v, int type) {
 		pBrush = b;
 		VectorCopy(v, vec);
 		nType = type;
@@ -69,7 +69,7 @@ public:
 
 typedef struct
 {
-	brush_t		*brush;
+	idEditorBrush		*brush;
 	face_t		*face;
 	CDragPoint *point;
 	float		dist;
@@ -91,7 +91,7 @@ void SelectCurvePointByRay( const idVec3 &org, const idVec3 &dir, int buttons);
 void SelectSplinePointByRay( const idVec3 &org, const idVec3 &dir, int buttons);
 
 void Select_GetBounds (idVec3 &mins, idVec3 &maxs);
-void Select_Brush (brush_t *b, bool bComplete = true, bool bStatus = true);
+void Select_Brush (idEditorBrush *b, bool bComplete = true, bool bStatus = true);
 void Select_Ray (idVec3 origin, idVec3 dir, int flags);
 void Select_Delete (void);
 void Select_Deselect (bool bDeselectFaces = true);

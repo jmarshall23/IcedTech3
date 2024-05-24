@@ -423,7 +423,7 @@ eclass_t *Eclass_ForName (const char *name, bool has_brushes)
 }
 
 
-eclass_t* GetCachedModel(entity_t *pEntity, const char *pName, idVec3 &vMin, idVec3 &vMax)
+eclass_t* GetCachedModel(idEditorEntity *pEntity, const char *pName, idVec3 &vMin, idVec3 &vMax)
 {
 	eclass_t *e = NULL;
 	if (pName == NULL || strlen(pName) == 0) {

@@ -573,7 +573,7 @@ void CLightDlg::SaveLightInfo( const idDict *differences ) {
 	if ( com_editorActive ) {
 
 		// used from Radiant
-		for ( brush_t *b = selected_brushes.next; b && b != &selected_brushes; b = b->next ) {
+		for ( idEditorBrush *b = selected_brushes.next; b && b != &selected_brushes; b = b->next ) {
 			if ( ( b->owner->eclass->nShowFlags & ECLASS_LIGHT ) && !b->entityModel ) {
 				if ( differences ) {
 					lightInfo.ToDictFromDifferences( &b->owner->epairs, differences );
@@ -711,9 +711,9 @@ void CLightDlg::OnOK() {
 	CDialog::OnOK();
 }
 
-entity_t *SingleLightSelected() {
+idEditorEntity *SingleLightSelected() {
 	if ( QE_SingleBrush( true, true ) ) {
-		brush_t *b = selected_brushes.next;
+		idEditorBrush *b = selected_brushes.next;
 		if ( ( b->owner->eclass->nShowFlags & ECLASS_LIGHT ) && !b->entityModel ) {
 			return b->owner;
 		}
@@ -730,7 +730,7 @@ void CLightDlg::UpdateDialog( bool updateChecks )
 
 	if ( com_editorActive ) {
 		// used from Radiant
-		entity_t *e = SingleLightSelected();
+		idEditorEntity *e = SingleLightSelected();
 		if ( e ) {
 			lightInfo.FromDict(&e->epairs);
 			lightInfoOriginal.FromDict(&e->epairs); //our original copy of the values that we compare against for apply differences
@@ -738,7 +738,7 @@ void CLightDlg::UpdateDialog( bool updateChecks )
 		} else {   
 			//find the last brush belonging to the last entity selected and use that as the source
 			e = NULL;
-			for ( brush_t *b = selected_brushes.next ; b != &selected_brushes ; b = b->next ) {
+			for ( idEditorBrush *b = selected_brushes.next ; b != &selected_brushes ; b = b->next ) {
 				if ( ( b->owner->eclass->nShowFlags & ECLASS_LIGHT ) && !b->entityModel ) {
 					e = b->owner;
 					break;

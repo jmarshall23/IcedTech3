@@ -1598,9 +1598,9 @@ void CMainFrame::OnDestroy() {
 
 	g_qeglobals.d_project_entity->epairs.Clear();
 
-	entity_t	*pEntity = g_qeglobals.d_project_entity->next;
+	idEditorEntity	*pEntity = g_qeglobals.d_project_entity->next;
 	while (pEntity != NULL && pEntity != g_qeglobals.d_project_entity) {
-		entity_t	*pNextEntity = pEntity->next;
+		idEditorEntity	*pNextEntity = pEntity->next;
 		Entity_Free(pEntity);
 		pEntity = pNextEntity;
 	}
@@ -2746,7 +2746,7 @@ bool DoColor( int iIndex ) {
 extern void Select_SetKeyVal(const char *key, const char *val);
 void CMainFrame::OnMiscSelectentitycolor() {
 
-	entity_t *ent = NULL;
+	idEditorEntity *ent = NULL;
 	if (QE_SingleBrush(true, true)) {
 		ent = selected_brushes.next->owner;
 		CString strColor = ValueForKey(ent, "_color");
@@ -2778,7 +2778,7 @@ CString strReplaceKey;
 CString strReplaceValue;
 bool    gbWholeStringMatchOnly = true;
 bool	gbSelectAllMatchingEnts= false;
-brush_t* gpPrevEntBrushFound = NULL;
+idEditorBrush* gpPrevEntBrushFound = NULL;
 
 // all this because there's no ansi stristr(), sigh...
 //
@@ -2804,11 +2804,11 @@ LPCSTR String_ToLower(LPCSTR psString)
 }
 
 
-bool FindNextBrush(brush_t* pPrevFoundBrush)	// can be NULL for fresh search
+bool FindNextBrush(idEditorBrush* pPrevFoundBrush)	// can be NULL for fresh search
 {	
 	bool bFoundSomething = false;
-	entity_t *pLastFoundEnt = nullptr;
-	brush_t  *pLastFoundBrush = nullptr;
+	idEditorEntity *pLastFoundEnt = nullptr;
+	idEditorBrush  *pLastFoundBrush = nullptr;
 
 	CWaitCursor waitcursor;
 
@@ -2816,12 +2816,12 @@ bool FindNextBrush(brush_t* pPrevFoundBrush)	// can be NULL for fresh search
 
 	// see whether to start search from prev_brush->next by checking if prev_brush is still in the active list...
 	//
-	brush_t *pStartBrush = active_brushes.next;
+	idEditorBrush *pStartBrush = active_brushes.next;
 
 	if (pPrevFoundBrush && !gbSelectAllMatchingEnts)
 	{
-		brush_t *pPrev = NULL;
-		for (brush_t* b = active_brushes.next ; b != &active_brushes ; b = b->next)
+		idEditorBrush *pPrev = NULL;
+		for (idEditorBrush* b = active_brushes.next ; b != &active_brushes ; b = b->next)
 		{
 			if (pPrev == pPrevFoundBrush && pPrevFoundBrush)
 			{
@@ -2838,8 +2838,8 @@ bool FindNextBrush(brush_t* pPrevFoundBrush)	// can be NULL for fresh search
 	int iBrushesSelected=0;
 	int iEntsScanned = 0;
 
-	brush_t* pNextBrush;		
-	for (brush_t* b = pStartBrush; b != &active_brushes ; b = pNextBrush)
+	idEditorBrush* pNextBrush;		
+	for (idEditorBrush* b = pStartBrush; b != &active_brushes ; b = pNextBrush)
 	{	
 		// setup the <nextbrush> ptr before going any further (because selecting a brush down below moves it to a 
 		//	different link list), but we need to ensure that the next brush has a different ent-owner than the current
@@ -2861,7 +2861,7 @@ bool FindNextBrush(brush_t* pPrevFoundBrush)	// can be NULL for fresh search
 			common->Printf(".");	// cut down on printing		
 
 		bool bMatch = false;
-		entity_t* ent = b->owner;
+		idEditorEntity* ent = b->owner;
 
 		if (ent && ent!= world_entity)	// needed!
 		{
@@ -2997,12 +2997,12 @@ void CMainFrame::OnMiscFindOrReplaceEntity()
 	{
 		case ID_RET_REPLACE:
 		{	
-			brush_t* next = NULL;
+			idEditorBrush* next = NULL;
 			int iOccurences = 0;
-			for (brush_t* b = active_brushes.next ; b != &active_brushes ; b = next)
+			for (idEditorBrush* b = active_brushes.next ; b != &active_brushes ; b = next)
 			{
 				next = b->next;	// important to do this here, in case brush gets linked to a different list
-				entity_t* ent = b->owner;
+				idEditorEntity* ent = b->owner;
 
 				if (ent)	// needed!
 				{
@@ -3231,7 +3231,7 @@ void CMainFrame::OnBrushFlipx() {
 	Undo_AddBrushList(&selected_brushes);
 
 	Select_FlipAxis(0);
-	for (brush_t * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		if (b->owner->eclass->fixedsize) {
 			char	buf[16];
 			float	a = FloatForKey(b->owner, "angle");
@@ -3254,7 +3254,7 @@ void CMainFrame::OnBrushFlipy() {
 	Undo_AddBrushList(&selected_brushes);
 
 	Select_FlipAxis(1);
-	for (brush_t * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		if (b->owner->eclass->fixedsize) {
 			float	a = FloatForKey(b->owner, "angle");
 			if (a == 0 || a == 180 || a == 360) {
@@ -3454,7 +3454,7 @@ void CMainFrame::OnSelectionCsgmerge() {
  =======================================================================================================================
  */
 void CMainFrame::OnSelectionDelete() {
-	brush_t *brush;
+	idEditorBrush *brush;
 
 	// if (ActiveXY()) ActiveXY()->UndoCopy();
 	Undo_Start("delete");
@@ -5002,7 +5002,7 @@ void CMainFrame::OnToolbarTexture() {
  =======================================================================================================================
  */
 void CMainFrame::OnSelectionPrint() {
-	for (brush_t * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush * b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		Brush_Print(b);
 	}
 }
@@ -5743,13 +5743,13 @@ void CMainFrame::OnPatchTab() {
 		// check to see if the selected brush is part of a func group if it is, deselect
 		// everything and reselect the next brush in the group
 		//
-		brush_t		*b = selected_brushes.next;
-		entity_t	*e;
+		idEditorBrush		*b = selected_brushes.next;
+		idEditorEntity	*e;
 		if (b != &selected_brushes) {
 			if ( idStr::Icmp(b->owner->eclass->name, "worldspawn") != 0 ) {
 				e = b->owner;
 				Select_Deselect();
-				brush_t *b2;
+				idEditorBrush *b2;
 				for (b2 = e->brushes.onext; b2 != &e->brushes; b2 = b2->onext) {
 					if (b == b2) {
 						b2 = b2->onext;
@@ -6578,7 +6578,7 @@ void CMainFrame::OnSelectionCombine()
 		return;
 	}
 
-	entity_t *e1 = g_qeglobals.d_select_order[0]->owner;
+	idEditorEntity *e1 = g_qeglobals.d_select_order[0]->owner;
 
 	if (e1 == world_entity) {
 		Sys_Status("First selection must not be world.", 0);
@@ -6607,7 +6607,7 @@ void CMainFrame::OnSelectionCombine()
 	}
 
 	bool setModel = true;
-	for (brush_t *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		if (b->owner != e1) {
 			if (e1->eclass->nShowFlags & ECLASS_LIGHT) {
 				if (GetVectorForKey(b->owner, "origin", v)) {
@@ -6645,7 +6645,7 @@ extern void Patch_Weld(patchMesh_t *p, patchMesh_t *p2);
 void CMainFrame::OnPatchCombine() {
 	patchMesh_t *p, *p2;
 	p = p2 = NULL;
-	for (brush_t *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
+	for (idEditorBrush *b = selected_brushes.next; b != &selected_brushes; b = b->next) {
 		if (b->pPatch) {
 			if (p == NULL) {
 				p = b->pPatch;
@@ -6876,8 +6876,8 @@ void CMainFrame::OnSelectAlltargets()
 
 void CMainFrame::OnSelectCompleteEntity()
 {
-    brush_t* b = NULL;
-    entity_t* e = NULL;
+    idEditorBrush* b = NULL;
+    idEditorEntity* e = NULL;
 
     b = selected_brushes.next;
     if ( b == &selected_brushes )
@@ -6925,7 +6925,7 @@ void CMainFrame::OnGenerateMaterialsList()
 	Sys_BeginWait ();
 	common->Printf ( "Generating list of active materials...\n" );
 
-	for ( brush_t* b = active_brushes.next ; b != &active_brushes ; b=b->next ) {
+	for ( idEditorBrush* b = active_brushes.next ; b != &active_brushes ; b=b->next ) {
 		if ( b->pPatch ){
 			mtrName = b->pPatch->d_texture->GetName();
 			if ( !mtrList.Find( mtrName) ) {
