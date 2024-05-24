@@ -357,8 +357,6 @@ int CRadiantApp::Run( void )
 	BOOL bIdle = TRUE;
 	LONG lIdleCount = 0;
 
-	lastFrameTime = std::chrono::steady_clock::now();
-
 #if _MSC_VER >= 1300
 	MSG *msg = AfxGetCurrentMessage();			// TODO Robert fix me!!
 #else

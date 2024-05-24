@@ -68,6 +68,8 @@ If you have questions concerning this license or the applicable additional terms
 static char		THIS_FILE[] = __FILE__;
 #endif
 
+#undef min
+
 // globals
 CString			g_strAppPath;						// holds the full path of the executable
 CMainFrame		*g_pParentWnd = NULL;				// used to precast to CMainFrame
@@ -712,7 +714,7 @@ static UINT indicators[] = {
 
 std::chrono::steady_clock::time_point lastFrameTime;
 
-idCVar radiant_cameraMoveSpeed("radiant_cameraMoveSpeed", "200", CVAR_TOOL | CVAR_FLOAT, "how fast the camera is going to move in radiant.");
+idCVar radiant_cameraMoveSpeed("radiant_cameraMoveSpeed", "500", CVAR_TOOL | CVAR_FLOAT, "how fast the camera is going to move in radiant.");
 
 /*
  =======================================================================================================================
@@ -3741,8 +3743,24 @@ void CMainFrame::OnCameraAngleup() {
  =======================================================================================================================
  */
 void CMainFrame::OnCameraBack() {
-	VectorMA(m_pCamWnd->Camera().origin, -SPEED_MOVE, m_pCamWnd->Camera().forward, m_pCamWnd->Camera().origin);
+	// Calculate delta time
+	auto currentFrameTime = std::chrono::steady_clock::now();
+	std::chrono::duration<float> deltaTime = currentFrameTime - lastFrameTime;
+	lastFrameTime = std::chrono::steady_clock::now();
+	float deltaTimeSeconds = std::min(deltaTime.count(), 0.1f);
 
+	// Calculate movement based on delta time
+	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTimeSeconds;
+
+	// Get the camera direction vectors
+	idVec3 forward = m_pCamWnd->Camera().forward;
+	idVec3 right = m_pCamWnd->Camera().right;
+	idVec3 up = idVec3(0, 0, 1);
+
+	// Update camera origin with smooth movement
+	m_pCamWnd->Camera().origin -= forward * moveAmount;
+
+	// Determine which windows to update
 	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
 	Sys_UpdateWindows(nUpdate);
 }
@@ -3764,9 +3782,11 @@ void CMainFrame::OnCameraForward() {
 	// Calculate delta time
 	auto currentFrameTime = std::chrono::steady_clock::now();
 	std::chrono::duration<float> deltaTime = currentFrameTime - lastFrameTime;
+	lastFrameTime = std::chrono::steady_clock::now();
+	float deltaTimeSeconds = std::min(deltaTime.count(), 0.1f);
 
 	// Calculate movement based on delta time
-	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTime.count();
+	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTimeSeconds;
 
 	// Get the camera direction vectors
 	idVec3 forward = m_pCamWnd->Camera().forward;
@@ -3789,9 +3809,11 @@ void CMainFrame::OnCameraLeft() {
 	// Calculate delta time
 	auto currentFrameTime = std::chrono::steady_clock::now();
 	std::chrono::duration<float> deltaTime = currentFrameTime - lastFrameTime;
+	lastFrameTime = std::chrono::steady_clock::now();
+	float deltaTimeSeconds = std::min(deltaTime.count(), 0.1f);
 
 	// Calculate movement based on delta time
-	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTime.count();
+	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTimeSeconds;
 
 	// Get the camera direction vectors
 	idVec3 forward = m_pCamWnd->Camera().forward;
@@ -3811,9 +3833,24 @@ void CMainFrame::OnCameraLeft() {
  =======================================================================================================================
  */
 void CMainFrame::OnCameraRight() {
-	idVec3 right = m_pCamWnd->Camera().right;
-	m_pCamWnd->Camera().origin -= right * SPEED_MOVE;
+	// Calculate delta time
+	auto currentFrameTime = std::chrono::steady_clock::now();
+	std::chrono::duration<float> deltaTime = currentFrameTime - lastFrameTime;
+	lastFrameTime = std::chrono::steady_clock::now();
+	float deltaTimeSeconds = std::min(deltaTime.count(), 0.1f);
 
+	// Calculate movement based on delta time
+	float moveAmount = radiant_cameraMoveSpeed.GetFloat() * deltaTimeSeconds;
+
+	// Get the camera direction vectors
+	idVec3 forward = m_pCamWnd->Camera().forward;
+	idVec3 right = m_pCamWnd->Camera().right;
+	idVec3 up = idVec3(0, 0, 1);
+
+	// Update camera origin with smooth movement
+	m_pCamWnd->Camera().origin -= right * moveAmount;
+
+	// Determine which windows to update
 	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
 	Sys_UpdateWindows(nUpdate);
 }
