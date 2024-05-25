@@ -397,6 +397,11 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 
 			// render it
 			const srfTriangles_t* tri = surfInt->ambientTris;
+
+			if (tri->numIndexes <= 0) {
+				continue;
+			}
+
 			if (!tri->ambientCache) {
 				R_CreateAmbientCache(const_cast<srfTriangles_t*>(tri), false);
 			}
