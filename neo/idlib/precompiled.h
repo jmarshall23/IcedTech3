@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <limits>
 #include <chrono>
 #include <algorithm>
+#include <thread>
 
 //-----------------------------------------------------
 

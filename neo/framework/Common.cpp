@@ -2772,6 +2772,19 @@ void idCommonLocal::SetMachineSpec( void ) {
 
 /*
 =================
+idSoundThread
+=================
+*/
+void idSoundThread() {
+	while (true) {
+		// Call the AsyncUpdate method with the current milliseconds
+		soundSystem->AsyncUpdate(Sys_Milliseconds());
+		Sleep(0);
+	}
+}
+
+/*
+=================
 idCommonLocal::Init
 =================
 */
@@ -2869,6 +2882,9 @@ void idCommonLocal::Init( int argc, const char **argv, const char *cmdline ) {
 		console->ClearNotifyLines();
 		
 		ClearCommandLine();
+
+		static std::thread updateThread(idSoundThread);
+		
 
 		com_fullyInitialized = true;
 	}
