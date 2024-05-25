@@ -169,6 +169,7 @@ public:
 
 	void						SetMachineSpec( void );
 
+	bool						IsShuttingDown(void) { return com_shuttingDown; }
 private:
 	void						InitCommands( void );
 	void						InitRenderSystem( void );
@@ -2776,7 +2777,7 @@ idSoundThread
 =================
 */
 void idSoundThread() {
-	while (true) {
+	while (!commonLocal.IsShuttingDown()) {
 		// Call the AsyncUpdate method with the current milliseconds
 		soundSystem->AsyncUpdate(Sys_Milliseconds());
 		Sleep(0);
