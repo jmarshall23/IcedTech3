@@ -2841,34 +2841,6 @@ void CXYWnd::XY_DrawGrid() {
 		qglEnd();
 	}
 
-
-	// draw ZClip boundaries (if applicable)...
-	//
-	if (m_nViewType == XZ || m_nViewType == YZ)
-	{
-		if (g_pParentWnd->GetZWnd()->m_pZClip)	// should always be the case at this point I think, but this is safer
-		{
-			if (g_pParentWnd->GetZWnd()->m_pZClip->IsEnabled())
-			{
-				qglColor3f(ZCLIP_COLOUR);
-				qglLineWidth(2);
-				qglBegin (GL_LINES);
-
-				qglVertex2f (xb, g_pParentWnd->GetZWnd()->m_pZClip->GetTop());
-				qglVertex2f (xe, g_pParentWnd->GetZWnd()->m_pZClip->GetTop());
-
-				qglVertex2f (xb, g_pParentWnd->GetZWnd()->m_pZClip->GetBottom());
-				qglVertex2f (xe, g_pParentWnd->GetZWnd()->m_pZClip->GetBottom());
-
-				qglEnd ();
-				qglLineWidth(1);
-			}
-		}		
-	}
-
-	
-
-
 	// draw coordinate text if needed
 	if (g_qeglobals.d_savedinfo.show_coordinates) {
 		// glColor4f(0, 0, 0, 0);
@@ -3176,22 +3148,6 @@ bool FilterBrush(idEditorBrush *pb) {
 
 	if ( pb->forceVisibile ) {
 		return false;
-	}
-
-	if (g_pParentWnd->GetZWnd()->m_pZClip)	// ZClip class up and running? (and hence Z window built)
-	{
-		if (g_pParentWnd->GetZWnd()->m_pZClip->IsEnabled())
-		{
-			// ZClipping active...
-			//
-			if (pb->mins[2] > g_pParentWnd->GetZWnd()->m_pZClip->GetTop()	// brush bottom edge is above clip top
-				||
-				pb->maxs[2] < g_pParentWnd->GetZWnd()->m_pZClip->GetBottom()// brush top edge is below clip bottom 
-				)
-			{
-				return TRUE;
-			}
-		}
 	}
 
 	if (g_qeglobals.d_savedinfo.exclude & (EXCLUDE_CAULK | EXCLUDE_VISPORTALS)) {

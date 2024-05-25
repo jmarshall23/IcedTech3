@@ -140,6 +140,7 @@ protected:
 	void InitCull();
 	bool CullBrush (idEditorBrush *b, bool cubicOnly);
 	void Cam_Draw();
+	void DrawGrid();
 	void Cam_Render();
 
 	// game renderer interaction

@@ -633,9 +633,6 @@
     <ClCompile Include="tools\radiant\ZClip.cpp">
       <Filter>Radiant</Filter>
     </ClCompile>
-    <ClCompile Include="tools\radiant\ZWnd.cpp">
-      <Filter>Radiant</Filter>
-    </ClCompile>
     <ClCompile Include="tools\script\DialogScriptEditor.cpp">
       <Filter>Script</Filter>
     </ClCompile>
@@ -1171,9 +1168,6 @@
       <Filter>Radiant</Filter>
     </ClInclude>
     <ClInclude Include="tools\radiant\ZClip.h">
-      <Filter>Radiant</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\radiant\ZWnd.h">
       <Filter>Radiant</Filter>
     </ClInclude>
     <ClInclude Include="tools\script\DialogScriptEditor.h">

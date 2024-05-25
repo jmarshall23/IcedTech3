@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "qe3.h"
 #include "Radiant.h"
-#include "ZWnd.h"
 #include "CamWnd.h"
 #include "MapInfo.h"
 #include "MainFrm.h"
@@ -758,7 +757,6 @@ CMainFrame::CMainFrame() {
 	g_pParentWnd = this;
 	m_pXYWnd = NULL;
 	m_pCamWnd = NULL;
-	m_pZWnd = NULL;
 	m_pYZWnd = NULL;
 	m_pXZWnd = NULL;
 	m_pActiveXY = NULL;
@@ -1564,13 +1562,6 @@ void CMainFrame::OnDestroy() {
 	delete m_pXZWnd;
 	m_pXZWnd = NULL;
 
-	if (m_pZWnd->GetSafeHwnd()) {
-		m_pZWnd->SendMessage(WM_DESTROY, 0, 0);
-	}
-
-	delete m_pZWnd;
-	m_pZWnd = NULL;
-
 	if (m_pCamWnd->GetSafeHwnd()) {
 		m_pCamWnd->SendMessage(WM_DESTROY, 0, 0);
 	}
@@ -1794,9 +1785,6 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext) {
 		TRACE0("Failed to create splitter window\n");
 		return FALSE; // failed to create
 	}
-	
-	m_pZWnd = new CZWnd();
-	m_pZWnd->Create(Z_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1238);
 
 	//m_pCamWnd = new CCamWnd();
 	//m_pCamWnd->Create(CAMERA_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1234);
@@ -3957,13 +3945,7 @@ void CMainFrame::OnToggleview() {
  =======================================================================================================================
  */
 void CMainFrame::OnTogglez() {
-	if (m_pZWnd && m_pZWnd->GetSafeHwnd()) {
-		if (m_pZWnd->IsWindowVisible()) {
-			m_pZWnd->ShowWindow(SW_HIDE);
-		} else {
-			m_pZWnd->ShowWindow(SW_SHOW);
-		}
-	}
+
 }
 
 /*
@@ -4101,12 +4083,6 @@ void CMainFrame::UpdateWindows(int nBits) {
 	if (nBits & W_CAMERA || ((nBits & W_CAMERA_IFON) && m_bCamPreview)) {
 		if (m_pCamWnd) {
 			m_pCamWnd->RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
-		}
-	}
-
-	if (nBits & (W_Z | W_Z_OVERLAY)) {
-		if (m_pZWnd) {
-			m_pZWnd->RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 		}
 	}
 

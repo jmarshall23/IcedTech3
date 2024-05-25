@@ -964,6 +964,44 @@ void CCamWnd::SetProjectionMatrix() {
 #endif
 }
 
+void CCamWnd::DrawGrid() {
+	const float GRID_SPACING = 64.0f;
+	const int GRID_LINES = 100;
+	const float GRID_COLOR[4] = { 0.0f, 0.0f, 0.5f, 1.0f }; // Blue color for regular lines
+	const float DARKER_LINE_COLOR[4] = { 0.0f, 0.0f, 0.25f, 1.0f }; // Darker blue color for center lines
+
+	// Calculate the grid bounds based on the camera position
+	float startX = floor(m_Camera.origin.x / GRID_SPACING) * GRID_SPACING - GRID_LINES * GRID_SPACING;
+	float endX = startX + 2 * GRID_LINES * GRID_SPACING;
+	float startY = floor(m_Camera.origin.y / GRID_SPACING) * GRID_SPACING - GRID_LINES * GRID_SPACING;
+	float endY = startY + 2 * GRID_LINES * GRID_SPACING;
+
+	// Draw vertical grid lines
+	glBegin(GL_LINES);
+	for (float x = startX; x <= endX; x += GRID_SPACING) {
+		if (fabs(x) < 0.01f) {
+			glColor4fv(GRID_COLOR); // Center line color
+		}
+		else {
+			glColor4fv(DARKER_LINE_COLOR); // Regular grid line color
+		}
+		glVertex3f(x, startY, 0);
+		glVertex3f(x, endY, 0);
+	}
+	// Draw horizontal grid lines
+	for (float y = startY; y <= endY; y += GRID_SPACING) {
+		if (fabs(y) < 0.01f) {
+			glColor4fv(GRID_COLOR); // Center line color
+		}
+		else {
+			glColor4fv(DARKER_LINE_COLOR); // Regular grid line color
+		}
+		glVertex3f(startX, y, 0);
+		glVertex3f(endX, y, 0);
+	}
+	glEnd();
+}
+
 void CCamWnd::Cam_Draw() {
 	idEditorBrush *brush;
 	face_t	*face;
@@ -982,7 +1020,6 @@ void CCamWnd::Cam_Draw() {
 
 	if (renderMode) {
 		Cam_Render();
-		return;
 	}
 
 	qglViewport(0, 0, m_Camera.width, m_Camera.height);
@@ -1005,6 +1042,10 @@ void CCamWnd::Cam_Draw() {
 	qglTranslatef(-m_Camera.origin[0], -m_Camera.origin[1], -m_Camera.origin[2]);
 
 	Cam_BuildMatrix();
+
+	if (!renderMode) {
+		DrawGrid();
+	}
    
 	for (brush = active_brushes.next; brush != &active_brushes; brush = brush->next) {
 

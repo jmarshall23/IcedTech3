@@ -83,64 +83,6 @@ void Z_MouseDown(int x, int y, int buttons) {
 	vright[1] = 0;
 	vright[2] = 0;
 
-
-	// new mouse code for ZClip, I'll do this stuff before falling through into the standard ZWindow mouse code...
-	//
-	if (g_pParentWnd->GetZWnd()->m_pZClip)	// should always be the case I think, but this is safer
-	{
-		bool bToggle = false;
-		bool bSetTop = false;
-		bool bSetBot = false;
-		bool bReset  = false;
-
-		if (g_PrefsDlg.m_nMouseButtons == 2)
-		{
-			// 2 button mice...
-			//
-			bToggle = (GetKeyState(VK_F1) & 0x8000) != 0;
-			bSetTop = (GetKeyState(VK_F2) & 0x8000) != 0;
-			bSetBot = (GetKeyState(VK_F3) & 0x8000) != 0;
-			bReset  = (GetKeyState(VK_F4) & 0x8000) != 0;
-		}
-		else
-		{	
-			// 3 button mice...
-			//
-			bToggle = (buttons == (MK_RBUTTON|MK_SHIFT|MK_CONTROL));
-			bSetTop = (buttons == (MK_RBUTTON|MK_SHIFT));
-			bSetBot = (buttons == (MK_RBUTTON|MK_CONTROL));
-			bReset  = (GetKeyState(VK_F4) & 0x8000) != 0;
-		}				
-		
-		if (bToggle)
-		{
-			g_pParentWnd->GetZWnd()->m_pZClip->Enable(!(g_pParentWnd->GetZWnd()->m_pZClip->IsEnabled()));
-		    Sys_UpdateWindows (W_ALL);
-			return;
-		}
-
-		if (bSetTop)
-		{
-			g_pParentWnd->GetZWnd()->m_pZClip->SetTop(org[2]);
-		    Sys_UpdateWindows (W_ALL);
-			return;
-		}
-		
-		if (bSetBot)
-		{
-			g_pParentWnd->GetZWnd()->m_pZClip->SetBottom(org[2]);
-		    Sys_UpdateWindows (W_ALL);
-			return;
-		}
-
-		if (bReset)
-		{
-			g_pParentWnd->GetZWnd()->m_pZClip->Reset();
-		    Sys_UpdateWindows (W_ALL);
-			return;
-		}
-	}
-
 	//
 	// LBUTTON = manipulate selection shift-LBUTTON = select middle button = grab
 	// texture ctrl-middle button = set entire brush to texture ctrl-shift-middle
@@ -321,13 +263,7 @@ void ZDrawCameraIcon(void) {
 
 void ZDrawZClip()
 {
-	float x,y;
-	
-	x = 0;
-	y = g_pParentWnd->GetCamera()->Camera().origin[2];
 
-	if (g_pParentWnd->GetZWnd()->m_pZClip)	// should always be the case I think
-		g_pParentWnd->GetZWnd()->m_pZClip->Paint();
 }
 
 

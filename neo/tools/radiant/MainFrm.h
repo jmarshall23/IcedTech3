@@ -35,7 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "XYWnd.h"
 #include "NewTexWnd.h"
-#include "ZWnd.h"
 #include "CamWnd.h"
 #include "TextureBar.h"
 
@@ -121,7 +120,6 @@ public:
 	CXYWnd* GetXZWnd() {return m_pXZWnd;};
 	CXYWnd* GetYZWnd() {return m_pYZWnd;};
 	CCamWnd* GetCamera() {return m_pCamWnd;};
-	CZWnd* GetZWnd()	 {return m_pZWnd;};
 
 	void SetActiveXY(CXYWnd* p) 
 	{
@@ -150,7 +148,6 @@ protected:  // control bar embedded members
 	CXYWnd* m_pYZWnd;
 	CXYWnd* m_pXZWnd;
 	CCamWnd* m_pCamWnd;
-	CZWnd* m_pZWnd;
 	CString m_strStatus[15];
 	CXYWnd* m_pActiveXY;
 	CSplitterWnd m_wndSplitter;

@@ -329,7 +329,6 @@
     <ClCompile Include="tools\radiant\XYWnd.cpp" />
     <ClCompile Include="tools\radiant\Z.CPP" />
     <ClCompile Include="tools\radiant\ZClip.cpp" />
-    <ClCompile Include="tools\radiant\ZWnd.cpp" />
     <ClCompile Include="tools\script\DialogScriptEditor.cpp" />
     <ClCompile Include="tools\sound\DialogSound.cpp" />
     <ClCompile Include="tools\sound\DialogSoundGroup.cpp" />
@@ -510,7 +509,6 @@
     <ClInclude Include="tools\radiant\XYWnd.h" />
     <ClInclude Include="tools\radiant\Z.H" />
     <ClInclude Include="tools\radiant\ZClip.h" />
-    <ClInclude Include="tools\radiant\ZWnd.h" />
     <ClInclude Include="tools\script\DialogScriptEditor.h" />
     <ClInclude Include="tools\sound\DialogSound.h" />
     <ClInclude Include="tools\sound\DialogSoundGroup.h" />
