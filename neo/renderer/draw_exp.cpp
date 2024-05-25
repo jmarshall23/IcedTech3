@@ -350,6 +350,12 @@ RB_EXP_RenderOccluders
 ==================
 */
 void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
+	baseDepthFillProgram->Bind();
+	GL_SelectTexture(0);
+	qglUniform1i(depthFillUniformState.diffuseImage, 0);
+	idVec4 ambientLightColor(1.0, 1.0, 1.0, 1.0);
+	qglUniform4fv(depthFillUniformState.ambientLightColor, 1, ambientLightColor.ToFloatPtr());
+
 	for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
 		const idRenderEntityLocal* entityDef = inter->entityDef;
 		if (!entityDef) {
@@ -362,6 +368,7 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 		// no need to check for current on this, because each interaction is always
 		// a different space
 		float matrix[16];
+		qglMatrixMode(GL_MODELVIEW);
 		myGlMultMatrix(inter->entityDef->modelMatrix, lightMatrix[side], matrix);
 		qglLoadMatrixf(matrix);
 
@@ -381,6 +388,13 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 				continue;
 			}
 
+			float textureIdentityMatrix[16] = {
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			};			
+
 			// render it
 			const srfTriangles_t* tri = surfInt->ambientTris;
 			if (!tri->ambientCache) {
@@ -389,12 +403,87 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 			idDrawVert* ac = (idDrawVert*)vertexCache.Position(tri->ambientCache);
 			qglVertexPointer(3, GL_FLOAT, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 			qglTexCoordPointer(2, GL_FLOAT, sizeof(idDrawVert), ac->st.ToFloatPtr());
+
+			int offset = 0;
+
+			// Vertex positions
+			qglEnableVertexAttribArrayARB(0);
+			qglVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+			offset += sizeof(idVec3);
+
+			// Texture coordinates
+			qglEnableVertexAttribArrayARB(1);
+			qglVertexAttribPointerARB(1, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+			offset += sizeof(idVec2);
+
+			// Normals
+			qglEnableVertexAttribArrayARB(2);
+			qglVertexAttribPointerARB(2, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+			offset += sizeof(idVec3);
+
+			// Tangent 0
+			qglEnableVertexAttribArrayARB(3);
+			qglVertexAttribPointerARB(3, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+			offset += sizeof(idVec3);
+
+			// Tangent 1
+			qglEnableVertexAttribArrayARB(4);
+			qglVertexAttribPointerARB(4, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
+			offset += sizeof(idVec3);
+
+			// Colors
+			qglEnableVertexAttribArrayARB(5);
+			qglVertexAttribPointerARB(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)offset);
+
+			RB_EXP_UploadTextureMatrix(textureIdentityMatrix);
 			if (surfInt->shader) {
-				surfInt->shader->GetEditorImage()->Bind();
+				const shaderStage_t* pStage = surfInt->shader->GetDiffuseStage();
+
+				if (pStage)
+				{
+					pStage->texture.image->Bind();
+
+					// set the texture matrix if needed
+#if 0
+					if (pStage->texture.hasMatrix) {
+						drawSurf_t tempSurface = {};
+						tempSurface.geo = surfInt->ambientTris;
+						tempSurface.material = surfInt->shader;
+						tempSurface.shaderRegisters = surfInt->shader->ConstantRegisters();
+
+						if (tempSurface.shaderRegisters == nullptr)
+						{
+							float* regs = (float*)R_FrameAlloc(surfInt->shader->GetNumRegisters() * sizeof(float));
+							tempSurface.shaderRegisters = regs;
+							surfInt->shader->EvaluateRegisters(regs, entityDef->parms.shaderParms, backEnd.viewDef, entityDef->parms.referenceSound);
+						}
+
+						RB_LoadShaderTextureMatrix(tempSurface.shaderRegisters, &pStage->texture);
+					}
+#endif
+				}
+				else
+				{
+					globalImages->whiteImage->Bind();				
+				}
 			}
+			else {
+				globalImages->whiteImage->Bind();
+			}
+
 			RB_DrawElementsWithCounters(tri);
 		}
 	}
+
+	qglUseProgram(0);
+	qglDisableVertexAttribArrayARB(0);
+	qglDisableVertexAttribArrayARB(1);
+	qglDisableVertexAttribArrayARB(2);
+	qglDisableVertexAttribArrayARB(3);
+	qglDisableVertexAttribArrayARB(4);
+	qglDisableVertexAttribArrayARB(5);
+
+	globalImages->whiteImage->Bind();
 }
 
 
@@ -409,6 +498,8 @@ void RB_RenderShadowBuffer(viewLight_t * vLight, int side) {
 	float	zNear;
 
 	float	fov = r_sb_frustomFOV.GetFloat();
+
+	depthFillActive = true;
 
 	//
 	// set up 90 degree projection matrix
@@ -688,6 +779,8 @@ void RB_RenderShadowBuffer(viewLight_t * vLight, int side) {
 
 	// the current modelView matrix is not valid
 	backEnd.currentSpace = NULL;
+
+	depthFillActive = false;
 }
 
 void GL_SelectTextureNoClient(int unit);

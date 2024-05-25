@@ -41,11 +41,10 @@ glprog depthfill
 		
 		void main() {
 			vec4 Cd = texture(diffuseImage, diffuseST);
-			
-			if(Cd.a != 1.0) {
-			//	discard;
-			}
-			
+
+			if(Cd.a < 0.5)
+				discard;
+
 			gl_FragColor.xyz = Cd.xyz * ambientLightColor.xyz;
 			gl_FragColor.w = Cd.a;
 		}

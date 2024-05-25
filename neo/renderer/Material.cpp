@@ -1844,7 +1844,7 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 		}
 		// noshadow
 		else if ( !token.Icmp( "noShadows" ) ) {
-			SetMaterialFlag( MF_NOSHADOWS );
+	//		SetMaterialFlag( MF_NOSHADOWS );
 			continue;
 		}
 		else if ( !token.Icmp( "suppressInSubview" ) ) {
@@ -1908,18 +1908,10 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 		// twoSided
 		else if ( !token.Icmp( "twoSided" ) ) {
 			cullType = CT_TWO_SIDED;
-			// twoSided implies no-shadows, because the shadow
-			// volume would be coplanar with the surface, giving depth fighting
-			// we could make this no-self-shadows, but it may be more important
-			// to receive shadows from no-self-shadow monsters
-			SetMaterialFlag( MF_NOSHADOWS );
 		}
 		// backSided
 		else if ( !token.Icmp( "backSided" ) ) {
 			cullType = CT_BACK_SIDED;
-			// the shadow code doesn't handle this, so just disable shadows.
-			// We could fix this in the future if there was a need.
-			SetMaterialFlag( MF_NOSHADOWS );
 		}
 		// foglight
 		else if ( !token.Icmp( "fogLight" ) ) {
@@ -2191,7 +2183,7 @@ bool idMaterial::Parse( const char *text, const int textLength ) {
 
 	// translucent automatically implies noshadows
 	if ( coverage == MC_TRANSLUCENT ) {
-		SetMaterialFlag( MF_NOSHADOWS );
+		//SetMaterialFlag( MF_NOSHADOWS );
 	} else {
 		// mark the contents as opaque
 		contentFlags |= CONTENTS_OPAQUE;

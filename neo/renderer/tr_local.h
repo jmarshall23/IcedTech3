@@ -1590,6 +1590,7 @@ void RB_ShowImages( void );
 
 void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds );
 
+void RB_PrepareStageTexturing(const shaderStage_t* pStage, const drawSurf_t* surf, idDrawVert* ac);
 
 /*
 =============================================================
