@@ -3827,7 +3827,7 @@ void CXYWnd::XY_Draw() {
 	if( m_precisionCrosshairMode != PRECISION_CROSSHAIR_NONE )
 		DrawPrecisionCrosshair();
 
-	qglFlush();
+	//qglFlush();
 
 	// QE_CheckOpenGLForErrors();
 }

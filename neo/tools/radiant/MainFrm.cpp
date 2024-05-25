@@ -714,7 +714,7 @@ static UINT indicators[] = {
 
 std::chrono::steady_clock::time_point lastFrameTime;
 
-idCVar radiant_cameraMoveSpeed("radiant_cameraMoveSpeed", "500", CVAR_TOOL | CVAR_FLOAT, "how fast the camera is going to move in radiant.");
+idCVar radiant_cameraMoveSpeed("radiant_cameraMoveSpeed", "200", CVAR_TOOL | CVAR_FLOAT, "how fast the camera is going to move in radiant.");
 
 /*
  =======================================================================================================================
@@ -3761,7 +3761,8 @@ void CMainFrame::OnCameraBack() {
 	m_pCamWnd->Camera().origin -= forward * moveAmount;
 
 	// Determine which windows to update
-	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
+	int nUpdate = nUpdate = W_CAMERA;
+
 	Sys_UpdateWindows(nUpdate);
 }
 
@@ -3797,7 +3798,7 @@ void CMainFrame::OnCameraForward() {
 	m_pCamWnd->Camera().origin += forward * moveAmount;
 
 	// Determine which windows to update
-	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
+	int nUpdate = nUpdate = W_CAMERA;
 	Sys_UpdateWindows(nUpdate);
 }
 
@@ -3824,7 +3825,7 @@ void CMainFrame::OnCameraLeft() {
 	m_pCamWnd->Camera().origin += right * moveAmount;
 
 	// Determine which windows to update
-	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
+	int nUpdate = nUpdate = W_CAMERA;
 	Sys_UpdateWindows(nUpdate);
 }
 
@@ -3851,7 +3852,7 @@ void CMainFrame::OnCameraRight() {
 	m_pCamWnd->Camera().origin -= right * moveAmount;
 
 	// Determine which windows to update
-	int nUpdate = (g_PrefsDlg.m_bCamXYUpdate) ? (W_CAMERA | W_XY) : (W_CAMERA);
+	int nUpdate = nUpdate = W_CAMERA;
 	Sys_UpdateWindows(nUpdate);
 }
 

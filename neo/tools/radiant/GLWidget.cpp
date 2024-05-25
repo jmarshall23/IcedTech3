@@ -192,7 +192,7 @@ void idGLWidget::OnPaint()
 	}
 
 	qwglSwapBuffers(dc);
-	qglFlush();
+	//qglFlush();
 	qwglMakeCurrent(win32.hDC, win32.hGLRC);
 
 }
