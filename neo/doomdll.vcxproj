@@ -290,6 +290,7 @@
     <ClInclude Include="libs\aasfile\AASFile_local.h" />
     <ClInclude Include="renderer\Cinematic.h" />
     <ClInclude Include="renderer\DeclRenderProg.h" />
+    <ClInclude Include="renderer\DeviceContext.h" />
     <ClInclude Include="renderer\glext.h" />
     <ClInclude Include="renderer\GuiModel.h" />
     <ClInclude Include="renderer\Image.h" />
@@ -391,7 +392,6 @@
     <ClInclude Include="sys\win32\rc\SoundEditor_resource.h" />
     <ClInclude Include="ui\BindWindow.h" />
     <ClInclude Include="ui\ChoiceWindow.h" />
-    <ClInclude Include="ui\DeviceContext.h" />
     <ClInclude Include="ui\EditWindow.h" />
     <ClInclude Include="ui\FieldWindow.h" />
     <ClInclude Include="ui\GuiScript.h" />
@@ -464,6 +464,7 @@
     <ClCompile Include="libs\aasfile\AASFile_sample.cpp" />
     <ClCompile Include="renderer\Cinematic.cpp" />
     <ClCompile Include="renderer\DeclRenderProg.cpp" />
+    <ClCompile Include="renderer\DeviceContext.cpp" />
     <ClCompile Include="renderer\draw_arb2.cpp" />
     <ClCompile Include="renderer\draw_common.cpp" />
     <ClCompile Include="renderer\draw_exp.cpp" />
@@ -1164,7 +1165,6 @@
     <ClCompile Include="sys\win32\rc\CreateResourceIDs.cpp" />
     <ClCompile Include="ui\BindWindow.cpp" />
     <ClCompile Include="ui\ChoiceWindow.cpp" />
-    <ClCompile Include="ui\DeviceContext.cpp" />
     <ClCompile Include="ui\EditWindow.cpp" />
     <ClCompile Include="ui\FieldWindow.cpp" />
     <ClCompile Include="ui\GuiScript.cpp" />

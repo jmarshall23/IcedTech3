@@ -465,9 +465,6 @@
     <ClInclude Include="ui\ChoiceWindow.h">
       <Filter>Ui</Filter>
     </ClInclude>
-    <ClInclude Include="ui\DeviceContext.h">
-      <Filter>Ui</Filter>
-    </ClInclude>
     <ClInclude Include="ui\EditWindow.h">
       <Filter>Ui</Filter>
     </ClInclude>
@@ -536,6 +533,9 @@
     </ClInclude>
     <ClInclude Include="sys\win32\win_local.h">
       <Filter>Sys\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\DeviceContext.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1037,9 +1037,6 @@
     <ClCompile Include="ui\ChoiceWindow.cpp">
       <Filter>Ui</Filter>
     </ClCompile>
-    <ClCompile Include="ui\DeviceContext.cpp">
-      <Filter>Ui</Filter>
-    </ClCompile>
     <ClCompile Include="ui\EditWindow.cpp">
       <Filter>Ui</Filter>
     </ClCompile>
@@ -1138,6 +1135,9 @@
     </ClCompile>
     <ClCompile Include="sys\win32\win_wndproc.cpp">
       <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\DeviceContext.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
