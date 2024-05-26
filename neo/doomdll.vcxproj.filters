@@ -55,6 +55,9 @@
     <Filter Include="Libs\aasfile">
       <UniqueIdentifier>{974e6b0a-8f88-4890-8df7-bba3972b8b56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sys\Win32">
+      <UniqueIdentifier>{de8a0854-0e2a-4087-97e2-762f28525949}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cm\CollisionModel.h">
@@ -414,9 +417,6 @@
     <ClInclude Include="sys\sys_public.h">
       <Filter>Sys</Filter>
     </ClInclude>
-    <ClInclude Include="sys\win32\win_local.h">
-      <Filter>Sys</Filter>
-    </ClInclude>
     <ClInclude Include="sys\win32\rc\AFEditor_resource.h">
       <Filter>Sys\RC</Filter>
     </ClInclude>
@@ -533,6 +533,9 @@
     </ClInclude>
     <ClInclude Include="libs\aasfile\AASFileManager.h">
       <Filter>Libs\aasfile</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\win32\win_local.h">
+      <Filter>Sys\Win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1025,39 +1028,6 @@
     <ClCompile Include="sys\sys_local.cpp">
       <Filter>Sys</Filter>
     </ClCompile>
-    <ClCompile Include="sys\win32\win_cpu.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_glimp.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_input.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_main.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_net.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_qgl.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_shared.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_snd.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_syscon.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_taskkeyhook.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
-    <ClCompile Include="sys\win32\win_wndproc.cpp">
-      <Filter>Sys</Filter>
-    </ClCompile>
     <ClCompile Include="sys\win32\rc\CreateResourceIDs.cpp">
       <Filter>Sys\RC</Filter>
     </ClCompile>
@@ -1138,6 +1108,36 @@
     </ClCompile>
     <ClCompile Include="libs\aasfile\AASFileManager.cpp">
       <Filter>Libs\aasfile</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_cpu.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_glimp.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_input.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_main.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_net.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_qgl.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_shared.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_snd.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_syscon.cpp">
+      <Filter>Sys\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys\win32\win_wndproc.cpp">
+      <Filter>Sys\Win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
