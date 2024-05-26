@@ -16,20 +16,11 @@
     <Filter Include="Script">
       <UniqueIdentifier>{bf06073d-3e0f-4e0a-9acf-43c6e35a9af7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AAS">
+      <UniqueIdentifier>{571a02ab-fc4a-4c0b-b421-7f6c40a59eb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="game\ai\AAS.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="game\ai\AAS_debug.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="game\ai\AAS_pathing.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
-    <ClCompile Include="game\ai\AAS_routing.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
     <ClCompile Include="game\ai\AI.cpp">
       <Filter>AI</Filter>
     </ClCompile>
@@ -171,14 +162,20 @@
     <ClCompile Include="game\ai\AI_script.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="game\aas\AAS.cpp">
+      <Filter>AAS</Filter>
+    </ClCompile>
+    <ClCompile Include="game\aas\AAS_debug.cpp">
+      <Filter>AAS</Filter>
+    </ClCompile>
+    <ClCompile Include="game\aas\AAS_pathing.cpp">
+      <Filter>AAS</Filter>
+    </ClCompile>
+    <ClCompile Include="game\aas\AAS_routing.cpp">
+      <Filter>AAS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\ai\AAS.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="game\ai\AAS_local.h">
-      <Filter>AI</Filter>
-    </ClInclude>
     <ClInclude Include="game\ai\AI.h">
       <Filter>AI</Filter>
     </ClInclude>
@@ -303,6 +300,12 @@
     <ClInclude Include="game\WorldSpawn.h" />
     <ClInclude Include="game\gamesys\State.h">
       <Filter>GameSys</Filter>
+    </ClInclude>
+    <ClInclude Include="game\aas\AAS.h">
+      <Filter>AAS</Filter>
+    </ClInclude>
+    <ClInclude Include="game\aas\AAS_local.h">
+      <Filter>AAS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

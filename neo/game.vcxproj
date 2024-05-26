@@ -261,10 +261,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="game\ai\AAS.cpp" />
-    <ClCompile Include="game\ai\AAS_debug.cpp" />
-    <ClCompile Include="game\ai\AAS_pathing.cpp" />
-    <ClCompile Include="game\ai\AAS_routing.cpp" />
+    <ClCompile Include="game\aas\AAS.cpp" />
+    <ClCompile Include="game\aas\AAS_debug.cpp" />
+    <ClCompile Include="game\aas\AAS_pathing.cpp" />
+    <ClCompile Include="game\aas\AAS_routing.cpp" />
     <ClCompile Include="game\ai\AI.cpp" />
     <ClCompile Include="game\ai\AI_events.cpp" />
     <ClCompile Include="game\ai\AI_pathing.cpp" />
@@ -342,8 +342,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\ai\AAS.h" />
-    <ClInclude Include="game\ai\AAS_local.h" />
+    <ClInclude Include="game\aas\AAS.h" />
+    <ClInclude Include="game\aas\AAS_local.h" />
     <ClInclude Include="game\ai\AI.h" />
     <ClInclude Include="game\anim\Anim.h" />
     <ClInclude Include="game\anim\Anim_Testmodel.h" />

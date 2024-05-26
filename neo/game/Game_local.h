@@ -102,7 +102,7 @@ void gameError( const char *fmt, ... );
 
 #include "anim/Anim.h"
 
-#include "ai/AAS.h"
+#include "aas/AAS.h"
 
 #include "physics/Clip.h"
 #include "physics/Push.h"
