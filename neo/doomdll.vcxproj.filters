@@ -40,12 +40,6 @@
     <Filter Include="Sys">
       <UniqueIdentifier>{8672dd57-2df1-454a-be5e-1ea2d6647cef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sys\RC">
-      <UniqueIdentifier>{c4397186-0c42-4057-82b4-17dea14c173f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sys\RC\res">
-      <UniqueIdentifier>{900f9550-2a58-4b22-82a9-298f01f6ac51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Ui">
       <UniqueIdentifier>{b3166d25-0562-49da-bc8d-961006fe1785}</UniqueIdentifier>
     </Filter>
@@ -57,6 +51,12 @@
     </Filter>
     <Filter Include="Sys\Win32">
       <UniqueIdentifier>{de8a0854-0e2a-4087-97e2-762f28525949}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sys\Win32\RC">
+      <UniqueIdentifier>{c4397186-0c42-4057-82b4-17dea14c173f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sys\Win32\RC\res">
+      <UniqueIdentifier>{900f9550-2a58-4b22-82a9-298f01f6ac51}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -418,46 +418,46 @@
       <Filter>Sys</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\AFEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\Common_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\CreateResourceIDs.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\Debugger_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\DeclEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\doom_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\GuiEd_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\MaterialEditor_Resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\ParticleEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\PDAEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\PropTree_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\Radiant_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\ScriptEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="sys\win32\rc\SoundEditor_resource.h">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClInclude>
     <ClInclude Include="ui\BindWindow.h">
       <Filter>Ui</Filter>
@@ -1029,7 +1029,7 @@
       <Filter>Sys</Filter>
     </ClCompile>
     <ClCompile Include="sys\win32\rc\CreateResourceIDs.cpp">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ClCompile>
     <ClCompile Include="ui\BindWindow.cpp">
       <Filter>Ui</Filter>
@@ -1148,228 +1148,228 @@
       <Filter>Sound\vorbissrc</Filter>
     </None>
     <None Include="sys\win32\rc\res\BEVEL.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\BITMAP2.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\BMP00001.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\bmp00002.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\bmp00003.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\bmp00004.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\bmp00005.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\BMP0002.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\cchsb.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\ccrgb.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_back.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_breakpoint.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_current.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_currentline.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_empty.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_open.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\dbg_toolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\DEFTEX.WAL">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\doom.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\ENDCAP.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\fpoint.cur">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\fxed_link.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\fxed_toolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\fxeditor.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\GetString.htm">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_collapse.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_expand.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_hand.cur">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_nav_visible.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_nav_visibledisabled.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_scripts.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_scripts_white.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\guied_viewer_toolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\IBEVEL.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\icon2.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\IENDCAP.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\logo_sm3dfx.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\matedtree.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\MaterialEditor.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\me_disabled_icon.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\me_enabled.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\me_off_icon.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\me_on_icon.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\MEFileToolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\MEtoolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\PropTree.rc2">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\Q.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\qe3.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\Radiant.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\RADIANT3.GIF">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\RadiantDoc.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\shaderbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\shaderdoc.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\shaderframe.ico">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\spliter.cur">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\Toolbar.bmp">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\TOOLBAR1.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\TOOLBAR2.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\VIEWDEFA.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
     <None Include="sys\win32\rc\res\VIEWOPPO.BMP">
-      <Filter>Sys\RC\res</Filter>
+      <Filter>Sys\Win32\RC\res</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="sys\win32\rc\AFEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\Common.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\Debugger.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\DeclEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\doom.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\GuiEd.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\MaterialEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\ParticleEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\PDAEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\PropTree.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\Radiant.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\ScriptEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
     <ResourceCompile Include="sys\win32\rc\SoundEditor.rc">
-      <Filter>Sys\RC</Filter>
+      <Filter>Sys\Win32\RC</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>
