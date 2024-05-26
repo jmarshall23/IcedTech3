@@ -89,9 +89,6 @@ void	IN_Frame( void );
 
 int		IN_DIMapKey( int key );
 
-void	DisableTaskKeys( BOOL bDisable, BOOL bBeep, BOOL bTaskMgr );
-
-
 // window procedure
 LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
