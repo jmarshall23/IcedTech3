@@ -281,6 +281,8 @@
     <ClCompile Include="game\gamesys\State.cpp" />
     <ClCompile Include="game\gamesys\SysCmds.cpp" />
     <ClCompile Include="game\gamesys\SysCvar.cpp" />
+    <ClCompile Include="game\Game_loadscreen.cpp" />
+    <ClCompile Include="game\Game_mainmenu.cpp" />
     <ClCompile Include="game\physics\Clip.cpp" />
     <ClCompile Include="game\physics\Force.cpp" />
     <ClCompile Include="game\physics\Force_Constant.cpp" />

@@ -353,7 +353,7 @@ idSessionLocal::idSessionLocal
 */
 idSessionLocal::idSessionLocal() {
 	guiInGame = guiMainMenu = guiIntro \
-		= guiRestartMenu = guiLoading = guiGameOver = guiActive \
+		= guiRestartMenu = guiGameOver = guiActive \
 		= guiTest = guiMsg = guiMsgRestore = guiTakeNotes = NULL;	
 	
 	menuSoundWorld = NULL;
@@ -515,14 +515,15 @@ void idSessionLocal::ShowLoadingGui() {
 	int stop = Sys_Milliseconds() + 1000;
 	int force = 10;
 	while ( Sys_Milliseconds() < stop || force-- > 0 ) {
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		//com_frameTime = com_ticNumber * USERCMD_MSEC;
+		com_frameTime = Sys_Milliseconds();
 		session->Frame();
 		session->UpdateScreen( false );
 	}
 #else
 	int stop = com_ticNumber + 1000.0f / USERCMD_MSEC * 1.0f;
 	while ( com_ticNumber < stop ) {
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		com_frameTime = Sys_Milliseconds();
 		session->Frame();
 		session->UpdateScreen( false );
 	}
@@ -920,8 +921,8 @@ void idSessionLocal::StartPlayingRenderDemo( idStr demoName ) {
 
 	// bring up the loading screen manually, since demos won't
 	// call ExecuteMapChange()
-	guiLoading = uiManager->FindGui( "guis/map/loading.gui", true, false, true );
-	guiLoading->SetStateString( "demo", common->GetLanguageDict()->GetString( "#str_02087" ) );
+	game->LoadLoadingGui("guis/renderdemo.gui");
+	//guiLoading->SetStateString( "demo", common->GetLanguageDict()->GetString( "#str_02087" ) );
 	readDemo = new idDemoFile;
 	demoName.DefaultFileExtension( ".demo" );
 	if ( !readDemo->OpenForReading( demoName ) ) {
@@ -937,7 +938,7 @@ void idSessionLocal::StartPlayingRenderDemo( idStr demoName ) {
 	insideExecuteMapChange = true;
 	UpdateScreen();
 	insideExecuteMapChange = false;
-	guiLoading->SetStateString( "demo", "" );
+	//guiLoading->SetStateString( "demo", "" );
 
 	// setup default render demo settings
 	// that's default for <= Doom3 v1.1
@@ -967,15 +968,15 @@ void idSessionLocal::TimeRenderDemo( const char *demoName, bool twice ) {
 	
 	if ( twice && readDemo ) {
 		// cycle through once to precache everything
-		guiLoading->SetStateString( "demo", common->GetLanguageDict()->GetString( "#str_04852" ) );
-		guiLoading->StateChanged( com_frameTime );
+		//guiLoading->SetStateString( "demo", common->GetLanguageDict()->GetString( "#str_04852" ) );
+		//guiLoading->StateChanged( com_frameTime );
 		while ( readDemo ) {
 			insideExecuteMapChange = true;
 			UpdateScreen();
 			insideExecuteMapChange = false;
 			AdvanceRenderDemo( true );
 		}
-		guiLoading->SetStateString( "demo", "" );
+		//guiLoading->SetStateString( "demo", "" );
 		StartPlayingRenderDemo( demo );
 	}
 	
@@ -1348,7 +1349,7 @@ void idSessionLocal::StartPlayingCmdDemo(const char *demoName) {
 		return;
 	}
 
-	guiLoading = uiManager->FindGui( "guis/map/loading.gui", true, false, true );
+	game->LoadLoadingGui("guis/cmddemo.gui");
 	//cmdDemoFile->Read(&loadGameTime, sizeof(loadGameTime));
 
 	LoadCmdDemoFromFile(cmdDemoFile);
@@ -1428,30 +1429,6 @@ void idSessionLocal::UnloadMap() {
 	}
 
 	mapSpawned = false;
-}
-
-/*
-===============
-idSessionLocal::LoadLoadingGui
-===============
-*/
-void idSessionLocal::LoadLoadingGui( const char *mapName ) {
-	// load / program a gui to stay up on the screen while loading
-	idStr stripped = mapName;
-	stripped.StripFileExtension();
-	stripped.StripPath();
-
-	char guiMap[ MAX_STRING_CHARS ];
-	strncpy( guiMap, va( "guis/map/%s.gui", stripped.c_str() ), MAX_STRING_CHARS );
-	// give the gamecode a chance to override
-	game->GetMapLoadingGUI( guiMap );
-
-	if ( uiManager->CheckGui( guiMap ) ) {
-		guiLoading = uiManager->FindGui( guiMap, true, false, true );
-	} else {
-		guiLoading = uiManager->FindGui( "guis/map/loading.gui", true, false, true );
-	}
-	guiLoading->SetStateFloat( "map_loading", 0.0f );
 }
 
 /*
@@ -1537,14 +1514,14 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 		sw->UnPause();
 	}
 
-	if ( !noFadeWipe ) {
-		// capture the current screen and start a wipe
-		StartWipe( "wipeMaterial", true );
-
-		// immediately complete the wipe to fade out the level transition
-		// run the wipe to completion
-		CompleteWipe();
-	}
+	//if ( !noFadeWipe ) {
+	//	// capture the current screen and start a wipe
+	//	StartWipe( "wipeMaterial", true );
+	//
+	//	// immediately complete the wipe to fade out the level transition
+	//	// run the wipe to completion
+	//	CompleteWipe();
+	//}
 
 	// extract the map name from serverinfo
 	idStr mapString = mapSpawnData.serverInfo.GetString( "si_map" );
@@ -1575,7 +1552,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	uiManager->Reload( true );
 
 	// set the loading gui that we will wipe to
-	LoadLoadingGui( mapString );
+	game->LoadLoadingGui( mapString );
 
 	// cause prints to force screen updates as a pacifier,
 	// and draw the loading gui instead of game draws
@@ -1677,19 +1654,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 
 	common->PrintWarnings();
 
-	if ( guiLoading && bytesNeededForMapLoad ) {
-		float pct = guiLoading->State().GetFloat( "map_loading" );
-		if ( pct < 0.0f ) {
-			pct = 0.0f;
-		}
-		while ( pct < 1.0f ) {
-			guiLoading->SetStateFloat( "map_loading", pct );
-			guiLoading->StateChanged( com_frameTime );
-			Sys_GenerateEvents();
-			UpdateScreen();
-			pct += 0.05f;
-		}
-	}
+	game->LoadScreenUpdate(com_frameTime, bytesNeededForMapLoad);
 
 	// capture the current screen and start a wipe
 	StartWipe( "wipe2Material" );
@@ -2347,13 +2312,7 @@ void idSessionLocal::PacifierUpdate() {
 	}
 	lastPacifierTime = time;
 
-	if ( guiLoading && bytesNeededForMapLoad ) {
-		float n = fileSystem->GetReadCount();
-		float pct = ( n / bytesNeededForMapLoad );
-		// pct = idMath::ClampFloat( 0.0f, 100.0f, pct );
-		guiLoading->SetStateFloat( "map_loading", pct );
-		guiLoading->StateChanged( com_frameTime );
-	}
+	game->LoadScreenUpdate(com_frameTime, bytesNeededForMapLoad);
 
 	Sys_GenerateEvents();
 
@@ -2372,9 +2331,7 @@ void idSessionLocal::Draw() {
 	bool fullConsole = false;
 
 	if ( insideExecuteMapChange ) {
-		if ( guiLoading ) {
-			guiLoading->Redraw( com_frameTime );
-		}
+		game->LoadScreenRedraw(com_frameTime);		
 		if ( guiActive == guiMsg ) {
 			guiMsg->Redraw( com_frameTime );
 		} 
@@ -2903,7 +2860,7 @@ idSessionLocal::SetPlayingSoundWorld
 ===============
 */
 void idSessionLocal::SetPlayingSoundWorld() {
-	if ( guiActive && ( guiActive == guiMainMenu || guiActive == guiIntro || guiActive == guiLoading || ( guiActive == guiMsg && !mapSpawned ) ) ) {
+	if ( guiActive && ( guiActive == guiMainMenu || guiActive == guiIntro || ( guiActive == guiMsg && !mapSpawned ) ) ) {
 		soundSystem->SetPlayingSoundWorld( menuSoundWorld );
 	} else {
 		soundSystem->SetPlayingSoundWorld( sw );

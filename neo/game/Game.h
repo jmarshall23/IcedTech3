@@ -189,7 +189,9 @@ public:
 
 	virtual bool				DownloadRequest( const char *IP, const char *guid, const char *paks, char urls[ MAX_STRING_CHARS ] ) = 0;
 
-	virtual void				GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) = 0;
+	virtual void				LoadLoadingGui(const char* mapName) = 0;
+	virtual void				LoadScreenUpdate(int time, int bytesNeededForMapLoad) = 0;
+	virtual void				LoadScreenRedraw(int time) = 0;
 };
 
 extern idGame *					game;
@@ -318,7 +320,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 
-const int GAME_API_VERSION		= 8;
+const int GAME_API_VERSION		= 8001;
 
 typedef struct {
 

@@ -36,7 +36,9 @@ static GLuint shadowDepth[NUM_SHADOW_GROUPS][6];
 
 const idDeclRenderProg* interactionProgram;
 const idDeclRenderProg* baseDepthFillProgram;
+const idDeclRenderProg* shadowDepthFillProgram;
 const idDeclRenderProg* fogProgram;
+const idDeclRenderProg* genericShaderPassProgram;
 
 idCVar r_sb_maxDrawDistance("r_sb_maxDrawDistance", "-1", CVAR_RENDERER | CVAR_INTEGER, "don't draw anything beyond this point");
 idCVar r_sb_shadowDrawDistance("r_sb_shadowDrawDistance", "1000", CVAR_RENDERER | CVAR_INTEGER, "don't draw shadows beyond this point");
@@ -67,12 +69,15 @@ static float	viewLightAxialSize;
 static int		lightNumSides = -1;
 
 static bool		depthFillActive = false;
+static bool		genericRendererActive = false;
 
 static int		shadowGroupNum = 0;
 
 // Declare a global variable for uniform state
 idInteractionUniformState interactionUniformState;
 idDepthFillUniformState depthFillUniformState;
+idDepthFillUniformState shadowFillUniformState;
+idGenericRenderUniformState genericRenderUniformState;
 
 /*
 ====================
@@ -128,13 +133,28 @@ void RB_EXP_Init(void) {
 
 	interactionProgram = renderSystem->FindRenderProgram("interaction", false);
 	baseDepthFillProgram = renderSystem->FindRenderProgram("depthfill", false);
+	shadowDepthFillProgram = renderSystem->FindRenderProgram("shadowfill", false);
 	fogProgram = renderSystem->FindRenderProgram("postprocess/fog", false);
+	genericShaderPassProgram = renderSystem->FindRenderProgram("shaderpasses/generic", false);
+
+	{
+		GLuint program = genericShaderPassProgram->GetProgram();
+		genericRenderUniformState.textureMatrix = qglGetUniformLocation(program, "textureMatrix");
+		genericRenderUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
+	}
 	
 	{
 		GLuint program = baseDepthFillProgram->GetProgram();
 		depthFillUniformState.textureMatrix = qglGetUniformLocation(program, "textureMatrix");
 		depthFillUniformState.ambientLightColor = qglGetUniformLocation(program, "ambientLightColor");
 		depthFillUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
+	}
+
+	{
+		GLuint program = shadowDepthFillProgram->GetProgram();
+		shadowFillUniformState.textureMatrix = qglGetUniformLocation(program, "textureMatrix");
+		shadowFillUniformState.ambientLightColor = qglGetUniformLocation(program, "ambientLightColor");
+		shadowFillUniformState.diffuseImage = qglGetUniformLocation(program, "diffuseImage");
 	}
 
 	// Get uniform locations and store them in interactionUniformState
@@ -207,14 +227,34 @@ void RB_EXP_BindDepthFill(void) {
 
 /*
 ====================
+RB_EXP_BindGenericRender
+====================
+*/
+void RB_EXP_BindGenericRender(void) {
+	GLuint program = genericShaderPassProgram->GetProgram();
+
+	genericRendererActive = true;
+
+	// Use the shader program
+	qglUseProgram(program);
+	qglUniform1i(genericRenderUniformState.diffuseImage, 0);
+}
+
+/*
+====================
 RB_EXP_UploadTextureMatrix
 ====================
 */
 void RB_EXP_UploadTextureMatrix(float matrix[16]) {
-	if (!depthFillActive)
-		return;
+	if (depthFillActive)
+	{
+		qglUniformMatrix4fv(depthFillUniformState.textureMatrix, 1, GL_FALSE, matrix);
+	}
 
-	qglUniformMatrix4fv(depthFillUniformState.textureMatrix, 1, GL_FALSE, matrix);
+	if (genericRendererActive)
+	{
+		//qglUniformMatrix4fv(genericRenderUniformState.textureMatrix, 1, GL_FALSE, matrix);
+	}
 }
 
 /*
@@ -227,6 +267,18 @@ void RB_EXP_UnbindDepthFill(void) {
 
 	qglUseProgram(0);
 }
+
+/*
+====================
+RB_EXP_UnBind_GenericShader
+====================
+*/
+void RB_EXP_UnBind_GenericShader(void) {
+	genericRendererActive = false;
+
+	qglUseProgram(0);
+}
+
 
 /*
 ====================
@@ -350,11 +402,11 @@ RB_EXP_RenderOccluders
 ==================
 */
 void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
-	baseDepthFillProgram->Bind();
+	shadowDepthFillProgram->Bind();
 	GL_SelectTexture(0);
-	qglUniform1i(depthFillUniformState.diffuseImage, 0);
+	qglUniform1i(shadowFillUniformState.diffuseImage, 0);
 	idVec4 ambientLightColor(1.0, 1.0, 1.0, 1.0);
-	qglUniform4fv(depthFillUniformState.ambientLightColor, 1, ambientLightColor.ToFloatPtr());
+	qglUniform4fv(shadowFillUniformState.ambientLightColor, 1, ambientLightColor.ToFloatPtr());
 
 	for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
 		const idRenderEntityLocal* entityDef = inter->entityDef;
@@ -406,39 +458,26 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 				R_CreateAmbientCache(const_cast<srfTriangles_t*>(tri), false);
 			}
 			idDrawVert* ac = (idDrawVert*)vertexCache.Position(tri->ambientCache);
-			qglVertexPointer(3, GL_FLOAT, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
-			qglTexCoordPointer(2, GL_FLOAT, sizeof(idDrawVert), ac->st.ToFloatPtr());
-
-			int offset = 0;
 
 			// Vertex positions
-			qglEnableVertexAttribArrayARB(0);
-			qglVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-			offset += sizeof(idVec3);
+			qglEnableVertexAttribArrayARB(ATTR_POSITION);
+			qglVertexAttribPointerARB(ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 
 			// Texture coordinates
-			qglEnableVertexAttribArrayARB(1);
-			qglVertexAttribPointerARB(1, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-			offset += sizeof(idVec2);
+			qglEnableVertexAttribArrayARB(ATTR_TEXCOORD);
+			qglVertexAttribPointerARB(ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->st.ToFloatPtr());
 
 			// Normals
-			qglEnableVertexAttribArrayARB(2);
-			qglVertexAttribPointerARB(2, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-			offset += sizeof(idVec3);
+			qglEnableVertexAttribArrayARB(ATTR_NORMAL);
+			qglVertexAttribPointerARB(ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 
 			// Tangent 0
-			qglEnableVertexAttribArrayARB(3);
-			qglVertexAttribPointerARB(3, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-			offset += sizeof(idVec3);
+			qglEnableVertexAttribArrayARB(ATTR_TANGENT0);
+			qglVertexAttribPointerARB(ATTR_TANGENT0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
 
 			// Tangent 1
-			qglEnableVertexAttribArrayARB(4);
-			qglVertexAttribPointerARB(4, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-			offset += sizeof(idVec3);
-
-			// Colors
-			qglEnableVertexAttribArrayARB(5);
-			qglVertexAttribPointerARB(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)offset);
+			qglEnableVertexAttribArrayARB(ATTR_TANGENT1);
+			qglVertexAttribPointerARB(ATTR_TANGENT1, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[1].ToFloatPtr());
 
 			RB_EXP_UploadTextureMatrix(textureIdentityMatrix);
 			if (surfInt->shader) {
@@ -481,12 +520,12 @@ void RB_EXP_RenderOccluders(viewLight_t* vLight, int side) {
 	}
 
 	qglUseProgram(0);
-	qglDisableVertexAttribArrayARB(0);
-	qglDisableVertexAttribArrayARB(1);
-	qglDisableVertexAttribArrayARB(2);
-	qglDisableVertexAttribArrayARB(3);
-	qglDisableVertexAttribArrayARB(4);
-	qglDisableVertexAttribArrayARB(5);
+	qglDisableVertexAttribArrayARB(ATTR_POSITION);
+	qglDisableVertexAttribArrayARB(ATTR_TEXCOORD);
+	qglDisableVertexAttribArrayARB(ATTR_NORMAL);
+	qglDisableVertexAttribArrayARB(ATTR_TANGENT0);
+	qglDisableVertexAttribArrayARB(ATTR_TANGENT1);
+	qglDisableVertexAttribArrayARB(ATTR_COLOR);
 
 	globalImages->whiteImage->Bind();
 }
@@ -893,36 +932,28 @@ void RB_EXP_CreateDrawInteractions(const drawSurf_t* surf) {
 	for (; surf; surf = surf->nextOnLight) {
 		// set the vertex pointers
 		idDrawVert* ac = (idDrawVert*)vertexCache.Position(surf->geo->ambientCache);
-		size_t offset = 0;
 
 		// Vertex positions
-		qglEnableVertexAttribArrayARB(0);
-		qglVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);		
-		offset += sizeof(idVec3);
+		qglEnableVertexAttribArrayARB(ATTR_POSITION);
+		qglVertexAttribPointerARB(ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 
 		// Texture coordinates
-		qglEnableVertexAttribArrayARB(1);
-		qglVertexAttribPointerARB(1, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);		
-		offset += sizeof(idVec2);
+		qglEnableVertexAttribArrayARB(ATTR_TEXCOORD);
+		qglVertexAttribPointerARB(ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->st.ToFloatPtr());
 
 		// Normals
-		qglEnableVertexAttribArrayARB(2);
-		qglVertexAttribPointerARB(2, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);		
-		offset += sizeof(idVec3);
+		qglEnableVertexAttribArrayARB(ATTR_NORMAL);
+		qglVertexAttribPointerARB(ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 
 		// Tangent 0
-		qglEnableVertexAttribArrayARB(3);
-		qglVertexAttribPointerARB(3, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);		
-		offset += sizeof(idVec3);
+		qglEnableVertexAttribArrayARB(ATTR_TANGENT0);
+		qglVertexAttribPointerARB(ATTR_TANGENT0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
 
 		// Tangent 1
-		qglEnableVertexAttribArrayARB(4);
-		qglVertexAttribPointerARB(4, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);		
-		offset += sizeof(idVec3);
+		qglEnableVertexAttribArrayARB(ATTR_TANGENT1);
+		qglVertexAttribPointerARB(ATTR_TANGENT1, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[1].ToFloatPtr());
 
-		// Colors
-		qglEnableVertexAttribArrayARB(5);
-		qglVertexAttribPointerARB(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)offset);		
+		qglColorPointer(4, GL_UNSIGNED_BYTE, sizeof(idDrawVert), ac->color);
 
 		// Error checking
 		GLenum error = glGetError();
@@ -935,12 +966,12 @@ void RB_EXP_CreateDrawInteractions(const drawSurf_t* surf) {
 	}
 
 	// Cleanup
-	qglDisableVertexAttribArrayARB(0);
-	qglDisableVertexAttribArrayARB(1);
-	qglDisableVertexAttribArrayARB(2);
-	qglDisableVertexAttribArrayARB(3);
-	qglDisableVertexAttribArrayARB(4);
-	qglDisableVertexAttribArrayARB(5);
+	qglDisableVertexAttribArrayARB(ATTR_POSITION);
+	qglDisableVertexAttribArrayARB(ATTR_TEXCOORD);
+	qglDisableVertexAttribArrayARB(ATTR_NORMAL);
+	qglDisableVertexAttribArrayARB(ATTR_TANGENT0);
+	qglDisableVertexAttribArrayARB(ATTR_TANGENT1);
+	qglDisableVertexAttribArrayARB(ATTR_COLOR);
 
 	// disable features
 	for (int i = 0; i < 7; i++)

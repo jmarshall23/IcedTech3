@@ -1299,7 +1299,6 @@ bool Sys_GameWindowVisible() {
 	return ::IsWindowVisible(win32.hWnd);
 }
 
-
 /*
 ==================
 WinMain

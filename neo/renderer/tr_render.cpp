@@ -535,10 +535,10 @@ void RB_DetermineLightScale( void ) {
 		}
 	}
 
-	backEnd.pc.maxLightValue = max;
+
+
 	if ( max <= tr.backEndRendererMaxLight ) {
-		backEnd.lightScale = r_lightScale.GetFloat();
-		backEnd.overBright = 1.0;
+		
 	} else {
 		backEnd.lightScale = r_lightScale.GetFloat() * tr.backEndRendererMaxLight / max;
 		backEnd.overBright = max / tr.backEndRendererMaxLight;

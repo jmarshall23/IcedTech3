@@ -153,6 +153,8 @@ idGameLocal::idGameLocal
 */
 idGameLocal::idGameLocal() {
 	Clear();
+
+	guiLoading = nullptr;
 }
 
 /*
@@ -4358,10 +4360,4 @@ void idGameLocal::SwitchTeam( int clientNum, int team ) {
 	}
 }
 
-/*
-===============
-idGameLocal::GetMapLoadingGUI
-===============
-*/
-void idGameLocal::GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) { }
 

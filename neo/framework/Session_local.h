@@ -236,8 +236,7 @@ public:
 	idUserInterface *	guiInGame;
 	idUserInterface *	guiMainMenu;
 	idListGUI *			guiMainMenu_MapList;		// easy map list handling
-	idUserInterface *	guiRestartMenu;
-	idUserInterface *	guiLoading;
+	idUserInterface *	guiRestartMenu;	
 	idUserInterface *	guiIntro;
 	idUserInterface *	guiGameOver;
 	idUserInterface *	guiTest;
@@ -290,7 +289,6 @@ public:
 	void				RunGameTic();
 	
 	void				FinishCmdLoad();
-	void				LoadLoadingGui(const char *mapName);
 
 	void				DemoShot( const char *name );
 

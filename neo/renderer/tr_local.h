@@ -1319,7 +1319,9 @@ int		R_FindARBProgram( GLenum target, const char *program );
 void	RB_EXP_DrawInteractions(void);
 void	RB_Exp_RenderPostProcess(void);
 void	RB_EXP_BindDepthFill(void);
+void	RB_EXP_BindGenericRender(void);
 void	RB_EXP_UnbindDepthFill(void);
+void	RB_EXP_UnBind_GenericShader(void);
 void	RB_EXP_UploadTextureMatrix(float matrix[16]);
 
 struct idDepthFillUniformState {
@@ -1327,6 +1329,12 @@ struct idDepthFillUniformState {
 	GLint ambientLightColor;
 	GLint diffuseImage;
 };
+
+struct idGenericRenderUniformState {
+	GLint textureMatrix;
+	GLint diffuseImage;
+};
+
 
 // Define the struct to hold uniform locations
 struct idInteractionUniformState {

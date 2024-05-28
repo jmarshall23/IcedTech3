@@ -440,36 +440,25 @@ void RB_T_FillDepthBuffer( const drawSurf_t *surf ) {
 	}
 
 	idDrawVert *ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
-	size_t offset = 0;
-
 	// Vertex positions
-	qglEnableVertexAttribArrayARB(0);
-	qglVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-	offset += sizeof(idVec3);
+	qglEnableVertexAttribArrayARB(ATTR_POSITION);
+	qglVertexAttribPointerARB(ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 
 	// Texture coordinates
-	qglEnableVertexAttribArrayARB(1);
-	qglVertexAttribPointerARB(1, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-	offset += sizeof(idVec2);
+	qglEnableVertexAttribArrayARB(ATTR_TEXCOORD);
+	qglVertexAttribPointerARB(ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->st.ToFloatPtr());
 
 	// Normals
-	qglEnableVertexAttribArrayARB(2);
-	qglVertexAttribPointerARB(2, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-	offset += sizeof(idVec3);
+	qglEnableVertexAttribArrayARB(ATTR_NORMAL);
+	qglVertexAttribPointerARB(ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 
 	// Tangent 0
-	qglEnableVertexAttribArrayARB(3);
-	qglVertexAttribPointerARB(3, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-	offset += sizeof(idVec3);
+	qglEnableVertexAttribArrayARB(ATTR_TANGENT0);
+	qglVertexAttribPointerARB(ATTR_TANGENT0, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
 
 	// Tangent 1
-	qglEnableVertexAttribArrayARB(4);
-	qglVertexAttribPointerARB(4, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)offset);
-	offset += sizeof(idVec3);
-
-	// Colors
-	qglEnableVertexAttribArrayARB(5);
-	qglVertexAttribPointerARB(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)offset);
+	qglEnableVertexAttribArrayARB(ATTR_TANGENT1);
+	qglVertexAttribPointerARB(ATTR_TANGENT1, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), ac->tangents[1].ToFloatPtr());
 
 	bool drawSolid = false;
 
@@ -830,9 +819,15 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 		RB_EnterModelDepthHack( surf->space->modelDepthHack );
 	}
 
+	//RB_EXP_BindGenericRender();
+
 	idDrawVert *ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
 	qglVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), ac->xyz.ToFloatPtr() );
-	qglTexCoordPointer( 2, GL_FLOAT, sizeof( idDrawVert ), reinterpret_cast<void *>(&ac->st) );
+
+	GL_SelectTexture(0);
+	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	qglTexCoordPointer( 2, GL_FLOAT, sizeof( idDrawVert ), ac->st.ToFloatPtr());
+
 
 	for ( stage = 0; stage < shader->GetNumStages() ; stage++ ) {		
 		pStage = shader->GetStage(stage);
@@ -1036,6 +1031,8 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 	if ( surf->space->weaponDepthHack || surf->space->modelDepthHack != 0.0f ) {
 		RB_LeaveDepthHack();
 	}
+
+	//RB_EXP_UnBind_GenericShader();
 }
 
 /*
@@ -1059,6 +1056,7 @@ int RB_STD_DrawShaderPasses( drawSurf_t **drawSurfs, int numDrawSurfs ) {
 	globalImages->BindNull();
 
 	GL_SelectTexture( 0 );
+	globalImages->BindNull();
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
 	RB_SetProgramEnvironment();
@@ -1464,7 +1462,9 @@ void	RB_STD_DrawView( void ) {
 	RB_BeginDrawingView();
 
 	// decide how much overbrighting we are going to do
-	RB_DetermineLightScale();
+	backEnd.pc.maxLightValue = 1.0f;
+	backEnd.lightScale = r_lightScale.GetFloat();
+	backEnd.overBright = 1.0;
 
 	// fill the depth buffer and clear color buffer to black except on
 	// subviews
@@ -1472,9 +1472,6 @@ void	RB_STD_DrawView( void ) {
 
 	// main light renderer
 	RB_EXP_DrawInteractions();
-
-	// disable stencil shadow test
-	qglStencilFunc( GL_ALWAYS, 128, 255 );
 
 	// now draw any non-light dependent shading passes
 	int	processed = RB_STD_DrawShaderPasses( drawSurfs, numDrawSurfs );
