@@ -176,6 +176,8 @@
     </ClCompile>
     <ClCompile Include="game\Game_mainmenu.cpp" />
     <ClCompile Include="game\Game_loadscreen.cpp" />
+    <ClCompile Include="game\AnimatedEntity.cpp" />
+    <ClCompile Include="game\Weapon_script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AI.h">
@@ -309,6 +311,7 @@
     <ClInclude Include="game\aas\AAS_local.h">
       <Filter>AAS</Filter>
     </ClInclude>
+    <ClInclude Include="game\AnimatedEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="game\Game.def" />

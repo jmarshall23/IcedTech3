@@ -270,6 +270,7 @@
     <ClCompile Include="game\ai\AI_pathing.cpp" />
     <ClCompile Include="game\ai\AI_script.cpp" />
     <ClCompile Include="game\ai\AI_Vagary.cpp" />
+    <ClCompile Include="game\AnimatedEntity.cpp" />
     <ClCompile Include="game\anim\Anim.cpp" />
     <ClCompile Include="game\anim\Anim_Blend.cpp" />
     <ClCompile Include="game\anim\Anim_Import.cpp" />
@@ -332,6 +333,7 @@
     <ClCompile Include="game\Target.cpp" />
     <ClCompile Include="game\Trigger.cpp" />
     <ClCompile Include="game\Weapon.cpp" />
+    <ClCompile Include="game\Weapon_script.cpp" />
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -347,6 +349,7 @@
     <ClInclude Include="game\aas\AAS.h" />
     <ClInclude Include="game\aas\AAS_local.h" />
     <ClInclude Include="game\ai\AI.h" />
+    <ClInclude Include="game\AnimatedEntity.h" />
     <ClInclude Include="game\anim\Anim.h" />
     <ClInclude Include="game\anim\Anim_Testmodel.h" />
     <ClInclude Include="game\gamesys\Class.h" />
