@@ -309,6 +309,44 @@ private:
 	void					UpdateNozzleFx( void );
 	void					UpdateFlashPosition( void );
 
+	// native events.
+	void NativeEvent_Clear();
+	idEntity* NativeEvent_GetOwner();
+	void NativeEvent_WeaponState(const char* statename, int blendFrames);
+	void NativeEvent_UseAmmo(int amount);
+	void NativeEvent_AddToClip(int amount);
+	int NativeEvent_AmmoInClip();
+	int NativeEvent_AmmoAvailable();
+	int NativeEvent_TotalAmmoCount();
+	int NativeEvent_ClipSize();
+	float NativeEvent_AutoReload();
+	void NativeEvent_NetReload();
+	void NativeEvent_NetEndReload();
+	void NativeEvent_PlayAnim(int channel, const char* animname);
+	void NativeEvent_PlayCycle(int channel, const char* animname);
+	bool NativeEvent_AnimDone(int channel, int blendFrames);
+	void NativeEvent_SetBlendFrames(int blendFrames);
+	int NativeEvent_GetBlendFrames();
+	void NativeEvent_Next();
+	void NativeEvent_SetSkin(const char* skinname);
+	void NativeEvent_Flashlight(int enable);
+	float NativeEvent_GetLightParm(int parmnum);
+	void NativeEvent_SetLightParm(int parmnum, float value);
+	void NativeEvent_SetLightParms(float parm0, float parm1, float parm2, float parm3);
+	idEntity* NativeEvent_CreateProjectile();
+	void NativeEvent_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower);
+	bool NativeEvent_Melee();
+	idEntity* NativeEvent_GetWorldModel();
+	void NativeEvent_AllowDrop(int allow);
+	void NativeEvent_EjectBrass();
+	float NativeEvent_IsInvisible();
+	void NativeEvent_WeaponReady();
+	void NativeEvent_WeaponOutOfAmmo();
+	void NativeEvent_WeaponReloading();
+	void NativeEvent_WeaponHolstered();
+	void NativeEvent_WeaponRising();
+	void NativeEvent_WeaponLowering();
+
 	// script events
 	void					Event_Clear( void );
 	void					Event_GetOwner( void );
@@ -360,5 +398,8 @@ ID_INLINE bool idWeapon::IsWorldModelReady( void ) {
 ID_INLINE idPlayer* idWeapon::GetOwner( void ) {
 	return owner;
 }
+
+extern const idEventDef EV_Weapon_Clear;
+extern const idEventDef EV_Weapon_EjectBrass;
 
 #endif /* !__GAME_WEAPON_H__ */

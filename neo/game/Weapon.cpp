@@ -31,91 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 
-/***********************************************************************
-
-  idWeapon  
-	
-***********************************************************************/
-
-//
-// event defs
-//
-const idEventDef EV_Weapon_Clear( "<clear>" );
-const idEventDef EV_Weapon_GetOwner( "getOwner", NULL, 'e' );
-const idEventDef EV_Weapon_Next( "nextWeapon" );
-const idEventDef EV_Weapon_State( "weaponState", "sd" );
-const idEventDef EV_Weapon_UseAmmo( "useAmmo", "d" );
-const idEventDef EV_Weapon_AddToClip( "addToClip", "d" );
-const idEventDef EV_Weapon_AmmoInClip( "ammoInClip", NULL, 'f' );
-const idEventDef EV_Weapon_AmmoAvailable( "ammoAvailable", NULL, 'f' );
-const idEventDef EV_Weapon_TotalAmmoCount( "totalAmmoCount", NULL, 'f' );
-const idEventDef EV_Weapon_ClipSize( "clipSize", NULL, 'f' );
-const idEventDef EV_Weapon_WeaponOutOfAmmo( "weaponOutOfAmmo" );
-const idEventDef EV_Weapon_WeaponReady( "weaponReady" );
-const idEventDef EV_Weapon_WeaponReloading( "weaponReloading" );
-const idEventDef EV_Weapon_WeaponHolstered( "weaponHolstered" );
-const idEventDef EV_Weapon_WeaponRising( "weaponRising" );
-const idEventDef EV_Weapon_WeaponLowering( "weaponLowering" );
-const idEventDef EV_Weapon_Flashlight( "flashlight", "d" );
-const idEventDef EV_Weapon_LaunchProjectiles( "launchProjectiles", "dffff" );
-const idEventDef EV_Weapon_CreateProjectile( "createProjectile", NULL, 'e' );
-const idEventDef EV_Weapon_EjectBrass( "ejectBrass" );
-const idEventDef EV_Weapon_Melee( "melee", NULL, 'd' );
-const idEventDef EV_Weapon_GetWorldModel( "getWorldModel", NULL, 'e' );
-const idEventDef EV_Weapon_AllowDrop( "allowDrop", "d" );
-const idEventDef EV_Weapon_AutoReload( "autoReload", NULL, 'f' );
-const idEventDef EV_Weapon_NetReload( "netReload" );
-const idEventDef EV_Weapon_IsInvisible( "isInvisible", NULL, 'f' );
-const idEventDef EV_Weapon_NetEndReload( "netEndReload" );
-
-//
-// class def
-//
-CLASS_DECLARATION( idAnimatedEntity, idWeapon )
-	EVENT( EV_Weapon_Clear,						idWeapon::Event_Clear )
-	EVENT( EV_Weapon_GetOwner,					idWeapon::Event_GetOwner )
-	EVENT( EV_Weapon_State,						idWeapon::Event_WeaponState )
-	EVENT( EV_Weapon_WeaponReady,				idWeapon::Event_WeaponReady )
-	EVENT( EV_Weapon_WeaponOutOfAmmo,			idWeapon::Event_WeaponOutOfAmmo )
-	EVENT( EV_Weapon_WeaponReloading,			idWeapon::Event_WeaponReloading )
-	EVENT( EV_Weapon_WeaponHolstered,			idWeapon::Event_WeaponHolstered )
-	EVENT( EV_Weapon_WeaponRising,				idWeapon::Event_WeaponRising )
-	EVENT( EV_Weapon_WeaponLowering,			idWeapon::Event_WeaponLowering )
-	EVENT( EV_Weapon_UseAmmo,					idWeapon::Event_UseAmmo )
-	EVENT( EV_Weapon_AddToClip,					idWeapon::Event_AddToClip )
-	EVENT( EV_Weapon_AmmoInClip,				idWeapon::Event_AmmoInClip )
-	EVENT( EV_Weapon_AmmoAvailable,				idWeapon::Event_AmmoAvailable )
-	EVENT( EV_Weapon_TotalAmmoCount,			idWeapon::Event_TotalAmmoCount )
-	EVENT( EV_Weapon_ClipSize,					idWeapon::Event_ClipSize )
-	EVENT( AI_PlayAnim,							idWeapon::Event_PlayAnim )
-	EVENT( AI_PlayCycle,						idWeapon::Event_PlayCycle )
-	EVENT( AI_SetBlendFrames,					idWeapon::Event_SetBlendFrames )
-	EVENT( AI_GetBlendFrames,					idWeapon::Event_GetBlendFrames )
-	EVENT( AI_AnimDone,							idWeapon::Event_AnimDone )
-	EVENT( EV_Weapon_Next,						idWeapon::Event_Next )
-	EVENT( EV_SetSkin,							idWeapon::Event_SetSkin )
-	EVENT( EV_Weapon_Flashlight,				idWeapon::Event_Flashlight )
-	EVENT( EV_Light_GetLightParm,				idWeapon::Event_GetLightParm )
-	EVENT( EV_Light_SetLightParm,				idWeapon::Event_SetLightParm )
-	EVENT( EV_Light_SetLightParms,				idWeapon::Event_SetLightParms )
-	EVENT( EV_Weapon_LaunchProjectiles,			idWeapon::Event_LaunchProjectiles )
-	EVENT( EV_Weapon_CreateProjectile,			idWeapon::Event_CreateProjectile )
-	EVENT( EV_Weapon_EjectBrass,				idWeapon::Event_EjectBrass )
-	EVENT( EV_Weapon_Melee,						idWeapon::Event_Melee )
-	EVENT( EV_Weapon_GetWorldModel,				idWeapon::Event_GetWorldModel )
-	EVENT( EV_Weapon_AllowDrop,					idWeapon::Event_AllowDrop )
-	EVENT( EV_Weapon_AutoReload,				idWeapon::Event_AutoReload )
-	EVENT( EV_Weapon_NetReload,					idWeapon::Event_NetReload )
-	EVENT( EV_Weapon_IsInvisible,				idWeapon::Event_IsInvisible )
-	EVENT( EV_Weapon_NetEndReload,				idWeapon::Event_NetEndReload )
-END_CLASS
-
-/***********************************************************************
-
-	init
-
-***********************************************************************/
-
 /*
 ================
 idWeapon::idWeapon()
@@ -2308,835 +2223,6 @@ bool idWeapon::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 	return false;
 }
 
-/***********************************************************************
-
-	Script events
-
-***********************************************************************/
-
-/*
-===============
-idWeapon::Event_Clear
-===============
-*/
-void idWeapon::Event_Clear( void ) {
-	Clear();
-}
-
-/*
-===============
-idWeapon::Event_GetOwner
-===============
-*/
-void idWeapon::Event_GetOwner( void ) {
-	idThread::ReturnEntity( owner );
-}
-
-/*
-===============
-idWeapon::Event_WeaponState
-===============
-*/
-void idWeapon::Event_WeaponState( const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	func = scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName() );
-	}
-
-	idealState = statename;
-
-	if ( !idealState.Icmp( "Fire" ) ) {
-		isFiring = true;
-	} else {
-		isFiring = false;
-	}
-
-	animBlendFrames = blendFrames;
-	thread->DoneProcessing();
-}
-
-/*
-===============
-idWeapon::Event_WeaponReady
-===============
-*/
-void idWeapon::Event_WeaponReady( void ) {
-	status = WP_READY;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
-	if ( sndHum ) {
-		StartSoundShader( sndHum, SND_CHANNEL_BODY, 0, false, NULL );
-	}
-
-}
-
-/*
-===============
-idWeapon::Event_WeaponOutOfAmmo
-===============
-*/
-void idWeapon::Event_WeaponOutOfAmmo( void ) {
-	status = WP_OUTOFAMMO;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
-}
-
-/*
-===============
-idWeapon::Event_WeaponReloading
-===============
-*/
-void idWeapon::Event_WeaponReloading( void ) {
-	status = WP_RELOAD;
-}
-
-/*
-===============
-idWeapon::Event_WeaponHolstered
-===============
-*/
-void idWeapon::Event_WeaponHolstered( void ) {
-	status = WP_HOLSTERED;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = false;
-	}
-}
-
-/*
-===============
-idWeapon::Event_WeaponRising
-===============
-*/
-void idWeapon::Event_WeaponRising( void ) {
-	status = WP_RISING;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = false;
-	}
-	owner->WeaponRisingCallback();
-}
-
-/*
-===============
-idWeapon::Event_WeaponLowering
-===============
-*/
-void idWeapon::Event_WeaponLowering( void ) {
-	status = WP_LOWERING;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
-	owner->WeaponLoweringCallback();
-}
-
-/*
-===============
-idWeapon::Event_UseAmmo
-===============
-*/
-void idWeapon::Event_UseAmmo( int amount ) {
-	if ( gameLocal.isClient ) {
-		return;
-	}
-
-	owner->inventory.UseAmmo( ammoType, ( powerAmmo ) ? amount : ( amount * ammoRequired ) );
-	if ( clipSize && ammoRequired ) {
-		ammoClip -= powerAmmo ? amount : ( amount * ammoRequired );
-		if ( ammoClip < 0 ) {
-			ammoClip = 0;
-		}
-	}
-}
-
-/*
-===============
-idWeapon::Event_AddToClip
-===============
-*/
-void idWeapon::Event_AddToClip( int amount ) {
-	int ammoAvail;
-
-	if ( gameLocal.isClient ) {
-		return;
-	}
-
-	ammoClip += amount;
-	if ( ammoClip > clipSize ) {
-		ammoClip = clipSize;
-	}
-
-	ammoAvail = owner->inventory.HasAmmo( ammoType, ammoRequired );
-	if ( ammoClip > ammoAvail ) {
-		ammoClip = ammoAvail;
-	}
-}
-
-/*
-===============
-idWeapon::Event_AmmoInClip
-===============
-*/
-void idWeapon::Event_AmmoInClip( void ) {
-	int ammo = AmmoInClip();
-	idThread::ReturnFloat( ammo );	
-}
-
-/*
-===============
-idWeapon::Event_AmmoAvailable
-===============
-*/
-void idWeapon::Event_AmmoAvailable( void ) {
-	int ammoAvail = owner->inventory.HasAmmo( ammoType, ammoRequired );
-	idThread::ReturnFloat( ammoAvail );
-}
-
-/*
-===============
-idWeapon::Event_TotalAmmoCount
-===============
-*/
-void idWeapon::Event_TotalAmmoCount( void ) {
-	int ammoAvail = owner->inventory.HasAmmo( ammoType, 1 );
-	idThread::ReturnFloat( ammoAvail );
-}
-
-/*
-===============
-idWeapon::Event_ClipSize
-===============
-*/
-void idWeapon::Event_ClipSize( void ) {
-	idThread::ReturnFloat( clipSize );	
-}
-
-/*
-===============
-idWeapon::Event_AutoReload
-===============
-*/
-void idWeapon::Event_AutoReload( void ) {
-	assert( owner );
-	if ( gameLocal.isClient ) {
-		idThread::ReturnFloat( 0.0f );
-		return;
-	}
-	idThread::ReturnFloat( gameLocal.userInfo[ owner->entityNumber ].GetBool( "ui_autoReload" ) );
-}
-
-/*
-===============
-idWeapon::Event_NetReload
-===============
-*/
-void idWeapon::Event_NetReload( void ) {
-	assert( owner );
-	if ( gameLocal.isServer ) {
-		ServerSendEvent( EVENT_RELOAD, NULL, false, -1 );
-	}
-}
-
-/*
-===============
-idWeapon::Event_NetEndReload
-===============
-*/
-void idWeapon::Event_NetEndReload( void ) {
-	assert( owner );
-	if ( gameLocal.isServer ) {
-		ServerSendEvent( EVENT_ENDRELOAD, NULL, false, -1 );
-	}
-}
-
-/*
-===============
-idWeapon::Event_PlayAnim
-===============
-*/
-void idWeapon::Event_PlayAnim( int channel, const char *animname ) {
-	int anim;
-	
-	anim = animator.GetAnim( animname );
-	if ( !anim ) {
-		gameLocal.Warning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
-		animator.Clear( channel, gameLocal.time, FRAME2MS( animBlendFrames ) );
-		animDoneTime = 0;
-	} else {
-		if ( !( owner && owner->GetInfluenceLevel() ) ) {
-			Show();
-		}
-		animator.PlayAnim( channel, anim, gameLocal.time, FRAME2MS( animBlendFrames ) );
-		animDoneTime = animator.CurrentAnim( channel )->GetEndTime();
-		if ( worldModel.GetEntity() ) {
-			anim = worldModel.GetEntity()->GetAnimator()->GetAnim( animname );
-			if ( anim ) {
-				worldModel.GetEntity()->GetAnimator()->PlayAnim( channel, anim, gameLocal.time, FRAME2MS( animBlendFrames ) );
-			}
-		}
-	}
-	animBlendFrames = 0;
-	idThread::ReturnInt( 0 );
-}
-
-/*
-===============
-idWeapon::Event_PlayCycle
-===============
-*/
-void idWeapon::Event_PlayCycle( int channel, const char *animname ) {
-	int anim;
-
-	anim = animator.GetAnim( animname );
-	if ( !anim ) {
-		gameLocal.Warning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
-		animator.Clear( channel, gameLocal.time, FRAME2MS( animBlendFrames ) );
-		animDoneTime = 0;
-	} else {
-		if ( !( owner && owner->GetInfluenceLevel() ) ) {
-			Show();
-		}
-		animator.CycleAnim( channel, anim, gameLocal.time, FRAME2MS( animBlendFrames ) );
-		animDoneTime = animator.CurrentAnim( channel )->GetEndTime();
-		if ( worldModel.GetEntity() ) {
-			anim = worldModel.GetEntity()->GetAnimator()->GetAnim( animname );
-			worldModel.GetEntity()->GetAnimator()->CycleAnim( channel, anim, gameLocal.time, FRAME2MS( animBlendFrames ) );
-		}
-	}
-	animBlendFrames = 0;
-	idThread::ReturnInt( 0 );
-}
-
-/*
-===============
-idWeapon::Event_AnimDone
-===============
-*/
-void idWeapon::Event_AnimDone( int channel, int blendFrames ) {
-	if ( animDoneTime - FRAME2MS( blendFrames ) <= gameLocal.time ) {
-		idThread::ReturnInt( true );
-	} else {
-		idThread::ReturnInt( false );
-	}
-}
-
-/*
-===============
-idWeapon::Event_SetBlendFrames
-===============
-*/
-void idWeapon::Event_SetBlendFrames( int channel, int blendFrames ) {
-	animBlendFrames = blendFrames;
-}
-
-/*
-===============
-idWeapon::Event_GetBlendFrames
-===============
-*/
-void idWeapon::Event_GetBlendFrames( int channel ) {
-	idThread::ReturnInt( animBlendFrames );
-}
-
-/*
-================
-idWeapon::Event_Next
-================
-*/
-void idWeapon::Event_Next( void ) {
-	// change to another weapon if possible
-	owner->NextBestWeapon();
-}
-
-/*
-================
-idWeapon::Event_SetSkin
-================
-*/
-void idWeapon::Event_SetSkin( const char *skinname ) {
-	const idDeclSkin *skinDecl;
-
-	if ( !skinname || !skinname[ 0 ] ) {
-		skinDecl = NULL;
-	} else {
-		skinDecl = declManager->FindSkin( skinname );
-	}
-
-	renderEntity.customSkin = skinDecl;
-	UpdateVisuals();
-
-	if ( worldModel.GetEntity() ) {
-		worldModel.GetEntity()->SetSkin( skinDecl );
-	}
-
-	if ( gameLocal.isServer ) {
-		idBitMsg	msg;
-		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
-
-		msg.Init( msgBuf, sizeof( msgBuf ) );
-		msg.WriteLong( ( skinDecl != NULL ) ? gameLocal.ServerRemapDecl( -1, DECL_SKIN, skinDecl->Index() ) : -1 );
-		ServerSendEvent( EVENT_CHANGESKIN, &msg, false, -1 );
-	}
-}
-
-/*
-================
-idWeapon::Event_Flashlight
-================
-*/
-void idWeapon::Event_Flashlight( int enable ) {
-	if ( enable ) {
-		lightOn = true;
-		MuzzleFlashLight();
-	} else {
-		lightOn = false;
-		muzzleFlashEnd = 0;
-	}
-}
-
-/*
-================
-idWeapon::Event_GetLightParm
-================
-*/
-void idWeapon::Event_GetLightParm( int parmnum ) {
-	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
-	}
-
-	idThread::ReturnFloat( muzzleFlash.shaderParms[ parmnum ] );
-}
-
-/*
-================
-idWeapon::Event_SetLightParm
-================
-*/
-void idWeapon::Event_SetLightParm( int parmnum, float value ) {
-	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
-	}
-
-	muzzleFlash.shaderParms[ parmnum ]		= value;
-	worldMuzzleFlash.shaderParms[ parmnum ]	= value;
-	UpdateVisuals();
-}
-
-/*
-================
-idWeapon::Event_SetLightParms
-================
-*/
-void idWeapon::Event_SetLightParms( float parm0, float parm1, float parm2, float parm3 ) {
-	muzzleFlash.shaderParms[ SHADERPARM_RED ]			= parm0;
-	muzzleFlash.shaderParms[ SHADERPARM_GREEN ]			= parm1;
-	muzzleFlash.shaderParms[ SHADERPARM_BLUE ]			= parm2;
-	muzzleFlash.shaderParms[ SHADERPARM_ALPHA ]			= parm3;
-
-	worldMuzzleFlash.shaderParms[ SHADERPARM_RED ]		= parm0;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_GREEN ]	= parm1;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_BLUE ]		= parm2;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_ALPHA ]	= parm3;
-
-	UpdateVisuals();
-}
-
-/*
-================
-idWeapon::Event_CreateProjectile
-================
-*/
-void idWeapon::Event_CreateProjectile( void ) {
-	if ( !gameLocal.isClient ) {
-		projectileEnt = NULL;
-		gameLocal.SpawnEntityDef( projectileDict, &projectileEnt, false );
-		if ( projectileEnt ) {
-			projectileEnt->SetOrigin( GetPhysics()->GetOrigin() );
-			projectileEnt->Bind( owner, false );
-			projectileEnt->Hide();
-		}
-		idThread::ReturnEntity( projectileEnt );
-	} else {
-		idThread::ReturnEntity( NULL );
-	}
-}
-
-/*
-================
-idWeapon::Event_LaunchProjectiles
-================
-*/
-void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower ) {
-	idProjectile	*proj;
-	idEntity		*ent;
-	int				i;
-	idVec3			dir;
-	float			ang;
-	float			spin;
-	float			distance;
-	trace_t			tr;
-	idVec3			start;
-	idVec3			muzzle_pos;
-	idBounds		ownerBounds, projBounds;
-
-	if ( IsHidden() ) {
-		return;
-	}
-
-	if ( !projectileDict.GetNumKeyVals() ) {
-		const char *classname = weaponDef->dict.GetString( "classname" );
-		gameLocal.Warning( "No projectile defined on '%s'", classname );
-		return;
-	}
-
-	// avoid all ammo considerations on an MP client
-	if ( !gameLocal.isClient ) {
-
-		// check if we're out of ammo or the clip is empty
-		int ammoAvail = owner->inventory.HasAmmo( ammoType, ammoRequired );
-		if ( !ammoAvail || ( ( clipSize != 0 ) && ( ammoClip <= 0 ) ) ) {
-			return;
-		}
-
-		// if this is a power ammo weapon ( currently only the bfg ) then make sure 
-		// we only fire as much power as available in each clip
-		if ( powerAmmo ) {
-			// power comes in as a float from zero to max
-			// if we use this on more than the bfg will need to define the max
-			// in the .def as opposed to just in the script so proper calcs
-			// can be done here. 
-			dmgPower = ( int )dmgPower + 1;
-			if ( dmgPower > ammoClip ) {
-				dmgPower = ammoClip;
-			}
-		}
-
-		owner->inventory.UseAmmo( ammoType, ( powerAmmo ) ? dmgPower : ammoRequired );
-		if ( clipSize && ammoRequired ) {
-			ammoClip -= powerAmmo ? dmgPower : 1;
-		}
-
-	}
-
-	if ( !silent_fire ) {
-		// wake up nearby monsters
-		gameLocal.AlertAI( owner );
-	}
-
-	// set the shader parm to the time of last projectile firing,
-	// which the gun material shaders can reference for single shot barrel glows, etc
-	renderEntity.shaderParms[ SHADERPARM_DIVERSITY ]	= gameLocal.random.CRandomFloat();
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.realClientTime );
-
-	if ( worldModel.GetEntity() ) {
-		worldModel.GetEntity()->SetShaderParm( SHADERPARM_DIVERSITY, renderEntity.shaderParms[ SHADERPARM_DIVERSITY ] );
-		worldModel.GetEntity()->SetShaderParm( SHADERPARM_TIMEOFFSET, renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] );
-	}
-
-	// calculate the muzzle position
-	if ( barrelJointView != INVALID_JOINT && projectileDict.GetBool( "launchFromBarrel" ) ) {
-		// there is an explicit joint for the muzzle
-		GetGlobalJointTransform( true, barrelJointView, muzzleOrigin, muzzleAxis );
-	} else {
-		// go straight out of the view
-		muzzleOrigin = playerViewOrigin;
-		muzzleAxis = playerViewAxis;
-	}
-
-	// add some to the kick time, incrementally moving repeat firing weapons back
-	if ( kick_endtime < gameLocal.realClientTime ) {
-		kick_endtime = gameLocal.realClientTime;
-	}
-	kick_endtime += muzzle_kick_time;
-	if ( kick_endtime > gameLocal.realClientTime + muzzle_kick_maxtime ) {
-		kick_endtime = gameLocal.realClientTime + muzzle_kick_maxtime;
-	}
-
-	if ( gameLocal.isClient ) {
-
-		// predict instant hit projectiles
-		if ( projectileDict.GetBool( "net_instanthit" ) ) {
-			float spreadRad = DEG2RAD( spread );
-			muzzle_pos = muzzleOrigin + playerViewAxis[ 0 ] * 2.0f;
-			for( i = 0; i < num_projectiles; i++ ) {
-				ang = idMath::Sin( spreadRad * gameLocal.random.RandomFloat() );
-				spin = (float)DEG2RAD( 360.0f ) * gameLocal.random.RandomFloat();
-				dir = playerViewAxis[ 0 ] + playerViewAxis[ 2 ] * ( ang * idMath::Sin( spin ) ) - playerViewAxis[ 1 ] * ( ang * idMath::Cos( spin ) );
-				dir.Normalize();
-				gameLocal.clip.Translation( tr, muzzle_pos, muzzle_pos + dir * 4096.0f, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, owner );
-				if ( tr.fraction < 1.0f ) {
-					idProjectile::ClientPredictionCollide( this, projectileDict, tr, vec3_origin, true );
-				}
-			}
-		}
-
-	} else {
-
-		ownerBounds = owner->GetPhysics()->GetAbsBounds();
-
-		owner->AddProjectilesFired( num_projectiles );
-
-		float spreadRad = DEG2RAD( spread );
-		for( i = 0; i < num_projectiles; i++ ) {
-			ang = idMath::Sin( spreadRad * gameLocal.random.RandomFloat() );
-			spin = (float)DEG2RAD( 360.0f ) * gameLocal.random.RandomFloat();
-			dir = playerViewAxis[ 0 ] + playerViewAxis[ 2 ] * ( ang * idMath::Sin( spin ) ) - playerViewAxis[ 1 ] * ( ang * idMath::Cos( spin ) );
-			dir.Normalize();
-
-			if ( projectileEnt ) {
-				ent = projectileEnt;
-				ent->Show();
-				ent->Unbind();
-				projectileEnt = NULL;
-			} else {
-				gameLocal.SpawnEntityDef( projectileDict, &ent, false );
-			}
-
-			if ( !ent || !ent->IsType( idProjectile::GetClassType() ) ) {
-				const char *projectileName = weaponDef->dict.GetString( "def_projectile" );
-				gameLocal.Error( "'%s' is not an idProjectile", projectileName );
-			}
-
-			if ( projectileDict.GetBool( "net_instanthit" ) ) {
-				// don't synchronize this on top of the already predicted effect
-				ent->fl.networkSync = false;
-			}
-
-			proj = static_cast<idProjectile *>(ent);
-			proj->Create( owner, muzzleOrigin, dir );
-
-			projBounds = proj->GetPhysics()->GetBounds().Rotate( proj->GetPhysics()->GetAxis() );
-
-			// make sure the projectile starts inside the bounding box of the owner
-			if ( i == 0 ) {
-				muzzle_pos = muzzleOrigin + playerViewAxis[ 0 ] * 2.0f;
-				if ( ( ownerBounds - projBounds).RayIntersection( muzzle_pos, playerViewAxis[0], distance ) ) {
-					start = muzzle_pos + distance * playerViewAxis[0];
-				} else {
-					start = ownerBounds.GetCenter();
-				}
-				gameLocal.clip.Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
-				muzzle_pos = tr.endpos;
-			}
-
-			proj->Launch( muzzle_pos, dir, pushVelocity, fuseOffset, launchPower, dmgPower );
-		}
-
-		// toss the brass
-		PostEventMS( &EV_Weapon_EjectBrass, brassDelay );
-	}
-
-	// add the light for the muzzleflash
-	if ( !lightOn ) {
-		MuzzleFlashLight();
-	}
-
-	owner->WeaponFireFeedback( &weaponDef->dict );
-
-	// reset muzzle smoke
-	weaponSmokeStartTime = gameLocal.realClientTime;
-}
-
-/*
-=====================
-idWeapon::Event_Melee
-=====================
-*/
-void idWeapon::Event_Melee( void ) {
-	idEntity	*ent;
-	trace_t		tr;
-
-	if ( !meleeDef ) {
-		gameLocal.Error( "No meleeDef on '%s'", weaponDef->dict.GetString( "classname" ) );
-	}
-
-	if ( !gameLocal.isClient ) {
-		idVec3 start = playerViewOrigin;
-		idVec3 end = start + playerViewAxis[0] * ( meleeDistance * owner->PowerUpModifier( MELEE_DISTANCE ) );
-		gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
-		if ( tr.fraction < 1.0f ) {
-			ent = gameLocal.GetTraceEntity( tr );
-		} else {
-			ent = NULL;
-		}
-
-		if ( g_debugWeapon.GetBool() ) {
-			gameRenderWorld->DebugLine( colorYellow, start, end, 100 );
-			if ( ent ) {
-				gameRenderWorld->DebugBounds( colorRed, ent->GetPhysics()->GetBounds(), ent->GetPhysics()->GetOrigin(), 100 );
-			}
-		}
-
-		bool hit = false;
-		const char *hitSound = meleeDef->dict.GetString( "snd_miss" );
-
-		if ( ent ) {
-
-			float push = meleeDef->dict.GetFloat( "push" );
-			idVec3 impulse = -push * owner->PowerUpModifier( SPEED ) * tr.c.normal;
-
-			if ( gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) && ( ent->IsType( idActor::GetClassType() ) || ent->IsType( idAFAttachment::GetClassType()) ) ) {
-				idThread::ReturnInt( 0 );
-				return;
-			}
-
-			ent->ApplyImpulse( this, tr.c.id, tr.c.point, impulse );
-
-			// weapon stealing - do this before damaging so weapons are not dropped twice
-			if ( gameLocal.isMultiplayer
-				&& weaponDef && weaponDef->dict.GetBool( "stealing" )
-				&& ent->IsType( idPlayer::GetClassType() )
-				&& !owner->PowerUpActive( BERSERK )
-				&& ( gameLocal.gameType != GAME_TDM || gameLocal.serverInfo.GetBool( "si_teamDamage" ) || ( owner->team != static_cast< idPlayer * >( ent )->team ) )
-				) {
-				owner->StealWeapon( static_cast< idPlayer * >( ent ) );
-			}
-
-			if ( ent->fl.takedamage ) {
-				idVec3 kickDir, globalKickDir;
-				meleeDef->dict.GetVector( "kickDir", "0 0 0", kickDir );
-				globalKickDir = muzzleAxis * kickDir;
-				ent->Damage( owner, owner, globalKickDir, meleeDefName, owner->PowerUpModifier( MELEE_DAMAGE ), tr.c.id );
-				hit = true;
-			}
-
-			if ( weaponDef->dict.GetBool( "impact_damage_effect" ) ) {
-
-				if ( ent->spawnArgs.GetBool( "bleed" ) ) {
-
-					hitSound = meleeDef->dict.GetString( owner->PowerUpActive( BERSERK ) ? "snd_hit_berserk" : "snd_hit" );
-
-					ent->AddDamageEffect( tr, impulse, meleeDef->dict.GetString( "classname" ) );
-
-				} else {
-
-					int type = tr.c.material->GetSurfaceType();
-					if ( type == SURFTYPE_NONE ) {
-						type = GetDefaultSurfaceType();
-					}
-
-					const char *materialType = gameLocal.sufaceTypeNames[ type ];
-
-					// start impact sound based on material type
-					hitSound = meleeDef->dict.GetString( va( "snd_%s", materialType ) );
-					if ( *hitSound == '\0' ) {
-						hitSound = meleeDef->dict.GetString( "snd_metal" );
-					}
-
-					if ( gameLocal.time > nextStrikeFx ) {
-						const char *decal;
-						// project decal
-						decal = weaponDef->dict.GetString( "mtr_strike" );
-						if ( decal && *decal ) {
-							gameLocal.ProjectDecal( tr.c.point, -tr.c.normal, 8.0f, true, 6.0, decal );
-						}
-						nextStrikeFx = gameLocal.time + 200;
-					} else {
-						hitSound = "";
-					}
-
-					strikeSmokeStartTime = gameLocal.time;
-					strikePos = tr.c.point;
-					strikeAxis = -tr.endAxis;
-				}
-			}
-		}
-
-		if ( *hitSound != '\0' ) {
-			const idSoundShader *snd = declManager->FindSound( hitSound );
-			StartSoundShader( snd, SND_CHANNEL_BODY2, 0, true, NULL );
-		}
-
-		idThread::ReturnInt( hit );
-		owner->WeaponFireFeedback( &weaponDef->dict );
-		return;
-	}
-
-	idThread::ReturnInt( 0 );
-	owner->WeaponFireFeedback( &weaponDef->dict );
-}
-
-/*
-=====================
-idWeapon::Event_GetWorldModel
-=====================
-*/
-void idWeapon::Event_GetWorldModel( void ) {
-	idThread::ReturnEntity( worldModel.GetEntity() );
-}
-
-/*
-=====================
-idWeapon::Event_AllowDrop
-=====================
-*/
-void idWeapon::Event_AllowDrop( int allow ) {
-	if ( allow ) {
-		allowDrop = true;
-	} else {
-		allowDrop = false;
-	}
-}
-
-/*
-================
-idWeapon::Event_EjectBrass
-
-Toss a shell model out from the breach if the bone is present
-================
-*/
-void idWeapon::Event_EjectBrass( void ) {
-	if ( !g_showBrass.GetBool() || !owner->CanShowWeaponViewmodel() ) {
-		return;
-	}
-
-	if ( ejectJointView == INVALID_JOINT || !brassDict.GetNumKeyVals() ) {
-		return;
-	}
-
-	if ( gameLocal.isClient ) {
-		return;
-	}
-
-	idMat3 axis;
-	idVec3 origin, linear_velocity, angular_velocity;
-	idEntity *ent;
-
-	if ( !GetGlobalJointTransform( true, ejectJointView, origin, axis ) ) {
-		return;
-	}
-
-	gameLocal.SpawnEntityDef( brassDict, &ent, false );
-	if ( !ent || !ent->IsType( idDebris::GetClassType() ) ) {
-		gameLocal.Error( "'%s' is not an idDebris", weaponDef ? weaponDef->dict.GetString( "def_ejectBrass" ) : "def_ejectBrass" );
-	}
-	idDebris *debris = static_cast<idDebris *>(ent);
-	debris->Create( owner, origin, axis );
-	debris->Launch();
-
-	linear_velocity = 40 * ( playerViewAxis[0] + playerViewAxis[1] + playerViewAxis[2] );
-	angular_velocity.Set( 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat() );
-
-	debris->GetPhysics()->SetLinearVelocity( linear_velocity );
-	debris->GetPhysics()->SetAngularVelocity( angular_velocity );
-}
-
-/*
-===============
-idWeapon::Event_IsInvisible
-===============
-*/
-void idWeapon::Event_IsInvisible( void ) {
-	if ( !owner ) {
-		idThread::ReturnFloat( 0 );
-		return;
-	}
-	idThread::ReturnFloat( owner->PowerUpActive( INVISIBILITY ) ? 1 : 0 );
-}
-
 /*
 ===============
 idWeapon::ClientPredictionThink
@@ -3144,4 +2230,579 @@ idWeapon::ClientPredictionThink
 */
 void idWeapon::ClientPredictionThink( void ) {
 	UpdateAnimation();	
+}
+
+void idWeapon::NativeEvent_Clear() {
+	Clear();
+}
+
+idEntity* idWeapon::NativeEvent_GetOwner() {
+	return owner;
+}
+
+void idWeapon::NativeEvent_WeaponState(const char* statename, int blendFrames) {
+	SetState(statename, blendFrames);
+	thread->Execute();
+}
+
+void idWeapon::NativeEvent_UseAmmo(int amount) {
+	if (gameLocal.isClient) {
+		return;
+	}
+
+	owner->inventory.UseAmmo(ammoType, (powerAmmo) ? amount : (amount * ammoRequired));
+	if (clipSize && ammoRequired) {
+		ammoClip -= powerAmmo ? amount : (amount * ammoRequired);
+		if (ammoClip < 0) {
+			ammoClip = 0;
+		}
+	}
+}
+
+void idWeapon::NativeEvent_AddToClip(int amount) {
+	int ammoAvail;
+
+	if (gameLocal.isClient) {
+		return;
+	}
+
+	ammoClip += amount;
+	if (ammoClip > clipSize) {
+		ammoClip = clipSize;
+	}
+
+	ammoAvail = owner->inventory.HasAmmo(ammoType, ammoRequired);
+	if (ammoClip > ammoAvail) {
+		ammoClip = ammoAvail;
+	}
+}
+
+int idWeapon::NativeEvent_AmmoInClip() {
+	return AmmoInClip();
+}
+
+int idWeapon::NativeEvent_AmmoAvailable() {
+	return owner->inventory.HasAmmo(ammoType, ammoRequired);
+}
+
+int idWeapon::NativeEvent_TotalAmmoCount() {
+	return owner->inventory.HasAmmo(ammoType, 1);
+}
+
+int idWeapon::NativeEvent_ClipSize() {
+	return clipSize;
+}
+
+float idWeapon::NativeEvent_AutoReload() {
+	assert(owner);
+	if (gameLocal.isClient) {
+		return 0.0f;
+	}
+	return gameLocal.userInfo[owner->entityNumber].GetBool("ui_autoReload");
+}
+
+void idWeapon::NativeEvent_NetReload() {
+	assert(owner);
+	if (gameLocal.isServer) {
+		ServerSendEvent(EVENT_RELOAD, NULL, false, -1);
+	}
+}
+
+void idWeapon::NativeEvent_NetEndReload() {
+	assert(owner);
+	if (gameLocal.isServer) {
+		ServerSendEvent(EVENT_ENDRELOAD, NULL, false, -1);
+	}
+}
+
+void idWeapon::NativeEvent_PlayAnim(int channel, const char* animname) {
+	int anim;
+
+	anim = animator.GetAnim(animname);
+	if (!anim) {
+		gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName());
+		animator.Clear(channel, gameLocal.time, FRAME2MS(animBlendFrames));
+		animDoneTime = 0;
+	}
+	else {
+		if (!(owner && owner->GetInfluenceLevel())) {
+			Show();
+		}
+		animator.PlayAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+		animDoneTime = animator.CurrentAnim(channel)->GetEndTime();
+		if (worldModel.GetEntity()) {
+			anim = worldModel.GetEntity()->GetAnimator()->GetAnim(animname);
+			if (anim) {
+				worldModel.GetEntity()->GetAnimator()->PlayAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+			}
+		}
+	}
+	animBlendFrames = 0;
+}
+
+void idWeapon::NativeEvent_PlayCycle(int channel, const char* animname) {
+	int anim;
+
+	anim = animator.GetAnim(animname);
+	if (!anim) {
+		gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName());
+		animator.Clear(channel, gameLocal.time, FRAME2MS(animBlendFrames));
+		animDoneTime = 0;
+	}
+	else {
+		if (!(owner && owner->GetInfluenceLevel())) {
+			Show();
+		}
+		animator.CycleAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+		animDoneTime = animator.CurrentAnim(channel)->GetEndTime();
+		if (worldModel.GetEntity()) {
+			anim = worldModel.GetEntity()->GetAnimator()->GetAnim(animname);
+			worldModel.GetEntity()->GetAnimator()->CycleAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+		}
+	}
+	animBlendFrames = 0;
+}
+
+bool idWeapon::NativeEvent_AnimDone(int channel, int blendFrames) {
+	return animDoneTime - FRAME2MS(blendFrames) <= gameLocal.time;
+}
+
+void idWeapon::NativeEvent_SetBlendFrames(int blendFrames) {
+	animBlendFrames = blendFrames;
+}
+
+int idWeapon::NativeEvent_GetBlendFrames() {
+	return animBlendFrames;
+}
+
+void idWeapon::NativeEvent_Next() {
+	owner->NextBestWeapon();
+}
+
+void idWeapon::NativeEvent_SetSkin(const char* skinname) {
+	const idDeclSkin* skinDecl;
+
+	if (!skinname || !skinname[0]) {
+		skinDecl = NULL;
+	}
+	else {
+		skinDecl = declManager->FindSkin(skinname);
+	}
+
+	renderEntity.customSkin = skinDecl;
+	UpdateVisuals();
+
+	if (worldModel.GetEntity()) {
+		worldModel.GetEntity()->SetSkin(skinDecl);
+	}
+
+	if (gameLocal.isServer) {
+		idBitMsg msg;
+		byte msgBuf[MAX_EVENT_PARAM_SIZE];
+
+		msg.Init(msgBuf, sizeof(msgBuf));
+		msg.WriteLong((skinDecl != NULL) ? gameLocal.ServerRemapDecl(-1, DECL_SKIN, skinDecl->Index()) : -1);
+		ServerSendEvent(EVENT_CHANGESKIN, &msg, false, -1);
+	}
+}
+
+void idWeapon::NativeEvent_Flashlight(int enable) {
+	if (enable) {
+		lightOn = true;
+		MuzzleFlashLight();
+	}
+	else {
+		lightOn = false;
+		muzzleFlashEnd = 0;
+	}
+}
+
+float idWeapon::NativeEvent_GetLightParm(int parmnum) {
+	if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
+		gameLocal.Error("shader parm index (%d) out of range", parmnum);
+	}
+	return muzzleFlash.shaderParms[parmnum];
+}
+
+void idWeapon::NativeEvent_SetLightParm(int parmnum, float value) {
+	if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
+		gameLocal.Error("shader parm index (%d) out of range", parmnum);
+	}
+	muzzleFlash.shaderParms[parmnum] = value;
+	worldMuzzleFlash.shaderParms[parmnum] = value;
+	UpdateVisuals();
+}
+
+void idWeapon::NativeEvent_SetLightParms(float parm0, float parm1, float parm2, float parm3) {
+	muzzleFlash.shaderParms[SHADERPARM_RED] = parm0;
+	muzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1;
+	muzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2;
+	muzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3;
+
+	worldMuzzleFlash.shaderParms[SHADERPARM_RED] = parm0;
+	worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1;
+	worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2;
+	worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3;
+
+	UpdateVisuals();
+}
+
+idEntity* idWeapon::NativeEvent_CreateProjectile() {
+	if (!gameLocal.isClient) {
+		projectileEnt = NULL;
+		gameLocal.SpawnEntityDef(projectileDict, &projectileEnt, false);
+		if (projectileEnt) {
+			projectileEnt->SetOrigin(GetPhysics()->GetOrigin());
+			projectileEnt->Bind(owner, false);
+			projectileEnt->Hide();
+		}
+		return projectileEnt;
+	}
+	else {
+		return NULL;
+	}
+}
+
+void idWeapon::NativeEvent_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower) {
+	idProjectile* proj;
+	idEntity* ent;
+	int i;
+	idVec3 dir;
+	float ang;
+	float spin;
+	float distance;
+	trace_t tr;
+	idVec3 start;
+	idVec3 muzzle_pos;
+	idBounds ownerBounds, projBounds;
+
+	if (IsHidden()) {
+		return;
+	}
+
+	if (!projectileDict.GetNumKeyVals()) {
+		const char* classname = weaponDef->dict.GetString("classname");
+		gameLocal.Warning("No projectile defined on '%s'", classname);
+		return;
+	}
+
+	if (!gameLocal.isClient) {
+		int ammoAvail = owner->inventory.HasAmmo(ammoType, ammoRequired);
+		if (!ammoAvail || ((clipSize != 0) && (ammoClip <= 0))) {
+			return;
+		}
+
+		if (powerAmmo) {
+			dmgPower = (int)dmgPower + 1;
+			if (dmgPower > ammoClip) {
+				dmgPower = ammoClip;
+			}
+		}
+
+		owner->inventory.UseAmmo(ammoType, (powerAmmo) ? dmgPower : ammoRequired);
+		if (clipSize && ammoRequired) {
+			ammoClip -= powerAmmo ? dmgPower : 1;
+		}
+	}
+
+	if (!silent_fire) {
+		gameLocal.AlertAI(owner);
+	}
+
+	renderEntity.shaderParms[SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
+	renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.realClientTime);
+
+	if (worldModel.GetEntity()) {
+		worldModel.GetEntity()->SetShaderParm(SHADERPARM_DIVERSITY, renderEntity.shaderParms[SHADERPARM_DIVERSITY]);
+		worldModel.GetEntity()->SetShaderParm(SHADERPARM_TIMEOFFSET, renderEntity.shaderParms[SHADERPARM_TIMEOFFSET]);
+	}
+
+	if (barrelJointView != INVALID_JOINT && projectileDict.GetBool("launchFromBarrel")) {
+		GetGlobalJointTransform(true, barrelJointView, muzzleOrigin, muzzleAxis);
+	}
+	else {
+		muzzleOrigin = playerViewOrigin;
+		muzzleAxis = playerViewAxis;
+	}
+
+	if (kick_endtime < gameLocal.realClientTime) {
+		kick_endtime = gameLocal.realClientTime;
+	}
+	kick_endtime += muzzle_kick_time;
+	if (kick_endtime > gameLocal.realClientTime + muzzle_kick_maxtime) {
+		kick_endtime = gameLocal.realClientTime + muzzle_kick_maxtime;
+	}
+
+	if (gameLocal.isClient) {
+		if (projectileDict.GetBool("net_instanthit")) {
+			float spreadRad = DEG2RAD(spread);
+			muzzle_pos = muzzleOrigin + playerViewAxis[0] * 2.0f;
+			for (i = 0; i < num_projectiles; i++) {
+				ang = idMath::Sin(spreadRad * gameLocal.random.RandomFloat());
+				spin = (float)DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
+				dir = playerViewAxis[0] + playerViewAxis[2] * (ang * idMath::Sin(spin)) - playerViewAxis[1] * (ang * idMath::Cos(spin));
+				dir.Normalize();
+				gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos + dir * 4096.0f, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, owner);
+				if (tr.fraction < 1.0f) {
+					idProjectile::ClientPredictionCollide(this, projectileDict, tr, vec3_origin, true);
+				}
+			}
+		}
+	}
+	else {
+		ownerBounds = owner->GetPhysics()->GetAbsBounds();
+		owner->AddProjectilesFired(num_projectiles);
+
+		float spreadRad = DEG2RAD(spread);
+		for (i = 0; i < num_projectiles; i++) {
+			ang = idMath::Sin(spreadRad * gameLocal.random.RandomFloat());
+			spin = (float)DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
+			dir = playerViewAxis[0] + playerViewAxis[2] * (ang * idMath::Sin(spin)) - playerViewAxis[1] * (ang * idMath::Cos(spin));
+			dir.Normalize();
+
+			if (projectileEnt) {
+				ent = projectileEnt;
+				ent->Show();
+				ent->Unbind();
+				projectileEnt = NULL;
+			}
+			else {
+				gameLocal.SpawnEntityDef(projectileDict, &ent, false);
+			}
+
+			if (!ent || !ent->IsType(idProjectile::GetClassType())) {
+				const char* projectileName = weaponDef->dict.GetString("def_projectile");
+				gameLocal.Error("'%s' is not an idProjectile", projectileName);
+			}
+
+			if (projectileDict.GetBool("net_instanthit")) {
+				ent->fl.networkSync = false;
+			}
+
+			proj = static_cast<idProjectile*>(ent);
+			proj->Create(owner, muzzleOrigin, dir);
+
+			projBounds = proj->GetPhysics()->GetBounds().Rotate(proj->GetPhysics()->GetAxis());
+
+			if (i == 0) {
+				muzzle_pos = muzzleOrigin + playerViewAxis[0] * 2.0f;
+				if ((ownerBounds - projBounds).RayIntersection(muzzle_pos, playerViewAxis[0], distance)) {
+					start = muzzle_pos + distance * playerViewAxis[0];
+				}
+				else {
+					start = ownerBounds.GetCenter();
+				}
+				gameLocal.clip.Translation(tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner);
+				muzzle_pos = tr.endpos;
+			}
+
+			proj->Launch(muzzle_pos, dir, pushVelocity, fuseOffset, launchPower, dmgPower);
+		}
+
+		PostEventMS(&EV_Weapon_EjectBrass, brassDelay);
+	}
+
+	if (!lightOn) {
+		MuzzleFlashLight();
+	}
+
+	owner->WeaponFireFeedback(&weaponDef->dict);
+	weaponSmokeStartTime = gameLocal.realClientTime;
+}
+
+bool idWeapon::NativeEvent_Melee() {
+	idEntity* ent;
+	trace_t tr;
+
+	if (!meleeDef) {
+		gameLocal.Error("No meleeDef on '%s'", weaponDef->dict.GetString("classname"));
+	}
+
+	if (!gameLocal.isClient) {
+		idVec3 start = playerViewOrigin;
+		idVec3 end = start + playerViewAxis[0] * (meleeDistance * owner->PowerUpModifier(MELEE_DISTANCE));
+		gameLocal.clip.TracePoint(tr, start, end, MASK_SHOT_RENDERMODEL, owner);
+		if (tr.fraction < 1.0f) {
+			ent = gameLocal.GetTraceEntity(tr);
+		}
+		else {
+			ent = NULL;
+		}
+
+		if (g_debugWeapon.GetBool()) {
+			gameRenderWorld->DebugLine(colorYellow, start, end, 100);
+			if (ent) {
+				gameRenderWorld->DebugBounds(colorRed, ent->GetPhysics()->GetBounds(), ent->GetPhysics()->GetOrigin(), 100);
+			}
+		}
+
+		bool hit = false;
+		const char* hitSound = meleeDef->dict.GetString("snd_miss");
+
+		if (ent) {
+			float push = meleeDef->dict.GetFloat("push");
+			idVec3 impulse = -push * owner->PowerUpModifier(SPEED) * tr.c.normal;
+
+			if (gameLocal.world->spawnArgs.GetBool("no_Weapons") && (ent->IsType(idActor::GetClassType()) || ent->IsType(idAFAttachment::GetClassType()))) {
+				return 0;
+			}
+
+			ent->ApplyImpulse(this, tr.c.id, tr.c.point, impulse);
+
+			if (gameLocal.isMultiplayer
+				&& weaponDef && weaponDef->dict.GetBool("stealing")
+				&& ent->IsType(idPlayer::GetClassType())
+				&& !owner->PowerUpActive(BERSERK)
+				&& (gameLocal.gameType != GAME_TDM || gameLocal.serverInfo.GetBool("si_teamDamage") || (owner->team != static_cast<idPlayer*>(ent)->team))
+				) {
+				owner->StealWeapon(static_cast<idPlayer*>(ent));
+			}
+
+			if (ent->fl.takedamage) {
+				idVec3 kickDir, globalKickDir;
+				meleeDef->dict.GetVector("kickDir", "0 0 0", kickDir);
+				globalKickDir = muzzleAxis * kickDir;
+				ent->Damage(owner, owner, globalKickDir, meleeDefName, owner->PowerUpModifier(MELEE_DAMAGE), tr.c.id);
+				hit = true;
+			}
+
+			if (weaponDef->dict.GetBool("impact_damage_effect")) {
+				if (ent->spawnArgs.GetBool("bleed")) {
+					hitSound = meleeDef->dict.GetString(owner->PowerUpActive(BERSERK) ? "snd_hit_berserk" : "snd_hit");
+					ent->AddDamageEffect(tr, impulse, meleeDef->dict.GetString("classname"));
+				}
+				else {
+					int type = tr.c.material->GetSurfaceType();
+					if (type == SURFTYPE_NONE) {
+						type = GetDefaultSurfaceType();
+					}
+					const char* materialType = gameLocal.sufaceTypeNames[type];
+					hitSound = meleeDef->dict.GetString(va("snd_%s", materialType));
+					if (*hitSound == '\0') {
+						hitSound = meleeDef->dict.GetString("snd_metal");
+					}
+					if (gameLocal.time > nextStrikeFx) {
+						const char* decal;
+						decal = weaponDef->dict.GetString("mtr_strike");
+						if (decal && *decal) {
+							gameLocal.ProjectDecal(tr.c.point, -tr.c.normal, 8.0f, true, 6.0, decal);
+						}
+						nextStrikeFx = gameLocal.time + 200;
+					}
+					else {
+						hitSound = "";
+					}
+					strikeSmokeStartTime = gameLocal.time;
+					strikePos = tr.c.point;
+					strikeAxis = -tr.endAxis;
+				}
+			}
+		}
+
+		if (*hitSound != '\0') {
+			const idSoundShader* snd = declManager->FindSound(hitSound);
+			StartSoundShader(snd, SND_CHANNEL_BODY2, 0, true, NULL);
+		}
+
+		owner->WeaponFireFeedback(&weaponDef->dict);
+		return hit;
+	}
+
+	owner->WeaponFireFeedback(&weaponDef->dict);
+	return false;
+}
+
+idEntity* idWeapon::NativeEvent_GetWorldModel() {
+	return worldModel.GetEntity();
+}
+
+void idWeapon::NativeEvent_AllowDrop(int allow) {
+	allowDrop = allow;
+}
+
+void idWeapon::NativeEvent_EjectBrass() {
+	if (!g_showBrass.GetBool() || !owner->CanShowWeaponViewmodel()) {
+		return;
+	}
+
+	if (ejectJointView == INVALID_JOINT || !brassDict.GetNumKeyVals()) {
+		return;
+	}
+
+	if (gameLocal.isClient) {
+		return;
+	}
+
+	idMat3 axis;
+	idVec3 origin, linear_velocity, angular_velocity;
+	idEntity* ent;
+
+	if (!GetGlobalJointTransform(true, ejectJointView, origin, axis)) {
+		return;
+	}
+
+	gameLocal.SpawnEntityDef(brassDict, &ent, false);
+	if (!ent || !ent->IsType(idDebris::GetClassType())) {
+		gameLocal.Error("'%s' is not an idDebris", weaponDef ? weaponDef->dict.GetString("def_ejectBrass") : "def_ejectBrass");
+	}
+	idDebris* debris = static_cast<idDebris*>(ent);
+	debris->Create(owner, origin, axis);
+	debris->Launch();
+
+	linear_velocity = 40 * (playerViewAxis[0] + playerViewAxis[1] + playerViewAxis[2]);
+	angular_velocity.Set(10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat());
+
+	debris->GetPhysics()->SetLinearVelocity(linear_velocity);
+	debris->GetPhysics()->SetAngularVelocity(angular_velocity);
+}
+
+float idWeapon::NativeEvent_IsInvisible() {
+	if (!owner) {
+		return 0;
+	}
+	return owner->PowerUpActive(INVISIBILITY) ? 1 : 0;
+}
+
+void idWeapon::NativeEvent_WeaponReady() {
+	status = WP_READY;
+	if (isLinked) {
+		WEAPON_RAISEWEAPON = false;
+	}
+	if (sndHum) {
+		StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, NULL);
+	}
+}
+
+void idWeapon::NativeEvent_WeaponOutOfAmmo() {
+	status = WP_OUTOFAMMO;
+	if (isLinked) {
+		WEAPON_RAISEWEAPON = false;
+	}
+}
+
+void idWeapon::NativeEvent_WeaponReloading() {
+	status = WP_RELOAD;
+}
+
+void idWeapon::NativeEvent_WeaponHolstered() {
+	status = WP_HOLSTERED;
+	if (isLinked) {
+		WEAPON_LOWERWEAPON = false;
+	}
+}
+
+void idWeapon::NativeEvent_WeaponRising() {
+	status = WP_RISING;
+	if (isLinked) {
+		WEAPON_LOWERWEAPON = false;
+	}
+	owner->WeaponRisingCallback();
+}
+
+void idWeapon::NativeEvent_WeaponLowering() {
+	status = WP_LOWERING;
+	if (isLinked) {
+		WEAPON_RAISEWEAPON = false;
+	}
+	owner->WeaponLoweringCallback();
 }
