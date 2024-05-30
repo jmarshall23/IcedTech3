@@ -375,7 +375,7 @@ bool idAI::BecomeRagdoll(void) {
 }
 
 void idAI::StopRagdoll(void) {
-	StopRagdoll();
+	idActor::StopRagdoll();
 	SetPhysics(&physicsObj);
 }
 
