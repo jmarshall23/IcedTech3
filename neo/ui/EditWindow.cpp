@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,13 +27,9 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
-#include "Window.h"
+#include "EditWindow.h"
 #include "UserInterfaceLocal.h"
 #include "SliderWindow.h"
-#include "EditWindow.h"
-
 
 bool idEditWindow::ParseInternalVar( const char *_name, idParser *src ) {
 	if ( idStr::Icmp( _name, "maxchars" ) == 0) {
@@ -60,7 +56,7 @@ bool idEditWindow::ParseInternalVar( const char *_name, idParser *src ) {
 		ParseString( src, sourceFile );
 		return true;
 	}
-	if ( idStr::Icmp( _name, "password" ) == 0 ) { 
+	if ( idStr::Icmp( _name, "password" ) == 0 ) {
 		password = src->ParseBool();
 		return true;
 	}
@@ -145,7 +141,7 @@ void idEditWindow::Draw( int time, float x, float y ) {
 
 	idStr		pass;
 	const char* buffer;
-	if ( password ) {		
+	if ( password ) {
 		const char* temp = text;
 		for ( ; *temp; temp++ )	{
 			pass += "*";
@@ -209,7 +205,7 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 	int len = text.Length();
 
 	if ( event->evType == SE_CHAR ) {
-		if ( event->evValue == Sys_GetConsoleKey( false ) || event->evValue == Sys_GetConsoleKey( true ) ) {
+		if ( event->evValue == Sys_GetConsoleKey( idKeyInput::IsDown( K_SHIFT ) ) ) {
 			return "";
 		}
 
@@ -220,7 +216,7 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 		if ( maxChars && len > maxChars ) {
 			len = maxChars;
 		}
-	
+
 		if ( ( key == K_ENTER || key == K_KP_ENTER ) && event->evValue2 ) {
 			RunScript( ON_ACTION );
 			RunScript( ON_ENTER );
@@ -237,7 +233,7 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 		}
 
 		if ( key == 'h' - 'a' + 1 || key == K_BACKSPACE ) {	// ctrl-h is backspace
-   			if ( cursorPos > 0 ) {
+			if ( cursorPos > 0 ) {
 				if ( cursorPos >= len ) {
 					buffer[len - 1] = 0;
 					cursorPos = len - 1;
@@ -252,11 +248,11 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 			}
 
 			return "";
-   		}
+		}
 
-   		//
-   		// ignore any non printable chars (except enter when wrap is enabled)
-   		//
+		//
+		// ignore any non printable chars (except enter when wrap is enabled)
+		//
 		if ( wrap && (key == K_ENTER || key == K_KP_ENTER) ) {
 		} else if ( !idStr::CharIsPrintable( key ) ) {
 			return "";
@@ -264,17 +260,17 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 
 		if ( numeric ) {
 			if ( ( key < '0' || key > '9' ) && key != '.' ) {
-	       		return "";
+				return "";
 			}
 		}
 
 		if ( dc->GetOverStrike() ) {
 			if ( maxChars && cursorPos >= maxChars ) {
-	       		return "";
+				return "";
 			}
 		} else {
 			if ( ( len == MAX_EDITFIELD - 1 ) || ( maxChars && len >= maxChars ) ) {
-	       		return "";
+				return "";
 			}
 			memmove( &buffer[ cursorPos + 1 ], &buffer[ cursorPos ], len + 1 - cursorPos );
 		}
@@ -325,7 +321,7 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 						cursorPos++;
 					}
 				}
-			} 
+			}
 
 			EnsureCursorVisible();
 
@@ -355,7 +351,7 @@ const char *idEditWindow::HandleEvent(const sysEvent_t *event, bool *updateVisua
 
 		if ( key == K_HOME ) {
 			if ( idKeyInput::IsDown( K_CTRL ) || cursorLine <= 0 || ( cursorLine >= breaks.Num() ) ) {
-                cursorPos = 0;
+				cursorPos = 0;
 			} else {
 				cursorPos = breaks[cursorLine];
 			}
@@ -630,7 +626,7 @@ idEditWindow::RunNamedEvent
 */
 void idEditWindow::RunNamedEvent( const char* eventName ) {
 	idStr event, group;
-	
+
 	if ( !idStr::Cmpn( eventName, "cvar read ", 10 ) ) {
 		event = eventName;
 		group = event.Mid( 10, event.Length() - 10 );

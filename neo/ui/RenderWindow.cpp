@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
 #include "Window.h"
 #include "UserInterfaceLocal.h"
 #include "RenderWindow.h"
@@ -45,7 +43,7 @@ idRenderWindow::idRenderWindow(idUserInterfaceLocal *g) : idWindow(g) {
 }
 
 idRenderWindow::~idRenderWindow() {
-	renderSystem->FreeRenderWorld( world ); 
+	renderSystem->FreeRenderWorld( world );
 }
 
 void idRenderWindow::CommonInit() {
@@ -64,7 +62,7 @@ void idRenderWindow::CommonInit() {
 
 
 void idRenderWindow::BuildAnimation(int time) {
-	
+
 	if (!updateAnimation) {
 		return;
 	}
@@ -138,7 +136,7 @@ void idRenderWindow::Render( int time ) {
 
 
 
-void idRenderWindow::Draw(int time, float x, float y) {
+void idRenderWindow::Draw(int time, float x_, float y_) {
 	PreRender();
 	Render(time);
 
@@ -152,10 +150,17 @@ void idRenderWindow::Draw(int time, float x, float y) {
 	refdef.shaderParms[2] = 1;
 	refdef.shaderParms[3] = 1;
 
-	refdef.x = drawRect.x;
-	refdef.y = drawRect.y;
-	refdef.width = drawRect.w;
-	refdef.height = drawRect.h;
+	// DG: for scaling menus to 4:3 (like that spinning mars globe in the main menu)
+	float x = drawRect.x;
+	float y = drawRect.y;
+	float w = drawRect.w;
+	float h = drawRect.h;
+
+	refdef.x = x;
+	refdef.y = y;
+	refdef.width = w;
+	refdef.height = h;
+	// DG end
 	refdef.fov_x = 90;
 	refdef.fov_y = 2 * atan((float)drawRect.h / drawRect.w) * idMath::M_RAD2DEG;
 
@@ -167,10 +172,10 @@ void idRenderWindow::PostParse() {
 	idWindow::PostParse();
 }
 
-// 
-//  
+//
+//
 idWinVar *idRenderWindow::GetWinVarByName(const char *_name, bool fixup, drawWin_t** owner ) {
-// 
+//
 	if (idStr::Icmp(_name, "model") == 0) {
 		return &modelName;
 	}
@@ -196,10 +201,10 @@ idWinVar *idRenderWindow::GetWinVarByName(const char *_name, bool fixup, drawWin
 		return &needsRender;
 	}
 
-// 
-//  
+//
+//
 	return idWindow::GetWinVarByName(_name, fixup, owner);
-// 
+//
 }
 
 bool idRenderWindow::ParseInternalVar(const char *_name, idParser *src) {

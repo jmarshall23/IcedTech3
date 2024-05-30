@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,13 +27,11 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
 #include "../Game_local.h"
 
 const idEventDef EV_Thread_Execute( "<execute>", NULL );
 const idEventDef EV_Thread_SetCallback( "<script_setcallback>", NULL );
-																	
+
 // script callable events
 const idEventDef EV_Thread_TerminateThread( "terminate", "d" );
 const idEventDef EV_Thread_Pause( "pause", NULL );
@@ -263,7 +261,7 @@ idThread::idThread
 */
 idThread::idThread( idEntity *self, const function_t *func ) {
 	assert( self );
-	
+
 	Init();
 	SetThreadName( self->name );
 	interpreter.EnterObjectFunction( self, func, false );
@@ -418,7 +416,7 @@ void idThread::Init( void ) {
 
 	threadNum = threadIndex;
 	threadList.Append( this );
-	
+
 	creationTime = gameLocal.time;
 	lastExecuteTime = 0;
 	manualControl = false;
@@ -455,19 +453,19 @@ idThread::DisplayInfo
 ================
 */
 void idThread::DisplayInfo( void ) {
-	gameLocal.Printf( 
+	gameLocal.Printf(
 		"%12i: '%s'\n"
 		"        File: %s(%d)\n"
 		"     Created: %d (%d ms ago)\n"
-		"      Status: ", 
-		threadNum, threadName.c_str(), 
-		interpreter.CurrentFile(), interpreter.CurrentLine(), 
+		"      Status: ",
+		threadNum, threadName.c_str(),
+		interpreter.CurrentFile(), interpreter.CurrentLine(),
 		creationTime, gameLocal.time - creationTime );
 
 	if ( interpreter.threadDying ) {
 		gameLocal.Printf( "Dying\n" );
 	} else if ( interpreter.doneProcessing ) {
-		gameLocal.Printf( 
+		gameLocal.Printf(
 			"Paused since %d (%d ms)\n"
 			"      Reason: ",  lastExecuteTime, gameLocal.time - lastExecuteTime );
 		if ( waitingForThread ) {
@@ -792,7 +790,7 @@ void idThread::Error( const char *fmt, ... ) const {
 	vsprintf( text, fmt, argptr );
 	va_end( argptr );
 
-	interpreter.Error( text );
+	interpreter.Error( "%s", text );
 }
 
 /*
@@ -808,7 +806,7 @@ void idThread::Warning( const char *fmt, ... ) const {
 	vsprintf( text, fmt, argptr );
 	va_end( argptr );
 
-	interpreter.Warning( text );
+	interpreter.Warning( "%s", text );
 }
 
 /*
@@ -913,8 +911,8 @@ void idThread::WaitFrame( void ) {
 
 /***********************************************************************
 
-  Script callable events  
-	
+  Script callable events
+
 ***********************************************************************/
 
 /*
@@ -923,9 +921,6 @@ idThread::Event_TerminateThread
 ================
 */
 void idThread::Event_TerminateThread( int num ) {
-	idThread *thread;
-
-	thread = GetThread( num );
 	KillThread( num );
 }
 
@@ -1357,7 +1352,7 @@ void idThread::Event_OnSignal( int signal, idEntity *ent, const char *func ) {
 	if ( !ent ) {
 		Error( "Entity not found" );
 	}
-	
+
 	if ( ( signal < 0 ) || ( signal >= NUM_SIGNALS ) ) {
 		Error( "Signal out of range" );
 	}
@@ -1379,7 +1374,7 @@ void idThread::Event_ClearSignalThread( int signal, idEntity *ent ) {
 	if ( !ent ) {
 		Error( "Entity not found" );
 	}
-	
+
 	if ( ( signal < 0 ) || ( signal >= NUM_SIGNALS ) ) {
 		Error( "Signal out of range" );
 	}
@@ -1507,7 +1502,7 @@ idThread::Event_GetTraceBody
 void idThread::Event_GetTraceBody( void ) {
 	if ( trace.fraction < 1.0f && trace.c.id < 0 ) {
 		idAFEntity_Base *af = static_cast<idAFEntity_Base *>( gameLocal.entities[ trace.c.entityNum ] );
-		if ( af && af->IsType( idAFEntity_Base::GetClassType()) && af->IsActiveAF() ) {
+		if ( af && af->IsType( idAFEntity_Base::GetClassType() ) && af->IsActiveAF() ) {
 			int bodyId = af->BodyForClipModelId( trace.c.id );
 			idAFBody *body = af->GetAFPhysics()->GetBody( bodyId );
 			if ( body ) {
@@ -1644,7 +1639,7 @@ void idThread::Event_StrLeft( const char *string, int num ) {
 
 /*
 ================
-idThread::Event_StrRight 
+idThread::Event_StrRight
 ================
 */
 void idThread::Event_StrRight( const char *string, int num ) {
@@ -1741,7 +1736,7 @@ void idThread::Event_RadiusDamage( const idVec3 &origin, idEntity *inflictor, id
 idThread::Event_IsClient
 ================
 */
-void idThread::Event_IsClient( void ) { 
+void idThread::Event_IsClient( void ) {
 	idThread::ReturnFloat( gameLocal.isClient );
 }
 
@@ -1750,7 +1745,7 @@ void idThread::Event_IsClient( void ) {
 idThread::Event_IsMultiplayer
 ================
 */
-void idThread::Event_IsMultiplayer( void ) { 
+void idThread::Event_IsMultiplayer( void ) {
 	idThread::ReturnFloat( gameLocal.isMultiplayer );
 }
 
@@ -1759,7 +1754,7 @@ void idThread::Event_IsMultiplayer( void ) {
 idThread::Event_GetFrameTime
 ================
 */
-void idThread::Event_GetFrameTime( void ) { 
+void idThread::Event_GetFrameTime( void ) {
 	idThread::ReturnFloat( MS2SEC( gameLocal.msec ) );
 }
 
@@ -1768,7 +1763,7 @@ void idThread::Event_GetFrameTime( void ) {
 idThread::Event_GetTicsPerSecond
 ================
 */
-void idThread::Event_GetTicsPerSecond( void ) { 
+void idThread::Event_GetTicsPerSecond( void ) {
 	idThread::ReturnFloat( USERCMD_HZ );
 }
 

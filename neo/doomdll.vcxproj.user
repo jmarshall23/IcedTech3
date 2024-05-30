@@ -6,7 +6,19 @@
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug with inlines and memory log|x64'">
+    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug with inlines|Win32'">
+    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug with inlines|x64'">
     <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
@@ -18,7 +30,19 @@
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>C:\Projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommand>C:\Projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug with inlines|Win32'">
+    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug with inlines|x64'">
     <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
@@ -30,13 +54,31 @@
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Debug|x64'">
+    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|Win32'">
     <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dedicated Release|x64'">
+    <LocalDebuggerCommand>D:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>D:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommand>c:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>c:\projects\IcedTech</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommand>c:\projects\IcedTech\Icetech.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>+set r_fullscreen 0 +set r_mode 6 +set fs_game ice3 </LocalDebuggerCommandArguments>

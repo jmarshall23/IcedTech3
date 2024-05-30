@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,11 +27,9 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
-#include "RegExp.h"
 #include "Window.h"
 #include "UserInterfaceLocal.h"
+#include "RegExp.h"
 
 int idRegister::REGCOUNT[NUMTYPES] = {4, 1, 1, 1, 0, 2, 3, 4};
 
@@ -112,7 +110,7 @@ void idRegister::GetFromRegs( float *registers ) {
 	for ( int i = 0; i < regCount; i++ ) {
 		v[i] = registers[regs[i]];
 	}
-	
+
 	switch( type ) {
 		case VEC4: {
 			*dynamic_cast<idWinVec4*>(var) = v;
@@ -193,7 +191,7 @@ void idRegister::WriteToSaveGame( idFile *savefile ) {
 	savefile->Write( &type, sizeof( type ) );
 	savefile->Write( &regCount, sizeof( regCount ) );
 	savefile->Write( &regs[0], sizeof( regs ) );
-	
+
 	len = name.Length();
 	savefile->Write( &len, sizeof( len ) );
 	savefile->Write( name.c_str(), len );

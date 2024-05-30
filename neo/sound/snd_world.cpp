@@ -1713,7 +1713,7 @@ void idSoundWorldLocal::AddChannelContribution( idSoundEmitterLocal *sound, idSo
 	//
 	int offset = current44kHz - chan->trigger44kHzTime;
 	float inputSamples[MIXBUFFER_SAMPLES*2+16];
-	float *alignedInputSamples = (float *) ( ( ( (int)inputSamples ) + 15 ) & ~15 );
+	float *alignedInputSamples = (float *) ( ( ( (INT_PTR)inputSamples ) + 15 ) & ~15 );
 
 	//
 	// allocate and initialize hardware source

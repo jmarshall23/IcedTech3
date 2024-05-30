@@ -41,15 +41,15 @@ If you have questions concerning this license or the applicable additional terms
 // Win32
 #if defined(WIN32) || defined(_WIN32)
 
-#define	BUILD_STRING					"win-x86"
+#define	BUILD_STRING					"win-x64"
 #define BUILD_OS_ID						0
-#define	CPUSTRING						"x86"
+#define	CPUSTRING						"x64"
 #define CPU_EASYARGS					1
 
 #define ALIGN16( x )					__declspec(align(16)) x
 #define PACKED
 
-#define _alloca16( x )					((void *)((((int)_alloca( (x)+15 )) + 15) & ~15))
+#define _alloca16( x )					((void *)((((INT_PTR)_alloca( (x)+15 )) + 15) & ~15))
 
 #define PATHSEPERATOR_STR				"\\"
 #define PATHSEPERATOR_CHAR				'\\'
@@ -326,9 +326,9 @@ const char *	Sys_GetCallStackCurAddressStr( int depth );
 void			Sys_ShutdownSymbols( void );
 
 // DLL loading, the path should be a fully qualified OS path to the DLL file to be loaded
-int				Sys_DLL_Load( const char *dllName );
-void *			Sys_DLL_GetProcAddress( int dllHandle, const char *procName );
-void			Sys_DLL_Unload( int dllHandle );
+INT_PTR			Sys_DLL_Load( const char *dllName );
+void *			Sys_DLL_GetProcAddress(INT_PTR dllHandle, const char *procName );
+void			Sys_DLL_Unload(INT_PTR dllHandle );
 
 // event generation
 void			Sys_GenerateEvents( void );
@@ -558,9 +558,9 @@ public:
 	virtual const char *	GetCallStackCurStr( int depth ) = 0;
 	virtual void			ShutdownSymbols( void ) = 0;
 
-	virtual int				DLL_Load( const char *dllName ) = 0;
-	virtual void *			DLL_GetProcAddress( int dllHandle, const char *procName ) = 0;
-	virtual void			DLL_Unload( int dllHandle ) = 0;
+	virtual INT_PTR			DLL_Load( const char *dllName ) = 0;
+	virtual void *			DLL_GetProcAddress(INT_PTR dllHandle, const char *procName ) = 0;
+	virtual void			DLL_Unload(INT_PTR dllHandle ) = 0;
 	virtual void			DLL_GetFileName( const char *baseName, char *dllName, int maxLength ) = 0;
 
 	virtual sysEvent_t		GenerateMouseButtonEvent( int button, bool down ) = 0;
@@ -578,5 +578,19 @@ extern idSys *				sys;
 
 bool Sys_LoadOpenAL( void );
 void Sys_FreeOpenAL( void );
+
+#undef  GetWindowLong
+#undef  SetWindowLong
+#undef SetClassLong
+#undef LONG 
+
+#define GWL_WNDPROC GWLP_WNDPROC
+#define SetClassLong	SetClassLongPtr
+#define GetWindowLong	GetWindowLongPtr
+#define SetWindowLong	SetWindowLongPtr
+#define GWL_USERDATA GWLP_USERDATA
+#define GCL_HICON GCLP_HICON
+#define DWL_MSGRESULT DWLP_MSGRESULT
+#define DWL_DLGPROC DWLP_DLGPROC
 
 #endif /* !__SYS_PUBLIC__ */

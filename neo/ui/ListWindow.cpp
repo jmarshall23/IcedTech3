@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,12 +27,10 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
-#include "../framework/Session_local.h"
 #include "Window.h"
 #include "UserInterfaceLocal.h"
 #include "SliderWindow.h"
+
 #include "ListWindow.h"
 
 // Number of pixels above the text that the rect starts
@@ -275,7 +273,7 @@ bool idListWindow::ParseInternalVar(const char *_name, idParser *src) {
 		ParseString(src, tabIconVOffsetStr);
 		return true;
 	}
-	
+
 	idStr strName = _name;
 	if(idStr::Icmp(strName.Left(4), "mtr_") == 0) {
 		idStr matName;
@@ -358,7 +356,7 @@ void idListWindow::PostParse() {
 			}
 			idVec2 size;
 			size.x = atoi(tok);
-			
+
 			src.ReadToken(&tok);	//","
 			src.ReadToken(&tok);
 
@@ -386,22 +384,22 @@ void idListWindow::PostParse() {
 		r.x = tabStops[i];
 		r.w = (i < c - 1) ? tabStops[i+1] - r.x - tabBorder : -1;
 		r.align = (doAligns) ? tabAligns[i] : 0;
-		if(tabVAligns.Num() > 0) {
+		if(tabVAligns.Num() > 0 && i < tabVAligns.Num()) {
 			r.valign = tabVAligns[i];
 		} else {
 			r.valign = 0;
 		}
-		if(tabTypes.Num() > 0) {
+		if(tabTypes.Num() > 0 && i < tabTypes.Num()) {
 			r.type = tabTypes[i];
 		} else {
 			r.type = TAB_TYPE_TEXT;
 		}
-		if(tabSizes.Num() > 0) {
+		if(tabSizes.Num() > 0 && i < tabSizes.Num() ) {
 			r.iconSize = tabSizes[i];
 		} else {
 			r.iconSize.Zero();
 		}
-		if(tabIconVOffsets.Num() > 0 ) {
+		if(tabIconVOffsets.Num() > 0 && i < tabIconVOffsets.Num()) {
 			r.iconVOffset = tabIconVOffsets[i];
 		} else {
 			r.iconVOffset = 0;
@@ -514,7 +512,7 @@ void idListWindow::Draw(int time, float x, float y) {
 				if ( tabInfo[tab].type == TAB_TYPE_TEXT ) {
 					dc->DrawText(work, scale, tabInfo[tab].align, color, rect, false, -1);
 				} else if (tabInfo[tab].type == TAB_TYPE_ICON) {
-					
+
 					const idMaterial	**hashMat;
 					const idMaterial	*iconMat;
 
@@ -599,23 +597,33 @@ void idListWindow::UpdateList() {
 	}
 	float vert = GetMaxCharHeight();
 	int fit = textRect.h / vert;
+	int selection = gui->State().GetInt( va( "%s_sel_0", listName.c_str() ) );
 	if ( listItems.Num() < fit ) {
 		scroller->SetRange(0.0f, 0.0f, 1.0f);
+		top = 0;
+		scroller->SetValue(0.0f);
 	} else {
 		scroller->SetRange(0.0f, (listItems.Num() - fit) + 1.0f, 1.0f);
+
+		// DG: scroll to selected item
+		float value = scroller->GetValue();
+		if ( value < 0.0f ) {
+			value = 0.0f;
+			top = 0;
+		} else if ( value > listItems.Num() - 1 ) {
+			value = listItems.Num() - 1;
+		}
+		float maxVisibleVal = Min(value + fit, scroller->GetHigh());
+		if ( selection >= 0 && (selection < value || selection > maxVisibleVal) ) {
+			// if selected entry is not currently visible, center it (if possible)
+			value = Max(0.0f, selection - 0.5f * fit);
+		}
+
+		scroller->SetValue(value);
+		top = value;
 	}
 
-	SetCurrentSel( gui->State().GetInt( va( "%s_sel_0", listName.c_str() ) ) );
-
-	float value = scroller->GetValue();
-	if ( value > listItems.Num() - 1 ) {
-		value = listItems.Num() - 1;
-	}
-	if ( value < 0.0f ) {
-		value = 0.0f;
-	}
-	scroller->SetValue(value);
-	top = value;
+	SetCurrentSel( selection );
 
 	typedTime = 0;
 	clickTime = 0;
@@ -625,4 +633,3 @@ void idListWindow::UpdateList() {
 void idListWindow::StateChanged( bool redraw ) {
 	UpdateList();
 }
-

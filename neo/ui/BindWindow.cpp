@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "UserInterfaceLocal.h"
 #include "BindWindow.h"
 
-
 void idBindWindow::CommonInit() {
 	bindName = "";
 	waitingOnKey = false;
@@ -57,7 +56,7 @@ idBindWindow::~idBindWindow() {
 
 const char *idBindWindow::HandleEvent(const sysEvent_t *event, bool *updateVisuals) {
 	static char ret[ 256 ];
-	
+
 	if (!(event->evType == SE_KEY && event->evValue2)) {
 		return "";
 	}

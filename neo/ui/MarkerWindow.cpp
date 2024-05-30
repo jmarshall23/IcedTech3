@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,13 +27,10 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
-// included for image uploading for player stat graph
-#include "../renderer/Image.h"
 #include "Window.h"
 #include "UserInterfaceLocal.h"
 #include "MarkerWindow.h"
+#include "../renderer/tr_local.h"
 
 class idImage;
 void idMarkerWindow::CommonInit() {
@@ -80,10 +77,6 @@ bool idMarkerWindow::ParseInternalVar(const char *_name, idParser *src) {
 		return true;
 	}
 	return idWindow::ParseInternalVar(_name, src);
-}
-
-idWinVar *idMarkerWindow::GetWinVarByName(const char *_name, bool fixup) {
-	return idWindow::GetWinVarByName(_name, fixup);
 }
 
 const char *idMarkerWindow::HandleEvent(const sysEvent_t *event, bool *updateVisuals) {
@@ -319,7 +312,6 @@ void idMarkerWindow::Activate(bool activate, idStr &act) {
 			fileSystem->FreeFileList( markers );
 			memset(imageBuff, 0, 512*64*4);
 			float step = 511.0f / (numStats - 1);
-			float startX = 0;
 			float x1, y1, x2, y2;
 			x1 = 0 - step;
 			for (i = 0; i < numStats-1; i++) {
@@ -341,7 +333,7 @@ void idMarkerWindow::Activate(bool activate, idStr &act) {
 			}
 			const shaderStage_t *stage = background->GetStage(0);
 			if (stage) {
-				stage->texture.image->UploadScratch((byte*)imageBuff, 512, 64);			
+				stage->texture.image->UploadScratch((byte*)imageBuff, 512, 64);
 			}
 			Mem_Free(imageBuff);
 		}

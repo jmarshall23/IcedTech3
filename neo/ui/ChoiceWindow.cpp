@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,11 +27,8 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
-#pragma hdrstop
-
-#include "Window.h"
-#include "UserInterfaceLocal.h"
 #include "ChoiceWindow.h"
+#include "UserInterfaceLocal.h"
 
 /*
 ============
@@ -42,7 +39,8 @@ void idChoiceWindow::InitVars( ) {
 	if ( cvarStr.Length() ) {
 		cvar = cvarSystem->Find( cvarStr );
 		if ( !cvar ) {
-			common->Warning( "idChoiceWindow::InitVars: gui '%s' window '%s' references undefined cvar '%s'", gui->GetSourceFile(), name.c_str(), cvarStr.c_str() );
+			if (strcmp(cvarStr.c_str(), "s_driver") && strcmp(cvarStr.c_str(), "net_serverAllowServerMod"))
+				common->Warning( "idChoiceWindow::InitVars: gui '%s' window '%s' references undefined cvar '%s'", gui->GetSourceFile(), name.c_str(), cvarStr.c_str() );
 			return;
 		}
 		updateStr.Append( &cvarStr );
@@ -84,7 +82,7 @@ idChoiceWindow::~idChoiceWindow() {
 
 void idChoiceWindow::RunNamedEvent( const char* eventName ) {
 	idStr event, group;
-	
+
 	if ( !idStr::Cmpn( eventName, "cvar read ", 10 ) ) {
 		event = eventName;
 		group = event.Mid( 10, event.Length() - 10 );
@@ -107,7 +105,7 @@ void idChoiceWindow::UpdateVars( bool read, bool force ) {
 				cvarStr.Set( cvar->GetString() );
 			} else {
 				cvar->SetString( cvarStr.c_str() );
-			}	
+			}
 		}
 		if ( !read && guiStr.NeedsUpdate() ) {
 			guiStr.Set( va( "%i", currentChoice ) );
@@ -198,7 +196,7 @@ const char *idChoiceWindow::HandleEvent(const sysEvent_t *event, bool *updateVis
 	if ( runAction2 ) {
 		RunScript( ON_ACTIONRELEASE );
 	}
-	
+
 	return cmd;
 }
 
@@ -215,7 +213,7 @@ void idChoiceWindow::UpdateChoice() {
 	if ( !updateStr.Num() ) {
 		return;
 	}
-	UpdateVars( true );	
+	UpdateVars( true );
 	updateStr.Update();
 	if ( choiceType == 0 ) {
 		// ChoiceType 0 stores current as an integer in either cvar or gui
@@ -273,7 +271,7 @@ idWinVar *idChoiceWindow::GetWinVarByName(const char *_name, bool fixup, drawWin
 	if ( idStr::Icmp( _name, "updateGroup" ) == 0 ) {
 		return &updateGroup;
 	}
-	
+
 	return idWindow::GetWinVarByName(_name, fixup, owner);
 }
 
@@ -321,7 +319,7 @@ void idChoiceWindow::UpdateChoicesAndVals( void ) {
 				if (token == "-") {
 					negNum = true;
 					continue;
-				} 
+				}
 				if (token == ";") {
 					if (str2.Length()) {
 						str2.StripTrailingWhitespace();
@@ -349,8 +347,12 @@ void idChoiceWindow::UpdateChoicesAndVals( void ) {
 	}
 }
 
+idStr R_GetVidModeListString(bool addCustom);
+idStr R_GetVidModeValsString(bool addCustom);
+
 void idChoiceWindow::PostParse() {
 	idWindow::PostParse();
+
 	UpdateChoicesAndVals();
 
 	InitVars();
@@ -389,7 +391,9 @@ void idChoiceWindow::Draw(int time, float x, float y) {
 		color = hoverColor;
 	}
 
-	dc->DrawText( choices[currentChoice], textScale, textAlign, color, textRect, false, -1 );
+	if(choices.Num() > 0) {
+		dc->DrawText( choices[currentChoice], textScale, textAlign, color, textRect, false, -1 );
+	}
 }
 
 void idChoiceWindow::Activate( bool activate, idStr &act ) {

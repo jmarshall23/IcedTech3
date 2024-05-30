@@ -30,6 +30,12 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "snd_local.h"
+#define ID_DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID name = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
+ID_DEFINE_GUID(EAXPROPERTYID_EAX40_Source, 0x1b86b823, 0x22df, 0x4eae, 0x8b, 0x3c, 0x12, 0x78, 0xce, 0x54, 0x42, 0x27);
+ID_DEFINE_GUID(EAXPROPERTYID_EAX40_FXSlot0, 0xc4d79f1e, 0xf1ac, 0x436b, 0xa8, 0x1d, 0xa7, 0x38, 0xe7, 0x04, 0x54, 0x69);
+ID_DEFINE_GUID(EAXPROPERTYID_EAX40_FXSlot1, 0x08c00e96, 0x74be, 0x4491, 0x93, 0xaa, 0xe8, 0xad, 0x35, 0xa4, 0x91, 0x17);
+ID_DEFINE_GUID(EAXPROPERTYID_EAX40_FXSlot2, 0x1d433b88, 0xf0f6, 0x4637, 0x91, 0x9f, 0x60, 0xe7, 0xe0, 0x6b, 0x5e, 0xdd);
+ID_DEFINE_GUID(EAXPROPERTYID_EAX40_FXSlot3, 0xefff08ea, 0xc7d8, 0x44ab, 0x93, 0xad, 0x6d, 0xbd, 0x5f, 0x91, 0x00, 0x64);
 
 #ifdef ID_DEDICATED
 idCVar idSoundSystemLocal::s_noSound( "s_noSound", "1", CVAR_SOUND | CVAR_BOOL | CVAR_ROM, "" );
@@ -321,7 +327,7 @@ void idSoundSystemLocal::Init() {
 	}
 
 	// make a 16 byte aligned finalMixBuffer
-	finalMixBuffer = (float *) ( ( ( (int)realAccum ) + 15 ) & ~15 );
+	finalMixBuffer = (float *) ( ( ( (INT_PTR)realAccum ) + 15 ) & ~15 );
 
 	graph = NULL;
 
