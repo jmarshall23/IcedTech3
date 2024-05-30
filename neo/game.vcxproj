@@ -276,6 +276,7 @@
     <ClCompile Include="game\anim\Anim_Blend.cpp" />
     <ClCompile Include="game\anim\Anim_Import.cpp" />
     <ClCompile Include="game\anim\Anim_Testmodel.cpp" />
+    <ClCompile Include="game\Entity_script.cpp" />
     <ClCompile Include="game\gamesys\Class.cpp" />
     <ClCompile Include="game\gamesys\DebugGraph.cpp" />
     <ClCompile Include="game\gamesys\Event.cpp" />

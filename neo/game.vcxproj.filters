@@ -179,6 +179,7 @@
     <ClCompile Include="game\AnimatedEntity.cpp" />
     <ClCompile Include="game\Weapon_script.cpp" />
     <ClCompile Include="game\AnimState.cpp" />
+    <ClCompile Include="game\Entity_script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AI.h">
