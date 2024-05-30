@@ -271,6 +271,7 @@
     <ClCompile Include="game\ai\AI_script.cpp" />
     <ClCompile Include="game\ai\AI_Vagary.cpp" />
     <ClCompile Include="game\AnimatedEntity.cpp" />
+    <ClCompile Include="game\AnimState.cpp" />
     <ClCompile Include="game\anim\Anim.cpp" />
     <ClCompile Include="game\anim\Anim_Blend.cpp" />
     <ClCompile Include="game\anim\Anim_Import.cpp" />
@@ -350,6 +351,7 @@
     <ClInclude Include="game\aas\AAS_local.h" />
     <ClInclude Include="game\ai\AI.h" />
     <ClInclude Include="game\AnimatedEntity.h" />
+    <ClInclude Include="game\AnimState.h" />
     <ClInclude Include="game\anim\Anim.h" />
     <ClInclude Include="game\anim\Anim_Testmodel.h" />
     <ClInclude Include="game\gamesys\Class.h" />

@@ -725,6 +725,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "IK.h"
 #include "AFEntity.h"
 #include "Misc.h"
+#include "AnimState.h"
 #include "Actor.h"
 #include "Projectile.h"
 #include "Weapon.h"

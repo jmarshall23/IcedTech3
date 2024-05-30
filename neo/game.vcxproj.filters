@@ -178,6 +178,7 @@
     <ClCompile Include="game\Game_loadscreen.cpp" />
     <ClCompile Include="game\AnimatedEntity.cpp" />
     <ClCompile Include="game\Weapon_script.cpp" />
+    <ClCompile Include="game\AnimState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AI.h">
@@ -312,6 +313,7 @@
       <Filter>AAS</Filter>
     </ClInclude>
     <ClInclude Include="game\AnimatedEntity.h" />
+    <ClInclude Include="game\AnimState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="game\Game.def" />
