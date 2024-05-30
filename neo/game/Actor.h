@@ -277,6 +277,46 @@ private:
 	void					Event_SetState( const char *name );
 	void					Event_GetState( void );
 	void					Event_GetHead( void );
+public:
+	void NativeEvent_EnableEyeFocus();
+	void NativeEvent_DisableEyeFocus();
+	void NativeEvent_Footstep();
+	void NativeEvent_EnableWalkIK();
+	void NativeEvent_DisableWalkIK();
+	void NativeEvent_EnableLegIK(int num);
+	void NativeEvent_DisableLegIK(int num);
+	void NativeEvent_PreventPain(float duration);
+	void NativeEvent_DisablePain();
+	void NativeEvent_EnablePain();
+	const char* NativeEvent_GetPainAnim();
+	void NativeEvent_SetAnimPrefix(const char* prefix);
+	void NativeEvent_StopAnim(int channel, int frames);
+	int NativeEvent_PlayAnim(int channel, const char* animname);
+	int NativeEvent_PlayCycle(int channel, const char* animname);
+	int NativeEvent_IdleAnim(int channel, const char* animname);
+	void NativeEvent_SetSyncedAnimWeight(int channel, int anim, float weight);
+	void NativeEvent_OverrideAnim(int channel);
+	void NativeEvent_EnableAnim(int channel, int blendFrames);
+	void NativeEvent_SetBlendFrames(int channel, int blendFrames);
+	int NativeEvent_GetBlendFrames(int channel);
+	void NativeEvent_AnimState(int channel, const char* statename, int blendFrames);
+	const char* NativeEvent_GetAnimState(int channel);
+	bool NativeEvent_InAnimState(int channel, const char* statename);
+	void NativeEvent_FinishAction(const char* actionname);
+	bool NativeEvent_AnimDone(int channel, int blendFrames);
+	float NativeEvent_HasAnim(int channel, const char* animname);
+	void NativeEvent_CheckAnim(int channel, const char* animname);
+	const char* NativeEvent_ChooseAnim(int channel, const char* animname);
+	float NativeEvent_AnimLength(int channel, const char* animname);
+	float NativeEvent_AnimDistance(int channel, const char* animname);
+	bool NativeEvent_HasEnemies();
+	idActor* NativeEvent_NextEnemy(idEntity* ent);
+	idActor* NativeEvent_ClosestEnemyToPoint(const idVec3& pos);
+	void NativeEvent_StopSound(int channel, int netSync);
+	void NativeEvent_SetNextState(const char* name);
+	void NativeEvent_SetState(const char* name);
+	const char* NativeEvent_GetState();
+	idEntity* NativeEvent_GetHead();
 };
 
 #endif /* !__GAME_ACTOR_H__ */

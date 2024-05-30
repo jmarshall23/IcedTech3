@@ -265,6 +265,7 @@
     <ClCompile Include="game\aas\AAS_debug.cpp" />
     <ClCompile Include="game\aas\AAS_pathing.cpp" />
     <ClCompile Include="game\aas\AAS_routing.cpp" />
+    <ClCompile Include="game\Actor_script.cpp" />
     <ClCompile Include="game\ai\AI.cpp" />
     <ClCompile Include="game\ai\AI_events.cpp" />
     <ClCompile Include="game\ai\AI_pathing.cpp" />
