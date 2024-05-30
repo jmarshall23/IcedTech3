@@ -19,6 +19,9 @@
     <Filter Include="AAS">
       <UniqueIdentifier>{571a02ab-fc4a-4c0b-b421-7f6c40a59eb5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Weapons">
+      <UniqueIdentifier>{d2abe6f1-29c0-4f9b-b84e-0e74e6a1d4a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game\ai\AI.cpp">
@@ -181,6 +184,21 @@
     <ClCompile Include="game\AnimState.cpp" />
     <ClCompile Include="game\Entity_script.cpp" />
     <ClCompile Include="game\Actor_script.cpp" />
+    <ClCompile Include="game\weapons\Weapon_base.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_pistol.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_fists.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_shotgun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_machinegun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AI.h">
@@ -316,6 +334,18 @@
     </ClInclude>
     <ClInclude Include="game\AnimatedEntity.h" />
     <ClInclude Include="game\AnimState.h" />
+    <ClInclude Include="game\weapons\Weapon_pistol.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_fists.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_shotgun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_machinegun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game\Game.def" />

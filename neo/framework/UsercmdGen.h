@@ -81,6 +81,7 @@ const int IMPULSE_26			= 26;			// <unused>
 const int IMPULSE_27			= 27;			// <unused>
 const int IMPULSE_28			= 28;			// vote yes
 const int IMPULSE_29			= 29;			// vote no
+const int IMPULSE_30			= 30;			// toggle flash light
 const int IMPULSE_40			= 40;			// use vehicle
 
 // usercmd_t->flags

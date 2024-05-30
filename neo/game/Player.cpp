@@ -3830,6 +3830,7 @@ void idPlayer::Weapon_Combat( void ) {
 			weaponGone = false;
 			animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
 			weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.clip[ currentWeapon ] );
+			weapon.GetEntity()->InitWeapon(currentWeapon);
 			animPrefix.Strip( "weapon_" );
 
 			weapon.GetEntity()->NetCatchup();
@@ -3855,6 +3856,7 @@ void idPlayer::Weapon_Combat( void ) {
 				weaponGone = false;
 				animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
 				weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.clip[ currentWeapon ] );
+				weapon.GetEntity()->InitWeapon(currentWeapon);
 				animPrefix.Strip( "weapon_" );
 
 				weapon.GetEntity()->Raise();
@@ -4022,13 +4024,11 @@ void idPlayer::UpdateWeapon( void ) {
 	}
 
 	// always make sure the weapon is correctly setup before accessing it
-	if ( !weapon.GetEntity()->IsLinked() ) {
-		if ( idealWeapon != -1 ) {
-			animPrefix = spawnArgs.GetString( va( "def_weapon%d", idealWeapon ) );
-			weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.clip[ idealWeapon ] );
-			assert( weapon.GetEntity()->IsLinked() );
-		} else {
-			return;
+	if (idealWeapon != -1) {
+		if (weapon.GetEntity()->GetCurrentWeaponId() != idealWeapon) {
+			animPrefix = spawnArgs.GetString(va("def_weapon%d", idealWeapon));
+			weapon.GetEntity()->GetWeaponDef(animPrefix, inventory.clip[idealWeapon]);
+			weapon.GetEntity()->InitWeapon(idealWeapon);
 		}
 	}
 
@@ -5528,6 +5528,15 @@ void idPlayer::UseVehicle( void ) {
 
 /*
 ==============
+idPlayer::ToggleFlashLight
+==============
+*/
+void idPlayer::ToggleFlashLight(void) {
+	weapon.GetEntity()->ToggleFlashLight();
+}
+
+/*
+==============
 idPlayer::PerformImpulse
 ==============
 */
@@ -5550,6 +5559,10 @@ void idPlayer::PerformImpulse( int impulse ) {
 	}
 
 	switch( impulse ) {
+		case IMPULSE_30: {
+			ToggleFlashLight();
+			break;
+		}
 		case IMPULSE_13: {
 			Reload();
 			break;
@@ -5576,11 +5589,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			// when we're not in single player, IMPULSE_19 is used for showScores
 			// otherwise it opens the pda
 			if ( !gameLocal.isMultiplayer ) {
-				if ( objectiveSystemOpen ) {
-					TogglePDA();
-				} else if ( weapon_pda >= 0 ) {
-					SelectWeapon( weapon_pda, true );
-				}
+				TogglePDA();
 			}
 			break;
 		}

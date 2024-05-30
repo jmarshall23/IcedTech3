@@ -418,6 +418,7 @@ public:
 
 	int						SlotForWeapon( const char *weaponName );
 	void					Reload( void );
+	void					ToggleFlashLight(void);
 	void					NextWeapon( void );
 	void					NextBestWeapon( void );
 	void					PrevWeapon( void );

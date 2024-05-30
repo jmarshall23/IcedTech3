@@ -37,6 +37,80 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+class idWeapon;
+
+#define WEAPON_STATE_FUNC(func) static_cast<idWeaponBase::StateFunction>(&func)
+
+#pragma once
+
+class idWeaponBase : public idClass {
+friend class idWeapon;
+public:
+	ABSTRACT_PROTOTYPE(idWeaponBase);
+
+	idWeaponBase();
+	virtual ~idWeaponBase() = default;
+
+	using StateFunction = void (idWeaponBase::*)();
+	
+	virtual void Init(idWeapon* owner) {
+		this->owner = owner;
+	}
+
+	void EnterCinematic();
+	virtual void ExitCinematic();
+	void NetCatchup();
+	void WeaponStolen();
+	void OwnerDied();
+	void UpdateSkin();
+	void ToggleFlashLight(void);
+	virtual bool WeaponHasFlashLight() { return true; }
+	virtual idStr GetFireAnim();
+
+	template<typename T>
+	void ChangeState(void (T::* newState)(), int blendFrames);
+	void Update();
+	void SetState(const char* name, int blendFrames);
+
+	virtual void StateChangedEvent(void) { }
+protected:
+	idWeapon* owner;
+
+	bool flashLightOn = false;
+
+	StateFunction currentState;
+	StateFunction nextState;
+	int blendFrames;
+	bool WEAPON_ATTACK;
+	bool WEAPON_RELOAD;
+	bool WEAPON_NETRELOAD;
+	bool WEAPON_NETENDRELOAD;
+	bool WEAPON_RAISEWEAPON;
+	bool WEAPON_LOWERWEAPON;
+	bool WEAPON_START_FIRING;
+
+	virtual void InitStates() = 0;
+
+	// Virtual state methods to be implemented by derived classes
+	virtual void State_Idle() = 0;
+	virtual void State_Lower() = 0;
+	virtual void State_Raise() = 0;
+	virtual void State_Fire() = 0;
+	virtual void State_Reload() = 0;
+};
+
+template<typename T>
+ID_INLINE void idWeaponBase::ChangeState(void (T::* newState)(), int blendFrames) {
+	this->nextState = static_cast<StateFunction>(newState);
+	this->blendFrames = blendFrames;
+	StateChangedEvent();
+}
+
+#include "weapons/Weapon_fists.h"
+#include "weapons/Weapon_pistol.h"
+#include "weapons/Weapon_shotgun.h"
+#include "weapons/Weapon_machinegun.h"
+
 typedef enum {
 	WP_READY,
 	WP_OUTOFAMMO,
@@ -58,6 +132,8 @@ class idMoveableItem;
 
 class idWeapon : public idAnimatedEntity {
 public:
+	friend class idWeaponBase;
+
 	CLASS_PROTOTYPE( idWeapon );
 
 							idWeapon();
@@ -78,7 +154,9 @@ public:
 	// Weapon definition management
 	void					Clear( void );
 	void					GetWeaponDef( const char *objectname, int ammoinclip );
-	bool					IsLinked( void );
+	void					InitWeapon(int currentWeaponId);
+	bool					IsLinked() { return scriptWeapon != nullptr; }
+	int						GetCurrentWeaponId() { return currentWeaponId; }
 	bool					IsWorldModelReady( void );
 
 	// GUIs
@@ -110,13 +188,8 @@ public:
 	bool					ShowCrosshair( void ) const;
 	idEntity *				DropItem( const idVec3 &velocity, int activateDelay, int removeDelay, bool died );
 	bool					CanDrop( void ) const;
-	void					WeaponStolen( void );
-
-	// Script state management
-	virtual idThread *		ConstructScriptObject( void );
-	virtual void			DeconstructScriptObject( void );
+	void					WeaponStolen( void );	
 	void					SetState( const char *statename, int blendFrames );
-	void					UpdateScript( void );
 	void					EnterCinematic( void );
 	void					ExitCinematic( void );
 	void					NetCatchup( void );
@@ -140,6 +213,8 @@ public:
 	int						LowAmmo( void ) const;
 	int						AmmoRequired( void ) const;
 
+	void					ToggleFlashLight(void);
+
 	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
 	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
 
@@ -153,21 +228,51 @@ public:
 
 	virtual void			ClientPredictionThink( void );
 
-private:
+	const idDeclEntityDef*  CurrentWeaponDef() { return weaponDef; }
+	void NativeEvent_Clear();
+	idEntity* NativeEvent_GetOwner();
+	void NativeEvent_WeaponState(const char* statename, int blendFrames);
+	void NativeEvent_UseAmmo(int amount);
+	void NativeEvent_AddToClip(int amount);
+	int NativeEvent_AmmoInClip();
+	int NativeEvent_AmmoAvailable();
+	int NativeEvent_TotalAmmoCount();
+	int NativeEvent_ClipSize();
+	float NativeEvent_AutoReload();
+	void NativeEvent_NetReload();
+	void NativeEvent_NetEndReload();
+	void NativeEvent_PlayAnim(int channel, const char* animname);
+	void NativeEvent_PlayCycle(int channel, const char* animname);
+	bool NativeEvent_AnimDone(int channel, int blendFrames);
+	void NativeEvent_SetBlendFrames(int blendFrames);
+	int NativeEvent_GetBlendFrames();
+	void NativeEvent_Next();
+	void NativeEvent_SetSkin(const char* skinname);
+	void NativeEvent_Flashlight(int enable);
+	float NativeEvent_GetLightParm(int parmnum);
+	void NativeEvent_SetLightParm(int parmnum, float value);
+	void NativeEvent_SetLightParms(float parm0, float parm1, float parm2, float parm3);
+	idEntity* NativeEvent_CreateProjectile();
+	void NativeEvent_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower);
+	bool NativeEvent_Melee();
+	idEntity* NativeEvent_GetWorldModel();
+	void NativeEvent_AllowDrop(int allow);
+	void NativeEvent_EjectBrass();
+	float NativeEvent_IsInvisible();
+	void NativeEvent_WeaponReady();
+	void NativeEvent_WeaponOutOfAmmo();
+	void NativeEvent_WeaponReloading();
+	void NativeEvent_WeaponHolstered();
+	void NativeEvent_WeaponRising();
+	void NativeEvent_WeaponLowering();
+protected:
 	// script control
-	idScriptBool			WEAPON_ATTACK;
-	idScriptBool			WEAPON_RELOAD;
-	idScriptBool			WEAPON_NETRELOAD;
-	idScriptBool			WEAPON_NETENDRELOAD;
-	idScriptBool			WEAPON_RAISEWEAPON;
-	idScriptBool			WEAPON_LOWERWEAPON;
+	idWeaponBase*			scriptWeapon;
 	weaponStatus_t			status;
-	idThread *				thread;
-	idStr					state;
-	idStr					idealState;
+
+	int						currentWeaponId;
 	int						animBlendFrames;
 	int						animDoneTime;
-	bool					isLinked;
 
 	// precreated projectile
 	idEntity				*projectileEnt;
@@ -309,44 +414,6 @@ private:
 	void					UpdateNozzleFx( void );
 	void					UpdateFlashPosition( void );
 
-	// native events.
-	void NativeEvent_Clear();
-	idEntity* NativeEvent_GetOwner();
-	void NativeEvent_WeaponState(const char* statename, int blendFrames);
-	void NativeEvent_UseAmmo(int amount);
-	void NativeEvent_AddToClip(int amount);
-	int NativeEvent_AmmoInClip();
-	int NativeEvent_AmmoAvailable();
-	int NativeEvent_TotalAmmoCount();
-	int NativeEvent_ClipSize();
-	float NativeEvent_AutoReload();
-	void NativeEvent_NetReload();
-	void NativeEvent_NetEndReload();
-	void NativeEvent_PlayAnim(int channel, const char* animname);
-	void NativeEvent_PlayCycle(int channel, const char* animname);
-	bool NativeEvent_AnimDone(int channel, int blendFrames);
-	void NativeEvent_SetBlendFrames(int blendFrames);
-	int NativeEvent_GetBlendFrames();
-	void NativeEvent_Next();
-	void NativeEvent_SetSkin(const char* skinname);
-	void NativeEvent_Flashlight(int enable);
-	float NativeEvent_GetLightParm(int parmnum);
-	void NativeEvent_SetLightParm(int parmnum, float value);
-	void NativeEvent_SetLightParms(float parm0, float parm1, float parm2, float parm3);
-	idEntity* NativeEvent_CreateProjectile();
-	void NativeEvent_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower);
-	bool NativeEvent_Melee();
-	idEntity* NativeEvent_GetWorldModel();
-	void NativeEvent_AllowDrop(int allow);
-	void NativeEvent_EjectBrass();
-	float NativeEvent_IsInvisible();
-	void NativeEvent_WeaponReady();
-	void NativeEvent_WeaponOutOfAmmo();
-	void NativeEvent_WeaponReloading();
-	void NativeEvent_WeaponHolstered();
-	void NativeEvent_WeaponRising();
-	void NativeEvent_WeaponLowering();
-
 	// script events
 	void					Event_Clear( void );
 	void					Event_GetOwner( void );
@@ -386,10 +453,6 @@ private:
 	void					Event_IsInvisible( void );
 	void					Event_NetEndReload( void );
 };
-
-ID_INLINE bool idWeapon::IsLinked( void ) {
-	return isLinked;
-}
 
 ID_INLINE bool idWeapon::IsWorldModelReady( void ) {
 	return ( worldModel.GetEntity() != NULL );

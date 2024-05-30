@@ -1302,6 +1302,11 @@ void idClass::RegisterClasses(void)
 	REGISTER(idThread)
 	REGISTER(iceWorldspawn)
 	REGISTER(idAI_Vagary)
+	REGISTER(idWeaponBase)
+	REGISTER(idWeaponFists)
+	REGISTER(idWeaponPistol)
+	REGISTER(idWeaponShotgun)
+	REGISTER(idWeaponMachinegun)
 #undef REGISTER
 }
 

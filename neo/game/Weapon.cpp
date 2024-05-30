@@ -40,7 +40,7 @@ idWeapon::idWeapon() {
 	owner					= NULL;
 	worldModel				= NULL;
 	weaponDef				= NULL;
-	thread					= NULL;
+	scriptWeapon			= nullptr;
 
 	memset( &guiLight, 0, sizeof( guiLight ) );
 	memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
@@ -87,10 +87,6 @@ void idWeapon::Spawn( void ) {
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::GetClassType(), NULL ) );
 		worldModel.GetEntity()->fl.networkSync = true;
 	}
-
-	thread = new idThread();
-	thread->ManualDelete();
-	thread->ManualControl();
 }
 
 /*
@@ -167,12 +163,12 @@ idWeapon::Save
 void idWeapon::Save( idSaveGame *savefile ) const {
 
 	savefile->WriteInt( status );
-	savefile->WriteObject( thread );
-	savefile->WriteString( state );
-	savefile->WriteString( idealState );
+	//savefile->WriteObject(thread);
+	//savefile->WriteString(state);
+	//savefile->WriteString(idealState);
 	savefile->WriteInt( animBlendFrames );
 	savefile->WriteInt( animDoneTime );
-	savefile->WriteBool( isLinked );
+	//savefile->WriteBool( isLinked );
 
 	savefile->WriteObject( owner );
 	worldModel.Save( savefile );
@@ -293,21 +289,12 @@ idWeapon::Restore
 void idWeapon::Restore( idRestoreGame *savefile ) {
 
 	savefile->ReadInt( (int &)status );
-	savefile->ReadObject( reinterpret_cast<idClass *&>( thread ) );
-	savefile->ReadString( state );
-	savefile->ReadString( idealState );
+	//savefile->ReadObject( reinterpret_cast<idClass *&>( thread ) );
+	//savefile->ReadString( state );
+	//savefile->ReadString( idealState );
 	savefile->ReadInt( animBlendFrames );
 	savefile->ReadInt( animDoneTime );
-	savefile->ReadBool( isLinked );
-
-	// Re-link script fields
-	WEAPON_ATTACK.LinkTo(		scriptObject, "WEAPON_ATTACK" );
-	WEAPON_RELOAD.LinkTo(		scriptObject, "WEAPON_RELOAD" );
-	WEAPON_NETRELOAD.LinkTo(	scriptObject, "WEAPON_NETRELOAD" );
-	WEAPON_NETENDRELOAD.LinkTo(	scriptObject, "WEAPON_NETENDRELOAD" );
-	WEAPON_RAISEWEAPON.LinkTo(	scriptObject, "WEAPON_RAISEWEAPON" );
-	WEAPON_LOWERWEAPON.LinkTo(	scriptObject, "WEAPON_LOWERWEAPON" );
-
+	//savefile->ReadBool( isLinked );
 	savefile->ReadObject( reinterpret_cast<idClass *&>( owner ) );
 	worldModel.Restore( savefile );
 
@@ -451,15 +438,12 @@ idWeapon::Clear
 void idWeapon::Clear( void ) {
 	CancelEvents( &EV_Weapon_Clear );
 
-	DeconstructScriptObject();
-	scriptObject.Free();
+	currentWeaponId = -1;
 
-	WEAPON_ATTACK.Unlink();
-	WEAPON_RELOAD.Unlink();
-	WEAPON_NETRELOAD.Unlink();
-	WEAPON_NETENDRELOAD.Unlink();
-	WEAPON_RAISEWEAPON.Unlink();
-	WEAPON_LOWERWEAPON.Unlink();
+	if (scriptWeapon) {
+		delete scriptWeapon;
+		scriptWeapon = nullptr;
+	}
 
 	if ( muzzleFlashHandle != -1 ) {
 		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
@@ -548,8 +532,6 @@ void idWeapon::Clear( void ) {
 	pushVelocity.Zero();
 
 	status			= WP_HOLSTERED;
-	state			= "";
-	idealState		= "";
 	animBlendFrames	= 0;
 	animDoneTime	= 0;
 
@@ -609,8 +591,6 @@ void idWeapon::Clear( void ) {
 	FreeModelDef();
 
 	sndHum				= NULL;
-
-	isLinked			= false;
 	projectileEnt		= NULL;
 
 	isFiring			= false;
@@ -664,6 +644,21 @@ void idWeapon::InitWorldModel( const idDeclEntityDef *def ) {
 
 /*
 ================
+idWeapon::InitWeapon
+================
+*/
+void idWeapon::InitWeapon(int currentWeaponId) {
+	if (!scriptWeapon) {
+		common->FatalError("idWeapon::InitWeapon: Null scriptweapon!");
+	}
+
+	this->currentWeaponId = currentWeaponId;
+	scriptWeapon->Init(this);
+	NativeEvent_Flashlight(false);
+}
+
+/*
+================
 idWeapon::GetWeaponDef
 ================
 */
@@ -686,6 +681,9 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	assert( owner );
 
 	weaponDef			= gameLocal.FindEntityDef( objectname );
+
+	idTypeInfo* scriptWeaponClass = idClass::GetClass(weaponDef->dict.GetString("nativeclass"));
+	scriptWeapon = (idWeaponBase*)scriptWeaponClass->CreateInstance();
 
 	ammoType			= GetAmmoNumForName( weaponDef->dict.GetString( "ammoType" ) );
 	ammoRequired		= weaponDef->dict.GetInt( "ammoRequired" );
@@ -887,22 +885,6 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	weaponOffsetTime = weaponDef->dict.GetFloat( "weaponOffsetTime", "400" );
 	weaponOffsetScale = weaponDef->dict.GetFloat( "weaponOffsetScale", "0.005" );
 
-	if ( !weaponDef->dict.GetString( "weapon_scriptobject", NULL, &objectType ) ) {
-		gameLocal.Error( "No 'weapon_scriptobject' set on '%s'.", objectname );
-	}
-	
-	// setup script object
-	if ( !scriptObject.SetType( objectType ) ) {
-		gameLocal.Error( "Script object '%s' not found on weapon '%s'.", objectType, objectname );
-	}
-
-	WEAPON_ATTACK.LinkTo(		scriptObject, "WEAPON_ATTACK" );
-	WEAPON_RELOAD.LinkTo(		scriptObject, "WEAPON_RELOAD" );
-	WEAPON_NETRELOAD.LinkTo(	scriptObject, "WEAPON_NETRELOAD" );
-	WEAPON_NETENDRELOAD.LinkTo(	scriptObject, "WEAPON_NETENDRELOAD" );
-	WEAPON_RAISEWEAPON.LinkTo(	scriptObject, "WEAPON_RAISEWEAPON" );
-	WEAPON_LOWERWEAPON.LinkTo(	scriptObject, "WEAPON_LOWERWEAPON" );
-
 	spawnArgs = weaponDef->dict;
 
 	shader = spawnArgs.GetString( "snd_hum" );
@@ -910,11 +892,6 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 		sndHum = declManager->FindSound( shader );
 		StartSoundShader( sndHum, SND_CHANNEL_BODY, 0, false, NULL );
 	}
-
-	isLinked = true;
-
-	// call script object's constructor
-	ConstructScriptObject();
 
 	// make sure we have the correct skin
 	UpdateSkin();
@@ -1055,19 +1032,11 @@ idWeapon::UpdateSkin
 bool idWeapon::UpdateSkin( void ) {
 	const function_t *func;
 
-	if ( !isLinked ) {
+	if ( !IsLinked() ) {
 		return false;
 	}
 
-	func = scriptObject.GetFunction( "UpdateSkin" );
-	if ( !func ) {
-		common->Warning( "Can't find function 'UpdateSkin' in object '%s'", scriptObject.GetTypeName() );
-		return false;
-	}
-	
-	// use the frameCommandThread since it's safe to use outside of framecommands
-	gameLocal.frameCommandThread->CallFunction( this, func, true );
-	gameLocal.frameCommandThread->Execute();
+	scriptWeapon->UpdateSkin();
 
 	return true;
 }
@@ -1149,7 +1118,8 @@ idWeapon::Think
 ================
 */
 void idWeapon::Think( void ) {
-	// do nothing because the present is called from the player through PresentWeapon
+	scriptWeapon->Update();
+	scriptWeapon->WEAPON_RELOAD = false;
 }
 
 /*
@@ -1158,8 +1128,8 @@ idWeapon::Raise
 ================
 */
 void idWeapon::Raise( void ) {
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = true;
+	if ( IsLinked() ) {
+		scriptWeapon->WEAPON_RAISEWEAPON = true;
 	}
 }
 
@@ -1170,8 +1140,8 @@ idWeapon::PutAway
 */
 void idWeapon::PutAway( void ) {
 	hasBloodSplat = false;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = true;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_LOWERWEAPON = true;
 	}
 }
 
@@ -1182,8 +1152,8 @@ NOTE: this is only for impulse-triggered reload, auto reload is scripted
 ================
 */
 void idWeapon::Reload( void ) {
-	if ( isLinked ) {
-		WEAPON_RELOAD = true;
+	if ( IsLinked() ) {
+		scriptWeapon->WEAPON_RELOAD = true;
 	}
 }
 
@@ -1281,9 +1251,8 @@ idWeapon::OwnerDied
 ================
 */
 void idWeapon::OwnerDied( void ) {
-	if ( isLinked ) {
-		SetState( "OwnerDied", 0 );
-		thread->Execute();
+	if ( IsLinked() ) {
+		scriptWeapon->OwnerDied();
 	}
 
 	Hide();
@@ -1306,16 +1275,16 @@ void idWeapon::BeginAttack( void ) {
 		lastAttack = gameLocal.time;
 	}
 
-	if ( !isLinked ) {
+	if ( !IsLinked() ) {
 		return;
 	}
 
-	if ( !WEAPON_ATTACK ) {
+	if ( !scriptWeapon->WEAPON_ATTACK ) {
 		if ( sndHum ) {
 			StopSound( SND_CHANNEL_BODY, false );
 		}
 	}
-	WEAPON_ATTACK = true;
+	scriptWeapon->WEAPON_ATTACK = true;
 }
 
 /*
@@ -1324,11 +1293,12 @@ idWeapon::EndAttack
 ================
 */
 void idWeapon::EndAttack( void ) {
-	if ( !WEAPON_ATTACK.IsLinked() ) {
+	if (!IsLinked()) {
 		return;
 	}
-	if ( WEAPON_ATTACK ) {
-		WEAPON_ATTACK = false;
+
+	if (scriptWeapon->WEAPON_ATTACK ) {
+		scriptWeapon->WEAPON_ATTACK = false;
 		if ( sndHum ) {
 			StartSoundShader( sndHum, SND_CHANNEL_BODY, 0, false, NULL );
 		}
@@ -1368,7 +1338,7 @@ idWeapon::ShowCrosshair
 ================
 */
 bool idWeapon::ShowCrosshair( void ) const {
-	return !( state == idStr( WP_RISING ) || state == idStr( WP_LOWERING ) || state == idStr( WP_HOLSTERED ) );
+	return !(status == WP_RISING || status == WP_LOWERING || status == WP_HOLSTERED);
 }
 
 /*
@@ -1395,9 +1365,8 @@ idWeapon::WeaponStolen
 void idWeapon::WeaponStolen( void ) {
 	assert( !gameLocal.isClient );
 	if ( projectileEnt ) {
-		if ( isLinked ) {
-			SetState( "WeaponStolen", 0 );
-			thread->Execute();
+		if ( IsLinked() ) {
+			scriptWeapon->WeaponStolen();
 		}
 		projectileEnt = NULL;
 	}
@@ -1442,27 +1411,12 @@ idWeapon::SetState
 =====================
 */
 void idWeapon::SetState( const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	if ( !isLinked ) {
-		return;
-	}
-
-	func = scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName() );
-	}
-
-	thread->CallFunction( this, func, true );
-	state = statename;
+	scriptWeapon->SetState(statename, blendFrames);
 
 	animBlendFrames = blendFrames;
 	if ( g_debugWeapon.GetBool() ) {
 		gameLocal.Printf( "%d: weapon state : %s\n", gameLocal.time, statename );
 	}
-
-	idealState = "";
 }
 
 
@@ -1627,102 +1581,6 @@ void idWeapon::MuzzleRise( idVec3 &origin, idMat3 &axis ) {
 
 /*
 ================
-idWeapon::ConstructScriptObject
-
-Called during idEntity::Spawn.  Calls the constructor on the script object.
-Can be overridden by subclasses when a thread doesn't need to be allocated.
-================
-*/
-idThread *idWeapon::ConstructScriptObject( void ) {
-	const function_t *constructor;
-
-	thread->EndThread();
-
-	// call script object's constructor
-	constructor = scriptObject.GetConstructor();
-	if ( !constructor ) {
-		gameLocal.Error( "Missing constructor on '%s' for weapon", scriptObject.GetTypeName() );
-	}
-
-	// init the script object's data
-	scriptObject.ClearObject();
-	thread->CallFunction( this, constructor, true );
-	thread->Execute();
-
-	return thread;
-}
-
-/*
-================
-idWeapon::DeconstructScriptObject
-
-Called during idEntity::~idEntity.  Calls the destructor on the script object.
-Can be overridden by subclasses when a thread doesn't need to be allocated.
-Not called during idGameLocal::MapShutdown.
-================
-*/
-void idWeapon::DeconstructScriptObject( void ) {
-	const function_t *destructor;
-
-	if ( !thread ) {
-		return;
-	}
-	
-	// don't bother calling the script object's destructor on map shutdown
-	if ( gameLocal.GameState() == GAMESTATE_SHUTDOWN ) {
-		return;
-	}
-
-	thread->EndThread();
-
-	// call script object's destructor
-	destructor = scriptObject.GetDestructor();
-	if ( destructor ) {
-		// start a thread that will run immediately and end
-		thread->CallFunction( this, destructor, true );
-		thread->Execute();
-		thread->EndThread();
-	}
-
-	// clear out the object's memory
-	scriptObject.ClearObject();
-}
-
-/*
-================
-idWeapon::UpdateScript
-================
-*/
-void idWeapon::UpdateScript( void ) {
-	int	count;
-
-	if ( !isLinked ) {
-		return;
-	}
-
-	// only update the script on new frames
-	if ( !gameLocal.isNewFrame ) {
-		return;
-	}
-
-	if ( idealState.Length() ) {
-		SetState( idealState, animBlendFrames );
-	}
-
-	// update script state, which may call Event_LaunchProjectiles, among other things
-	count = 10;
-	while( ( thread->Execute() || idealState.Length() ) && count-- ) {
-		// happens for weapons with no clip (like grenades)
-		if ( idealState.Length() ) {
-			SetState( idealState, animBlendFrames );
-		}
-	}
-
-	WEAPON_RELOAD = false;
-}
-
-/*
-================
 idWeapon::AlertMonsters
 ================
 */
@@ -1805,9 +1663,6 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	GetPhysics()->SetOrigin( viewWeaponOrigin );
 	GetPhysics()->SetAxis( viewWeaponAxis );
 	UpdateVisuals();
-
-	// update the weapon script
-	UpdateScript();
 
 	UpdateGUI();
 
@@ -1915,16 +1770,14 @@ idWeapon::EnterCinematic
 void idWeapon::EnterCinematic( void ) {
 	StopSound( SND_CHANNEL_ANY, false );
 
-	if ( isLinked ) {
-		SetState( "EnterCinematic", 0 );
-		thread->Execute();
-
-		WEAPON_ATTACK		= false;
-		WEAPON_RELOAD		= false;
-		WEAPON_NETRELOAD	= false;
-		WEAPON_NETENDRELOAD	= false;
-		WEAPON_RAISEWEAPON	= false;
-		WEAPON_LOWERWEAPON	= false;
+	if ( IsLinked() ) {		
+		scriptWeapon->EnterCinematic();
+		scriptWeapon->WEAPON_ATTACK		= false;
+		scriptWeapon->WEAPON_RELOAD		= false;
+		scriptWeapon->WEAPON_NETRELOAD	= false;
+		scriptWeapon->WEAPON_NETENDRELOAD	= false;
+		scriptWeapon->WEAPON_RAISEWEAPON	= false;
+		scriptWeapon->WEAPON_LOWERWEAPON	= false;
 	}
 
 	disabled = true;
@@ -1940,9 +1793,8 @@ idWeapon::ExitCinematic
 void idWeapon::ExitCinematic( void ) {
 	disabled = false;
 
-	if ( isLinked ) {
-		SetState( "ExitCinematic", 0 );
-		thread->Execute();
+	if ( IsLinked() ) {
+		scriptWeapon->ExitCinematic();		
 	}
 
 	RaiseWeapon();
@@ -1954,9 +1806,8 @@ idWeapon::NetCatchup
 ================
 */
 void idWeapon::NetCatchup( void ) {
-	if ( isLinked ) {
-		SetState( "NetCatchup", 0 );
-		thread->Execute();
+	if (IsLinked()) {
+		scriptWeapon->NetCatchup();		
 	}
 }
 
@@ -2194,17 +2045,13 @@ bool idWeapon::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 	switch( event ) {
 		case EVENT_RELOAD: {
 			if ( gameLocal.time - time < 1000 ) {
-				if ( WEAPON_NETRELOAD.IsLinked() ) {
-					WEAPON_NETRELOAD = true;
-					WEAPON_NETENDRELOAD = false;
-				}
+				scriptWeapon->WEAPON_NETRELOAD = true;
+				scriptWeapon->WEAPON_NETENDRELOAD = false;				
 			}
 			return true;
 		}
 		case EVENT_ENDRELOAD: {
-			if ( WEAPON_NETENDRELOAD.IsLinked() ) {
-				WEAPON_NETENDRELOAD = true;
-			}
+			scriptWeapon->WEAPON_NETRELOAD = true;
 			return true;
 		}
 		case EVENT_CHANGESKIN: {
@@ -2242,7 +2089,6 @@ idEntity* idWeapon::NativeEvent_GetOwner() {
 
 void idWeapon::NativeEvent_WeaponState(const char* statename, int blendFrames) {
 	SetState(statename, blendFrames);
-	thread->Execute();
 }
 
 void idWeapon::NativeEvent_UseAmmo(int amount) {
@@ -2403,6 +2249,13 @@ void idWeapon::NativeEvent_SetSkin(const char* skinname) {
 		msg.Init(msgBuf, sizeof(msgBuf));
 		msg.WriteLong((skinDecl != NULL) ? gameLocal.ServerRemapDecl(-1, DECL_SKIN, skinDecl->Index()) : -1);
 		ServerSendEvent(EVENT_CHANGESKIN, &msg, false, -1);
+	}
+}
+
+void idWeapon::ToggleFlashLight(void) {
+	if (IsLinked())
+	{
+		scriptWeapon->ToggleFlashLight();
 	}
 }
 
@@ -2765,8 +2618,8 @@ float idWeapon::NativeEvent_IsInvisible() {
 
 void idWeapon::NativeEvent_WeaponReady() {
 	status = WP_READY;
-	if (isLinked) {
-		WEAPON_RAISEWEAPON = false;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_RAISEWEAPON = false;
 	}
 	if (sndHum) {
 		StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, NULL);
@@ -2775,8 +2628,8 @@ void idWeapon::NativeEvent_WeaponReady() {
 
 void idWeapon::NativeEvent_WeaponOutOfAmmo() {
 	status = WP_OUTOFAMMO;
-	if (isLinked) {
-		WEAPON_RAISEWEAPON = false;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_RAISEWEAPON = false;
 	}
 }
 
@@ -2786,23 +2639,23 @@ void idWeapon::NativeEvent_WeaponReloading() {
 
 void idWeapon::NativeEvent_WeaponHolstered() {
 	status = WP_HOLSTERED;
-	if (isLinked) {
-		WEAPON_LOWERWEAPON = false;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_LOWERWEAPON = false;
 	}
 }
 
 void idWeapon::NativeEvent_WeaponRising() {
 	status = WP_RISING;
-	if (isLinked) {
-		WEAPON_LOWERWEAPON = false;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_LOWERWEAPON = false;
 	}
 	owner->WeaponRisingCallback();
 }
 
 void idWeapon::NativeEvent_WeaponLowering() {
 	status = WP_LOWERING;
-	if (isLinked) {
-		WEAPON_RAISEWEAPON = false;
+	if (IsLinked()) {
+		scriptWeapon->WEAPON_RAISEWEAPON = false;
 	}
 	owner->WeaponLoweringCallback();
 }
