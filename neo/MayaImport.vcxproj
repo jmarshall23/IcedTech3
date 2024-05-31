@@ -306,6 +306,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -315,6 +316,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -324,6 +326,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -333,6 +336,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -342,6 +346,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -351,6 +356,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -360,6 +366,7 @@
     <Link>
       <OutputFile>../MayaImport2025x64.dll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2025\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>MayaImport/mayaimport.def</ModuleDefinitionFile>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2025\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

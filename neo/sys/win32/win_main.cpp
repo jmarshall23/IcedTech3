@@ -677,7 +677,7 @@ Sys_DLL_GetProcAddress
 =====================
 */
 void *Sys_DLL_GetProcAddress(INT_PTR dllHandle, const char *procName ) {
-	return GetProcAddress( (HINSTANCE)dllHandle, procName ); 
+	return GetProcAddress( (HMODULE)dllHandle, procName ); 
 }
 
 /*
