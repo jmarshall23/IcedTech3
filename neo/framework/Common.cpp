@@ -2806,11 +2806,22 @@ void idCommonLocal::Init( int argc, const char **argv, const char *cmdline ) {
 		
 		// parse command line options
 		idCmdArgs args;
+#ifdef ID_ALLOW_TOOLS
+		idStr cmdlinebuf = cmdline;
+		if (cmdlinebuf.Length() > 0) {
+			cmdlinebuf += " +idStudio";
+
+			// tokenize if the OS doesn't do it for us
+			args.TokenizeString(cmdlinebuf, true);
+			argv = args.GetArgs(&argc);
+		}
+#else
 		if ( cmdline ) {
 			// tokenize if the OS doesn't do it for us
 			args.TokenizeString( cmdline, true );
 			argv = args.GetArgs( &argc );
 		}
+#endif
 		ParseCommandLine( argc, argv );
 
 		// init console command system
