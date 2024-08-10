@@ -1538,7 +1538,10 @@ void CMainFrame::OnDestroy() {
 
 	SaveWindowPlacement(GetSafeHwnd(), "radiant_MainWindowPlace");
 
-	SaveSplitterInfo(m_wndSplitter, "radiant_main_splitter");
+	SaveWindowPlacement(m_pXYWnd->GetSafeHwnd(), "radiant_xywindow");
+	SaveWindowPlacement(m_pXZWnd->GetSafeHwnd(), "radiant_xzwindow");
+	SaveWindowPlacement(m_pYZWnd->GetSafeHwnd(), "radiant_yzwindow");
+	SaveWindowPlacement(m_pCamWnd->GetSafeHwnd(), "radiant_camerawindow");
 	SaveWindowState(g_Inspectors->texWnd.GetSafeHwnd(), "radiant_texwindow");
 
 	if (m_pXYWnd->GetSafeHwnd()) {
@@ -1754,21 +1757,25 @@ void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
  =======================================================================================================================
  =======================================================================================================================
  */
-BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext) {
+ /*
+  =======================================================================================================================
+  =======================================================================================================================
+  */
+BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext) {
 
-	g_Inspectors = new CInspectorDialog( this );
+	g_Inspectors = new CInspectorDialog(this);
 	g_Inspectors->Create(IDD_DIALOG_INSPECTORS, this);
 
 	LoadWindowPlacement(g_Inspectors->GetSafeHwnd(), "radiant_InspectorsWindow");
 	g_Inspectors->ShowWindow(SW_SHOW);
 
 	CRect r;
-	g_Inspectors->GetWindowRect ( r );
+	g_Inspectors->GetWindowRect(r);
 
 	//stupid hack to get the window resize itself properly
-	r.DeflateRect(0,0,0,1);
-	g_Inspectors->MoveWindow(r);	
-	r.InflateRect(0,0,0,1);
+	r.DeflateRect(0, 0, 0, 1);
+	g_Inspectors->MoveWindow(r);
+	r.InflateRect(0, 0, 0, 1);
 	g_Inspectors->MoveWindow(r);
 
 
@@ -1779,60 +1786,37 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext) {
 	CRect rctParent;
 	GetClientRect(rctParent);
 
-	// Create a splitter with 2 rows and 2 columns
-	if (!m_wndSplitter.CreateStatic(this, 2, 2))
-	{
-		TRACE0("Failed to create splitter window\n");
-		return FALSE; // failed to create
-	}
+	m_pCamWnd = new CCamWnd();
+	m_pCamWnd->Create(CAMERA_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1234);
 
-	//m_pCamWnd = new CCamWnd();
-	//m_pCamWnd->Create(CAMERA_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1234);
-	//
-	//m_pXYWnd = new CXYWnd();
-	//m_pXYWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1235);
-	//m_pXYWnd->SetViewType(XY);
-	//
-	//m_pXZWnd = new CXYWnd();
-	//m_pXZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1236);
-	//m_pXZWnd->SetViewType(XZ);
-	//
-	//m_pYZWnd = new CXYWnd();
-	//m_pYZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1237);
-	//m_pYZWnd->SetViewType(YZ);
-
-	 // Create the views inside the splitter panes
-	if (!m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CCamWnd), CSize(100, 100), pContext) ||
-		!m_wndSplitter.CreateView(0, 1, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext) ||
-		!m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext) ||
-		!m_wndSplitter.CreateView(1, 1, RUNTIME_CLASS(CXYWnd), CSize(100, 100), pContext))
-	{
-		TRACE0("Failed to create splitter window panes\n");
-		return FALSE;
-	}
-
-	// Get pointers to the views created in the splitter panes
-	m_pCamWnd = (CCamWnd*)m_wndSplitter.GetPane(0, 0);
-	m_pXZWnd = (CXYWnd*)m_wndSplitter.GetPane(0, 1);
-	m_pYZWnd = (CXYWnd*)m_wndSplitter.GetPane(1, 0);
-	m_pXYWnd = (CXYWnd*)m_wndSplitter.GetPane(1, 1);
-
-	// Set view types for each window
+	m_pXYWnd = new CXYWnd();
+	m_pXYWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1235);
 	m_pXYWnd->SetViewType(XY);
+
+	m_pXZWnd = new CXYWnd();
+	m_pXZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1236);
 	m_pXZWnd->SetViewType(XZ);
+
+	m_pYZWnd = new CXYWnd();
+	m_pYZWnd->Create(XY_WINDOW_CLASS, "", QE3_CHILDSTYLE, rect, this, 1237);
 	m_pYZWnd->SetViewType(YZ);
+
 	m_pCamWnd->SetXYFriend(m_pXYWnd);
 
-
 	CRect	rctWork;
-	
-	// Set the initial layout
-	m_wndSplitter.SetColumnInfo(0, 100, 50);
-	m_wndSplitter.SetColumnInfo(1, 100, 50);
-	m_wndSplitter.SetRowInfo(0, 100, 50);
-	m_wndSplitter.SetRowInfo(1, 100, 50);
 
-	LoadSplitterInfo(m_wndSplitter, "radiant_main_splitter");
+	LoadWindowPlacement(m_pXYWnd->GetSafeHwnd(), "radiant_xywindow");
+	LoadWindowPlacement(m_pXZWnd->GetSafeHwnd(), "radiant_xzwindow");
+	LoadWindowPlacement(m_pYZWnd->GetSafeHwnd(), "radiant_yzwindow");
+	LoadWindowPlacement(m_pCamWnd->GetSafeHwnd(), "radiant_camerawindow");
+
+	if (!g_PrefsDlg.m_bXZVis) {
+		m_pXZWnd->ShowWindow(SW_HIDE);
+	}
+
+	//if (!g_PrefsDlg.m_bYZVis) {
+	//	m_pYZWnd->ShowWindow(SW_HIDE);
+	//}
 
 	CreateQEChildren();
 
