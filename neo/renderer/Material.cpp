@@ -2740,3 +2740,108 @@ void idMaterial::ReloadImages( bool force ) const
 		}
 	}
 }
+
+// Define a console command function
+void MatToTech7_f(const idCmdArgs& args) {
+	// Get all materials
+	idDecl* decl;
+	idList<idStr> materials;
+	declManager->FindAllDecls(DECL_MATERIAL, materials);
+
+	// Iterate through all materials
+	for (int i = 0; i < materials.Num(); i++) {
+		const idMaterial* material = declManager->FindMaterial(materials[i], false);
+
+		// Initialize paths
+		idStr albedoPath = "";
+		idStr normalPath = "";
+		idStr specularPath = "";
+
+		bool hasNormalMap = false;
+
+		if (material->GetNumStages() <= 1)
+			continue;
+
+		if (material->GetState() == DS_DEFAULTED)
+			continue;
+
+		
+
+		// Iterate through texture stages to find paths
+		for (int j = 0; j < material->GetNumStages(); j++) {
+			const shaderStage_t* stage = material->GetStage(j);
+			if (stage->texture.image == nullptr)
+				continue;
+
+			idStr texturePath = stage->texture.image->imgName;
+
+			// Check if the stage is for normal map
+			if (stage->lighting == SL_BUMP) {
+				hasNormalMap = true;
+				normalPath = texturePath;
+			}
+			else if (stage->lighting == SL_DIFFUSE) {
+				albedoPath = texturePath; 
+			}
+			else if (stage->lighting == SL_SPECULAR) {
+				specularPath = texturePath; 
+			}
+		}
+
+		// Continue if no normal map stage is found
+		if (!hasNormalMap) {
+			continue;
+		}
+
+		if (albedoPath.Length() <= 0)
+			continue;
+
+		if (strstr(normalPath.c_str(), "addnormals")) {
+			continue;
+		}
+
+		// Default texture path for heightmap
+		idStr heightmapPath = "textures/system/constant_color/white.tga";
+
+		// Construct the idTEch 7 material output
+		idStr materialName = material->GetName();
+		idStr output = "declType( " + materialName + " ) {\n";
+		output += "\tinherit = \"template/pbr\";\n";
+		output += "\tedit = {\n";
+		output += "\t\tRenderLayers = {\n";
+		output += "\t\t\titem[0] = {\n";
+		output += "\t\t\t\tparms = {\n";
+		output += "\t\t\t\t\theightmap = {\n";
+		output += "\t\t\t\t\t\tfilePath = \"" + heightmapPath + "\";\n";
+		output += "\t\t\t\t\t}\n";
+		output += "\t\t\t\t\tsmoothness = {\n";
+		output += "\t\t\t\t\t\tfilePath = \"art/tile/sentinel/brick_large_g.tga\";\n";
+		output += "\t\t\t\t\t}\n";
+		output += "\t\t\t\t\tnormal = {\n";
+		output += "\t\t\t\t\t\tfilePath = \"" + normalPath + "\";\n";
+		output += "\t\t\t\t\t}\n";
+		output += "\t\t\t\t\tspecular = {\n";
+		output += "\t\t\t\t\t\tfilePath = \"" + specularPath + "\";\n";
+		output += "\t\t\t\t\t}\n";
+		output += "\t\t\t\t\talbedo = {\n";
+		output += "\t\t\t\t\t\tfilePath = \"" + albedoPath + "\";\n";
+		output += "\t\t\t\t\t}\n";
+		output += "\t\t\t\t}\n";
+		output += "\t\t\t}\n";
+		output += "\t\t}\n";
+		output += "\t\tSurfaceType = \"SURFTYPE_ROCK\";\n";
+		output += "\t}\n";
+		output += "}\n";
+
+		// Write output to a file
+		idStr filePath = "decltree/material2/art/" + materialName + ".decl";
+		idFile* file = fileSystem->OpenFileWrite(filePath); // false = not append
+		if (file) {
+			file->Write(output.c_str(), output.Length());
+			fileSystem->CloseFile(file);
+		}
+		else {
+			common->Printf("Failed to open file for writing: %s\n", filePath.c_str());
+		}
+	}
+}

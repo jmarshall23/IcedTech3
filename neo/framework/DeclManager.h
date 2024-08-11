@@ -130,6 +130,7 @@ public:
 	virtual size_t			Size( void ) const = 0;
 	virtual void			List( void ) const = 0;
 	virtual void			Print( void ) const = 0;
+	virtual void			ParseLocal(void) = 0;
 };
 
 
@@ -279,6 +280,8 @@ public:
 
 							// Returns the decl type for a type name.
 	virtual declType_t		GetDeclTypeFromName( const char *typeName ) const = 0;
+
+	virtual void			FindAllDecls(int declType, idList<idStr>& decls) = 0;
 
 							// If makeDefault is true, a default decl of appropriate type will be created
 							// if an explicit one isn't found. If makeDefault is false, NULL will be returned

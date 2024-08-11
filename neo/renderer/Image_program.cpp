@@ -429,7 +429,7 @@ static bool R_ParseImageProgram_r( idLexer &src, byte **pic, int *width, int *he
 		}
 		
 		// process it
-		if ( pic ) {
+		if ( pic && width2 > 0 && height2 > 0 ) {
 			R_AddNormalMaps( *pic, *width, *height, pic2, width2, height2 );
 			R_StaticFree( pic2 );
 			if ( depth ) {

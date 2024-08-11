@@ -49,6 +49,8 @@ typedef enum {
 	#define BUILD_DEBUG ""
 #endif
 
+void MatToTech7_f(const idCmdArgs& args);
+
 struct version_s {
 			version_s( void ) { sprintf( string, "%s.%d%s %s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ ); }
 	char	string[256];
@@ -2377,6 +2379,7 @@ void idCommonLocal::InitCommands( void ) {
 
 	//BSM Nerve: Add support for the material editor
 	cmdSystem->AddCommand( "materialEditor", Com_MaterialEditor_f, CMD_FL_TOOL, "launches the Material Editor" );
+	cmdSystem->AddCommand( "matto7", MatToTech7_f, CMD_FL_TOOL, "");	
 #endif
 
 	cmdSystem->AddCommand( "printMemInfo", PrintMemInfo_f, CMD_FL_SYSTEM, "prints memory debugging data" );

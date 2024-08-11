@@ -107,6 +107,10 @@ public:
 	virtual void				MakeDefault( void );
 	virtual bool				EverReferenced( void ) const;
 
+	// Parses the decl definition.
+	// After calling parse, a decl will be guaranteed usable.
+	virtual void				ParseLocal(void);
+
 protected:
 	virtual bool				SetDefaultText( void );
 	virtual const char *		DefaultDefinition( void ) const;
@@ -117,10 +121,6 @@ protected:
 
 protected:
 	void						AllocateSelf( void );
-
-								// Parses the decl definition.
-								// After calling parse, a decl will be guaranteed usable.
-	void						ParseLocal( void );
 
 								// Does a MakeDefualt, but flags the decl so that it
 								// will Parse() the next time the decl is found.
@@ -182,6 +182,7 @@ public:
 	virtual void				Reload( bool force );
 	virtual void				BeginLevelLoad();
 	virtual void				EndLevelLoad();
+	virtual void				FindAllDecls(int declType, idList<idStr>& decls);
 	virtual void				RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)( void ) );
 	virtual void				RegisterDeclFolder( const char *folder, const char *extension, declType_t defaultType );
 	virtual int					GetChecksum( void ) const;
@@ -947,6 +948,25 @@ void idDeclManagerLocal::EndLevelLoad() {
 
 	// we don't need to do anything here, but the image manager, model manager,
 	// and sound sample manager will need to free media that was not referenced
+}
+
+/*
+===================
+idDeclManagerLocal::FindAllDecls
+===================
+*/
+void idDeclManagerLocal::FindAllDecls(int declType, idList<idStr>& decls) {
+	// Clear the output list
+	decls.Clear();
+
+	for (int i = 0; i < loadedFiles.Num(); i++) {
+		for (idDeclLocal* decl = loadedFiles[i]->decls; decl; decl = decl->nextInFile) {
+			// Check if the declaration type matches
+			if (decl->GetType() == declType) {
+				decls.Append(decl->GetName());
+			}
+		}
+	}
 }
 
 /*
